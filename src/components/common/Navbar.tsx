@@ -14,24 +14,9 @@ const Navbar = () => {
     <nav className="navbar">
       <div className="navbar-inner">
         <ul>
-          <li><Link to="/">TOKENS</Link></li>
-          <li>
-            {address ? (
-              <Link to={`/wallet/${address}`}>WALLET</Link>
-            ) : (
-              <span className="navbar-activity-disabled">WALLET</span>
-            )}
-          </li>
-          <li>
-            {address ? (
-              <Link to={`/activity/${address}`}>ACTIVITY</Link>
-            ) : (
-              <span className="navbar-activity-disabled">ACTIVITY</span>
-            )}
-          </li>
-          <li>
-            <Link to="/simulator">SIMULATOR</Link>
-          </li>
+          <li><Link to="/1/">Home</Link></li>
+          <li><Link to="/1/blocks">BLOCKS</Link></li>
+          <li><Link to="/1/txs">TRANSACTIONS</Link></li>
         </ul>
         <ul>
           <li>
