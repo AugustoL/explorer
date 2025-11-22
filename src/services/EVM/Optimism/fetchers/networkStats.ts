@@ -1,4 +1,4 @@
-// src/services/EVM/L1/fetchers/networkStats.ts
+// src/services/EVM/Optimism/fetchers/networkStats.ts
 import { RPCClient } from '../../common/RPCClient';
 import type { NetworkStats } from '../../../../types';
 
@@ -6,14 +6,14 @@ export class NetworkStatsFetcher {
   constructor(private rpcClient: RPCClient, private chainId: number) {}
 
   async getNetworkStats(): Promise<NetworkStats> {
-    const [gasPrice, syncing, blockNumber,] = await Promise.all([
+    const [gasPrice, syncing, blockNumber] = await Promise.all([
       this.rpcClient.call<string>('eth_gasPrice', []),
       this.rpcClient.call<boolean | object>('eth_syncing', []),
       this.rpcClient.call<string>('eth_blockNumber', []),
     ]);
 
-    const hashRate = (this.chainId === 31337) ? "0x0" : await this.rpcClient.call<string>('eth_hashrate', []);
-    const metadata = (this.chainId === 31337) ? await this.rpcClient.call<string>('hardhat_metadata', []) : '';
+    const hashRate = await this.rpcClient.call<string>('eth_hashrate', []).catch(() => '0x0');
+    const metadata = '';
 
     // eth_syncing returns false when not syncing, or an object with sync status when syncing
     const isSyncing = typeof syncing === 'object';
@@ -37,7 +37,7 @@ export class NetworkStatsFetcher {
   }
 
   async getHashRate(): Promise<string> {
-    return await this.rpcClient.call<string>('eth_hashrate', []);
+    return await this.rpcClient.call<string>('eth_hashrate', []).catch(() => '0x0');
   }
 
   async getBlockNumber(): Promise<string> {

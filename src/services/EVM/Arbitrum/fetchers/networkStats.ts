@@ -12,8 +12,7 @@ export class NetworkStatsFetcher {
       this.rpcClient.call<string>('eth_blockNumber', []),
     ]);
 
-    const hashRate = (this.chainId === 31337) ? "0x0" : await this.rpcClient.call<string>('eth_hashrate', []);
-    const metadata = (this.chainId === 31337) ? await this.rpcClient.call<string>('hardhat_metadata', []) : '';
+    const metadata = '';
 
     // eth_syncing returns false when not syncing, or an object with sync status when syncing
     const isSyncing = typeof syncing === 'object';
@@ -21,7 +20,7 @@ export class NetworkStatsFetcher {
     return {
       currentGasPrice: gasPrice,
       isSyncing,
-      hashRate,
+      hashRate: "0x0",
       currentBlockNumber: blockNumber,
       metadata: metadata
     };

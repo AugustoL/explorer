@@ -36,13 +36,14 @@ const Settings: React.FC = () => {
   const chainConfigs = [
     { id: 1, name: 'Ethereum Mainnet'},
     { id: 11155111, name: 'Sepolia Testnet'},
+    { id: 42161, name: 'Arbitrum One'},
+    { id: 10, name: 'Optimism Mainnet'},
     { id: 31337, name: 'Local Hardhat'},
-    { id: 677868, name: 'Aztec Network'}
   ];
 
   return (
     <div style={{ 
-      maxWidth: '900px', 
+      maxWidth: '1400px', 
       margin: '0 auto', 
       padding: '32px 24px',
       fontFamily: 'Outfit, sans-serif',

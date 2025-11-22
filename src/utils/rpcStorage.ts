@@ -31,6 +31,20 @@ export const RPC_ENDPOINTS: RpcUrlsContextType = {
   677868: [
     process.env.REACT_APP_AZTEC_RPC || 'http://localhost:8080',
   ].filter(Boolean) as string[],
+
+  // Arbitrum One
+  42161: [
+    process.env.REACT_APP_ARBITRUM_RPC || 'https://arb1.arbitrum.io/rpc',
+    'https://arbitrum.llamarpc.com',
+    'https://arbitrum-one.publicnode.com',
+  ].filter(Boolean) as string[],
+
+  // Optimism Mainnet
+  10: [
+    process.env.REACT_APP_OPTIMISM_RPC || 'https://mainnet.optimism.io',
+    'https://optimism.llamarpc.com',
+    'https://optimism.publicnode.com',
+  ].filter(Boolean) as string[],
 };
 type RpcMap = Record<number, string[]>;
 
