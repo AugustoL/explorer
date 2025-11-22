@@ -1,6 +1,6 @@
 // src/services/DataService.ts
 import { RPCClient } from './RPCClient';
-import { getRPCUrl } from '../config/rpcConfig';
+import { getRPCUrls } from '../config/rpcConfig';
 import { BlockFetcher } from './fetchers/mainnet/block';
 import { TransactionFetcher } from './fetchers/mainnet/transaction';
 import { AddressFetcher } from './fetchers/mainnet/address';
@@ -25,8 +25,8 @@ export class DataService {
   private cacheTimeout = 30000; // 30 seconds
 
   constructor(private chainId: number) {
-    const rpcUrl = getRPCUrl(chainId);
-    this.rpcClient = new RPCClient(rpcUrl);
+    const rpcUrls = getRPCUrls(chainId);
+    this.rpcClient = new RPCClient(rpcUrls);
     this.blockFetcher = new BlockFetcher(this.rpcClient, chainId);
     this.transactionFetcher = new TransactionFetcher(this.rpcClient, chainId);
     this.addressFetcher = new AddressFetcher(this.rpcClient, chainId);
@@ -130,6 +130,48 @@ export class DataService {
 
   async getLatestBlockNumber(): Promise<number> {
     return await this.blockFetcher.getLatestBlockNumber();
+  }
+
+  async getLatestBlocks(count: number = 10): Promise<Block[]> {
+    const latestBlockNumber = await this.getLatestBlockNumber();
+    const blockNumbers = Array.from(
+      { length: count },
+      (_, i) => latestBlockNumber - i
+    ).filter(num => num >= 0); // Don't go below block 0
+
+    const blocks = await Promise.all(
+      blockNumbers.map(num => this.getBlock(num))
+    );
+
+    return blocks;
+  }
+
+  async getTransactionsFromLatestBlocks(blockCount: number = 10): Promise<Array<Transaction & { blockNumber: string }>> {
+    const latestBlockNumber = await this.getLatestBlockNumber();
+    const blockNumbers = Array.from(
+      { length: blockCount },
+      (_, i) => latestBlockNumber - i
+    ).filter(num => num >= 0);
+
+    // Fetch blocks with full transaction details
+    const blocksWithTxs = await Promise.all(
+      blockNumbers.map(num => this.getBlockWithTransactions(num))
+    );
+
+    // Flatten all transactions from all blocks, maintaining block order
+    const transactions: Array<Transaction & { blockNumber: string }> = [];
+    for (const block of blocksWithTxs) {
+      if (block.transactionDetails && block.transactionDetails.length > 0) {
+        for (const tx of block.transactionDetails) {
+          transactions.push({
+            ...tx,
+            blockNumber: block.number
+          });
+        }
+      }
+    }
+
+    return transactions;
   }
 
   getChainId(): number {
