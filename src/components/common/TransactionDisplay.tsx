@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Transaction } from '../../types';
+import { Transaction, TransactionArbitrum, TransactionReceiptArbitrum } from '../../types';
 import LongString from './LongString';
 
 interface TransactionDisplayProps {
-    transaction: Transaction;
+    transaction: Transaction | TransactionArbitrum;
     chainId?: string;
     currentBlockNumber?: number;
 }
@@ -12,6 +12,16 @@ interface TransactionDisplayProps {
 const TransactionDisplay: React.FC<TransactionDisplayProps> = ({ transaction, chainId, currentBlockNumber }) => {
     const [showRawData, setShowRawData] = useState(false);
     const [showLogs, setShowLogs] = useState(false);
+
+    // Check if this is an Arbitrum transaction
+    const isArbitrumTx = (tx: Transaction | TransactionArbitrum): tx is TransactionArbitrum => {
+        return 'requestId' in tx;
+    };
+
+    // Check if receipt is Arbitrum receipt
+    const isArbitrumReceipt = (receipt: any): receipt is TransactionReceiptArbitrum => {
+        return receipt && 'l1BlockNumber' in receipt;
+    };
 
     const truncate = (str: string, start = 6, end = 4) => {
         if (!str) return '';
@@ -494,6 +504,91 @@ const TransactionDisplay: React.FC<TransactionDisplayProps> = ({ transaction, ch
                     </>
                 )}
             </div>
+
+            {/* Arbitrum-specific fields */}
+            {isArbitrumTx(transaction) && (
+                <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                    gap: '12px',
+                    marginTop: '16px'
+                }}>
+                    {transaction.requestId && transaction.requestId !== '0x0' && (
+                        <div style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '4px',
+                            padding: '10px 12px',
+                            background: 'rgba(59, 130, 246, 0.08)',
+                            borderRadius: '8px',
+                            borderLeft: '3px solid #3b82f6',
+                            gridColumn: '1 / -1'
+                        }}>
+                            <span style={{ 
+                                fontSize: '0.85rem',
+                                color: '#3b82f6',
+                                fontWeight: '600',
+                                fontFamily: 'Outfit, sans-serif'
+                            }}>Request ID</span>
+                            <span style={{ 
+                                fontWeight: '500',
+                                color: 'var(--text-color, #1f2937)',
+                                fontFamily: 'monospace',
+                                fontSize: '0.85rem',
+                                wordBreak: 'break-all'
+                            }}>{transaction.requestId}</span>
+                        </div>
+                    )}
+                    
+                    {transaction.receipt && isArbitrumReceipt(transaction.receipt) && (
+                        <>
+                            <div style={{
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                padding: '8px 12px',
+                                background: 'rgba(59, 130, 246, 0.08)',
+                                borderRadius: '8px',
+                                borderLeft: '3px solid #3b82f6'
+                            }}>
+                                <span style={{ 
+                                    fontSize: '0.85rem',
+                                    color: '#3b82f6',
+                                    fontWeight: '600',
+                                    fontFamily: 'Outfit, sans-serif'
+                                }}>L1 Block Number</span>
+                                <span style={{ 
+                                    fontWeight: '500',
+                                    color: 'var(--text-color, #1f2937)',
+                                    fontFamily: 'Outfit, sans-serif',
+                                    fontSize: '0.95rem'
+                                }}>{Number(transaction.receipt.l1BlockNumber).toLocaleString()}</span>
+                            </div>
+
+                            <div style={{
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                padding: '8px 12px',
+                                background: 'rgba(59, 130, 246, 0.08)',
+                                borderRadius: '8px',
+                                borderLeft: '3px solid #3b82f6'
+                            }}>
+                                <span style={{ 
+                                    fontSize: '0.85rem',
+                                    color: '#3b82f6',
+                                    fontWeight: '600',
+                                    fontFamily: 'Outfit, sans-serif'
+                                }}>Gas Used for L1</span>
+                                <span style={{ 
+                                    fontWeight: '500',
+                                    color: 'var(--text-color, #1f2937)',
+                                    fontFamily: 'Outfit, sans-serif',
+                                    fontSize: '0.95rem'
+                                }}>{Number(transaction.receipt.gasUsedForL1).toLocaleString()}</span>
+                            </div>
+                        </>
+                    )}
+                </div>
+            )}
 
             {/* Input Data Section */}
             {transaction.data && transaction.data !== '0x' && (

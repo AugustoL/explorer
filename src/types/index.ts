@@ -43,6 +43,12 @@ export interface Block {
   }>
 }
 
+export interface BlockArbitrum extends Block {
+  l1BlockNumber: string
+  sendCount: string
+  sendRoot: string
+}
+
 export interface Transaction {
   blockHash: string
   blockNumber: string
@@ -62,6 +68,10 @@ export interface Transaction {
   receipt?: TransactionReceipt
 }
 
+export interface TransactionArbitrum extends Transaction {
+  requestId: string
+}
+
 export interface TransactionReceipt {  
   blockHash: string
   blockNumber: string
@@ -77,6 +87,11 @@ export interface TransactionReceipt {
   transactionHash: string
   transactionIndex: string
   type: string
+}
+
+export interface TransactionReceiptArbitrum extends TransactionReceipt {
+  l1BlockNumber: string,
+  gasUsedForL1: string
 }
 
 export interface Address {
@@ -170,7 +185,8 @@ export type supportedChainsIds =
 1 | // mainnet
 11155111 | // sepolia testnet
 31337 | // local node (hardhat, anvil, aztec)
-677868 // aztec sandobx
+677868 | // aztec sandobx
+42161 // arbitrum one
 
 export type RpcUrlsContextType = Record<supportedChainsIds, RPCUrls>;
 

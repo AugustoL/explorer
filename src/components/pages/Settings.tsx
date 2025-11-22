@@ -36,6 +36,7 @@ const Settings: React.FC = () => {
   const chainConfigs = [
     { id: 1, name: 'Ethereum Mainnet'},
     { id: 11155111, name: 'Sepolia Testnet'},
+    { id: 42161, name: 'Arbitrum One'},
     { id: 31337, name: 'Local Hardhat'},
     { id: 677868, name: 'Aztec Network'}
   ];

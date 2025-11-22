@@ -8,6 +8,14 @@ import { NetworkStatsFetcher } from './EVM/L1/fetchers/networkStats';
 import { BlockAdapter } from './EVM/L1/adapters/block';
 import { TransactionAdapter } from './EVM/L1/adapters/transaction';
 import { AddressAdapter } from './EVM/L1/adapters/address';
+// Arbitrum imports
+import { BlockFetcher as BlockFetcherArbitrum } from './EVM/Arbitrum/fetchers/block';
+import { TransactionFetcher as TransactionFetcherArbitrum } from './EVM/Arbitrum/fetchers/transaction';
+import { AddressFetcher as AddressFetcherArbitrum } from './EVM/Arbitrum/fetchers/address';
+import { NetworkStatsFetcher as NetworkStatsFetcherArbitrum } from './EVM/Arbitrum/fetchers/networkStats';
+import { BlockArbitrumAdapter } from './EVM/Arbitrum/adapters/block';
+import { TransactionArbitrumAdapter } from './EVM/Arbitrum/adapters/transaction';
+import { AddressAdapter as AddressAdapterArbitrum } from './EVM/Arbitrum/adapters/address';
 import type { Block, Transaction, Address, NetworkStats, RpcUrlsContextType } from '../types';
 
 interface CacheEntry<T> {
@@ -17,10 +25,11 @@ interface CacheEntry<T> {
 
 export class DataService {
   private rpcClient: RPCClient;
-  private blockFetcher: BlockFetcher;
-  private transactionFetcher: TransactionFetcher;
-  private addressFetcher: AddressFetcher;
-  private networkStatsFetcher: NetworkStatsFetcher;
+  private blockFetcher: BlockFetcher | BlockFetcherArbitrum;
+  private transactionFetcher: TransactionFetcher | TransactionFetcherArbitrum;
+  private addressFetcher: AddressFetcher | AddressFetcherArbitrum;
+  private networkStatsFetcher: NetworkStatsFetcher | NetworkStatsFetcherArbitrum;
+  private isArbitrum: boolean;
   
   // Simple in-memory cache with chainId in key
   private cache = new Map<string, CacheEntry<any>>();
@@ -31,10 +40,21 @@ export class DataService {
     const rpcUrls = getRPCUrls(chainId, rpcUrlsMap);
     console.log('RPC URLs for chain', chainId, ':', rpcUrls);
     this.rpcClient = new RPCClient(rpcUrls);
-    this.blockFetcher = new BlockFetcher(this.rpcClient, chainId);
-    this.transactionFetcher = new TransactionFetcher(this.rpcClient, chainId);
-    this.addressFetcher = new AddressFetcher(this.rpcClient, chainId);
-    this.networkStatsFetcher = new NetworkStatsFetcher(this.rpcClient, chainId);
+    
+    // Check if this is Arbitrum
+    this.isArbitrum = chainId === 42161;
+    
+    if (this.isArbitrum) {
+      this.blockFetcher = new BlockFetcherArbitrum(this.rpcClient, chainId);
+      this.transactionFetcher = new TransactionFetcherArbitrum(this.rpcClient, chainId);
+      this.addressFetcher = new AddressFetcherArbitrum(this.rpcClient, chainId);
+      this.networkStatsFetcher = new NetworkStatsFetcherArbitrum(this.rpcClient, chainId);
+    } else {
+      this.blockFetcher = new BlockFetcher(this.rpcClient, chainId);
+      this.transactionFetcher = new TransactionFetcher(this.rpcClient, chainId);
+      this.addressFetcher = new AddressFetcher(this.rpcClient, chainId);
+      this.networkStatsFetcher = new NetworkStatsFetcher(this.rpcClient, chainId);
+    }
   }
 
   private getCached<T>(key: string): T | null {
@@ -66,7 +86,9 @@ export class DataService {
     const rpcBlock = await this.blockFetcher.getBlock(blockNumber);
     if (!rpcBlock) throw new Error('Block not found');
 
-    const block = BlockAdapter.fromRPCBlock(rpcBlock, this.chainId);
+    const block = this.isArbitrum 
+      ? BlockArbitrumAdapter.fromRPCBlock(rpcBlock, this.chainId)
+      : BlockAdapter.fromRPCBlock(rpcBlock, this.chainId);
     
     // Only cache non-latest blocks
     if (blockNumber !== 'latest') {
@@ -80,12 +102,17 @@ export class DataService {
     const rpcBlock = await this.blockFetcher.getBlockWithTransactions(blockNumber);
     if (!rpcBlock) throw new Error('Block not found');
 
-    const block = BlockAdapter.fromRPCBlock(rpcBlock, this.chainId);
+    const block = this.isArbitrum
+      ? BlockArbitrumAdapter.fromRPCBlock(rpcBlock, this.chainId)
+      : BlockAdapter.fromRPCBlock(rpcBlock, this.chainId);
     
     // Transform transaction objects
     const transactionDetails = (Array.isArray(rpcBlock.transactions) ? rpcBlock.transactions : [])
       .filter(tx => typeof tx !== 'string')
-      .map(tx => TransactionAdapter.fromRPCTransaction(tx as any, this.chainId));
+      .map(tx => this.isArbitrum
+        ? TransactionArbitrumAdapter.fromRPCTransaction(tx as any, this.chainId)
+        : TransactionAdapter.fromRPCTransaction(tx as any, this.chainId)
+      );
 
     return { ...block, transactionDetails };
   }
@@ -109,7 +136,9 @@ export class DataService {
       timestamp = block.timestamp.toString();
     }
 
-    const transaction = TransactionAdapter.fromRPCTransaction(rpcTx, this.chainId, receipt);
+    const transaction = this.isArbitrum
+      ? TransactionArbitrumAdapter.fromRPCTransaction(rpcTx, this.chainId, receipt)
+      : TransactionAdapter.fromRPCTransaction(rpcTx, this.chainId, receipt);
     // transaction.timestamp = timestamp;
 
     this.setCache(cacheKey, transaction);
@@ -127,7 +156,9 @@ export class DataService {
       this.addressFetcher.getTransactionCount(address),
     ]);
 
-    const addressData = AddressAdapter.fromRawData(address, balance, code, txCount, this.chainId);
+    const addressData = this.isArbitrum
+      ? AddressAdapterArbitrum.fromRawData(address, balance, code, txCount, this.chainId)
+      : AddressAdapter.fromRawData(address, balance, code, txCount, this.chainId);
     
     this.setCache(cacheKey, addressData);
     return addressData;

@@ -1,15 +1,21 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Block } from '../../types';
+import { Block, BlockArbitrum } from '../../types';
 
 interface BlockDisplayProps {
-    block: Block;
+    block: Block | BlockArbitrum;
     chainId?: string;
 }
 
 const BlockDisplay: React.FC<BlockDisplayProps> = ({ block, chainId }) => {
     const [showWithdrawals, setShowWithdrawals] = useState(false);
     const [showTransactions, setShowTransactions] = useState(false);
+    
+    // Check if this is an Arbitrum block
+    const isArbitrumBlock = (block: Block | BlockArbitrum): block is BlockArbitrum => {
+        return 'l1BlockNumber' in block;
+    };
+    
     // Helper to truncate long hashes
     const truncate = (str: string, start = 6, end = 4) => {
         if (!str) return '';
@@ -476,6 +482,86 @@ const BlockDisplay: React.FC<BlockDisplayProps> = ({ block, chainId }) => {
                     }} title={block.extraData}>
                         {block.extraData.length > 20 ? truncate(block.extraData, 10, 8) : block.extraData}
                     </span>
+                </div>
+            )}
+
+            {/* Arbitrum-specific fields */}
+            {isArbitrumBlock(block) && (
+                <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                    gap: '12px',
+                    marginTop: '16px',
+                    marginBottom: '16px'
+                }}>
+                    <div style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        padding: '8px 12px',
+                        background: 'rgba(59, 130, 246, 0.08)',
+                        borderRadius: '8px',
+                        borderLeft: '3px solid #3b82f6'
+                    }}>
+                        <span style={{ 
+                            fontSize: '0.85rem',
+                            color: '#3b82f6',
+                            fontWeight: '600',
+                            fontFamily: 'Outfit, sans-serif'
+                        }}>L1 Block Number</span>
+                        <span style={{ 
+                            fontWeight: '500',
+                            color: 'var(--text-color, #1f2937)',
+                            fontFamily: 'Outfit, sans-serif',
+                            fontSize: '0.95rem'
+                        }}>{Number(block.l1BlockNumber).toLocaleString()}</span>
+                    </div>
+
+                    <div style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        padding: '8px 12px',
+                        background: 'rgba(59, 130, 246, 0.08)',
+                        borderRadius: '8px',
+                        borderLeft: '3px solid #3b82f6'
+                    }}>
+                        <span style={{ 
+                            fontSize: '0.85rem',
+                            color: '#3b82f6',
+                            fontWeight: '600',
+                            fontFamily: 'Outfit, sans-serif'
+                        }}>Send Count</span>
+                        <span style={{ 
+                            fontWeight: '500',
+                            color: 'var(--text-color, #1f2937)',
+                            fontFamily: 'Outfit, sans-serif',
+                            fontSize: '0.95rem'
+                        }}>{block.sendCount}</span>
+                    </div>
+
+                    <div style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '4px',
+                        padding: '10px 12px',
+                        background: 'rgba(59, 130, 246, 0.08)',
+                        borderRadius: '8px',
+                        borderLeft: '3px solid #3b82f6',
+                        gridColumn: '1 / -1'
+                    }}>
+                        <span style={{ 
+                            fontSize: '0.85rem',
+                            color: '#3b82f6',
+                            fontWeight: '600',
+                            fontFamily: 'Outfit, sans-serif'
+                        }}>Send Root</span>
+                        <span style={{ 
+                            fontWeight: '500',
+                            color: 'var(--text-color, #1f2937)',
+                            fontFamily: 'monospace',
+                            fontSize: '0.85rem',
+                            wordBreak: 'break-all'
+                        }}>{block.sendRoot}</span>
+                    </div>
                 </div>
             )}
 
