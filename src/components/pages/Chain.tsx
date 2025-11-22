@@ -16,8 +16,7 @@ export default function Home() {
       <div className="home-content">
         <h1 className="home-title">OPENSCAN</h1>
         <SearchBox />
-
-          <NetworkStatsDisplay networkStats={mockNetworkStats} />
+        <NetworkStatsDisplay networkStats={mockNetworkStats} />
       </div>
     </div>
   );
