@@ -2,6 +2,7 @@ import { createContext, useState, ReactNode, useEffect } from 'react';
 import { useAccount } from 'wagmi';
 import { useWagmiConnection } from '../hooks/useWagmiConnection';
 import { IAppContext, RpcUrlsContextType } from '../types';
+import { getEffectiveRpcUrls, saveRpcUrlsToStorage } from '../utils/rpcStorage';
 
 // Alias exported for use across the app where a shorter/consistent name is preferred
 export type tRpcUrlsContextType = RpcUrlsContextType;
@@ -10,12 +11,7 @@ export const AppContext = createContext<IAppContext>({
   appReady: false,
   resourcesLoaded: false,
   isHydrated: false,
-  rpcUrls: {
-    1: ['https://eth.llamarpc.com'],
-    11155111: ['wss://ethereum-sepolia-rpc.publicnode.com'],
-    31337: ['http://localhost:8545', 'http://localhost:8545'],
-    677868: ['https://aztec-connect-testnet-eth-host.aztec.network:8545/'],
-  },
+  rpcUrls: getEffectiveRpcUrls(),
   setRpcUrls: () => {},
 });
 
@@ -23,12 +19,16 @@ export const AppContextProvider = ({ children }: { children: ReactNode }) => {
   const [appReady, setAppReady] = useState<boolean>(false);
   const [resourcesLoaded, setResourcesLoaded] = useState<boolean>(false);
   const [isHydrated, setIsHydrated] = useState<boolean>(false);
-  const [rpcUrls, setRpcUrls] = useState<RpcUrlsContextType>({
-    1: ['https://eth.llamarpc.com'],
-    11155111: ['wss://ethereum-sepolia-rpc.publicnode.com'],
-    31337: ['http://localhost:8545', 'http://localhost:8545'],
-    677868: ['https://aztec-connect-testnet-eth-host.aztec.network:8545/'],
-  });
+  const [rpcUrls, setRpcUrlsState] = useState<RpcUrlsContextType>(() => getEffectiveRpcUrls());
+
+  const setRpcUrls = (next: RpcUrlsContextType) => {
+    setRpcUrlsState(next);
+    try {
+      saveRpcUrlsToStorage(next as Record<number, string[]>);
+    } catch (err) {
+      console.warn('Failed to persist rpc urls', err);
+    }
+  };
 
   const account = useAccount();
   const { isFullyConnected, address } = useWagmiConnection();
