@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Transaction, TransactionArbitrum, TransactionReceiptArbitrum } from '../../types';
+import { Transaction, TransactionArbitrum, TransactionReceiptArbitrum, TransactionReceiptOptimism } from '../../types';
 import LongString from './LongString';
 
 interface TransactionDisplayProps {
@@ -21,6 +21,11 @@ const TransactionDisplay: React.FC<TransactionDisplayProps> = ({ transaction, ch
     // Check if receipt is Arbitrum receipt
     const isArbitrumReceipt = (receipt: any): receipt is TransactionReceiptArbitrum => {
         return receipt && 'l1BlockNumber' in receipt;
+    };
+
+    // Check if receipt is Optimism receipt
+    const isOptimismReceipt = (receipt: any): receipt is TransactionReceiptOptimism => {
+        return receipt && 'l1Fee' in receipt;
     };
 
     const truncate = (str: string, start = 6, end = 4) => {
@@ -587,6 +592,104 @@ const TransactionDisplay: React.FC<TransactionDisplayProps> = ({ transaction, ch
                             </div>
                         </>
                     )}
+                </div>
+            )}
+
+            {/* Optimism-specific fields */}
+            {transaction.receipt && isOptimismReceipt(transaction.receipt) && (
+                <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                    gap: '12px',
+                    marginTop: '16px'
+                }}>
+                    <div style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        padding: '8px 12px',
+                        background: 'rgba(239, 68, 68, 0.08)',
+                        borderRadius: '8px',
+                        borderLeft: '3px solid #ef4444'
+                    }}>
+                        <span style={{ 
+                            fontSize: '0.85rem',
+                            color: '#ef4444',
+                            fontWeight: '600',
+                            fontFamily: 'Outfit, sans-serif'
+                        }}>L1 Fee</span>
+                        <span style={{ 
+                            fontWeight: '500',
+                            color: 'var(--text-color, #1f2937)',
+                            fontFamily: 'Outfit, sans-serif',
+                            fontSize: '0.95rem'
+                        }}>{formatValue(transaction.receipt.l1Fee)}</span>
+                    </div>
+
+                    <div style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        padding: '8px 12px',
+                        background: 'rgba(239, 68, 68, 0.08)',
+                        borderRadius: '8px',
+                        borderLeft: '3px solid #ef4444'
+                    }}>
+                        <span style={{ 
+                            fontSize: '0.85rem',
+                            color: '#ef4444',
+                            fontWeight: '600',
+                            fontFamily: 'Outfit, sans-serif'
+                        }}>L1 Gas Price</span>
+                        <span style={{ 
+                            fontWeight: '500',
+                            color: 'var(--text-color, #1f2937)',
+                            fontFamily: 'Outfit, sans-serif',
+                            fontSize: '0.95rem'
+                        }}>{formatGwei(transaction.receipt.l1GasPrice)}</span>
+                    </div>
+
+                    <div style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        padding: '8px 12px',
+                        background: 'rgba(239, 68, 68, 0.08)',
+                        borderRadius: '8px',
+                        borderLeft: '3px solid #ef4444'
+                    }}>
+                        <span style={{ 
+                            fontSize: '0.85rem',
+                            color: '#ef4444',
+                            fontWeight: '600',
+                            fontFamily: 'Outfit, sans-serif'
+                        }}>L1 Gas Used</span>
+                        <span style={{ 
+                            fontWeight: '500',
+                            color: 'var(--text-color, #1f2937)',
+                            fontFamily: 'Outfit, sans-serif',
+                            fontSize: '0.95rem'
+                        }}>{Number(transaction.receipt.l1GasUsed).toLocaleString()}</span>
+                    </div>
+
+                    <div style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        padding: '8px 12px',
+                        background: 'rgba(239, 68, 68, 0.08)',
+                        borderRadius: '8px',
+                        borderLeft: '3px solid #ef4444'
+                    }}>
+                        <span style={{ 
+                            fontSize: '0.85rem',
+                            color: '#ef4444',
+                            fontWeight: '600',
+                            fontFamily: 'Outfit, sans-serif'
+                        }}>L1 Fee Scalar</span>
+                        <span style={{ 
+                            fontWeight: '500',
+                            color: 'var(--text-color, #1f2937)',
+                            fontFamily: 'Outfit, sans-serif',
+                            fontSize: '0.95rem'
+                        }}>{transaction.receipt.l1FeeScalar}</span>
+                    </div>
                 </div>
             )}
 

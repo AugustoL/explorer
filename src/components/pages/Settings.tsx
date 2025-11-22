@@ -37,6 +37,7 @@ const Settings: React.FC = () => {
     { id: 1, name: 'Ethereum Mainnet'},
     { id: 11155111, name: 'Sepolia Testnet'},
     { id: 42161, name: 'Arbitrum One'},
+    { id: 10, name: 'Optimism Mainnet'},
     { id: 31337, name: 'Local Hardhat'},
     { id: 677868, name: 'Aztec Network'}
   ];

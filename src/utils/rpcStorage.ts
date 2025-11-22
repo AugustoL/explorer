@@ -38,6 +38,13 @@ export const RPC_ENDPOINTS: RpcUrlsContextType = {
     'https://arbitrum.llamarpc.com',
     'https://arbitrum-one.publicnode.com',
   ].filter(Boolean) as string[],
+
+  // Optimism Mainnet
+  10: [
+    process.env.REACT_APP_OPTIMISM_RPC || 'https://mainnet.optimism.io',
+    'https://optimism.llamarpc.com',
+    'https://optimism.publicnode.com',
+  ].filter(Boolean) as string[],
 };
 type RpcMap = Record<number, string[]>;
 

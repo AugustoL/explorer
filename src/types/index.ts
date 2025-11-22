@@ -94,6 +94,14 @@ export interface TransactionReceiptArbitrum extends TransactionReceipt {
   gasUsedForL1: string
 }
 
+// Optimism types - blocks are same as Ethereum
+export interface TransactionReceiptOptimism extends TransactionReceipt {
+  l1Fee: string
+  l1GasPrice: string
+  l1GasUsed: string
+  l1FeeScalar: string
+}
+
 export interface Address {
   address: string
   balance: string
@@ -186,7 +194,8 @@ export type supportedChainsIds =
 11155111 | // sepolia testnet
 31337 | // local node (hardhat, anvil, aztec)
 677868 | // aztec sandobx
-42161 // arbitrum one
+42161 | // arbitrum one
+10 // optimism mainnet
 
 export type RpcUrlsContextType = Record<supportedChainsIds, RPCUrls>;
 
