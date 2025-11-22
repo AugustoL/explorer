@@ -4,6 +4,7 @@ import type { Block } from '../../../../types';
 
 export class BlockAdapter {
   static fromRPCBlock(rpcBlock: RPCBlock, chainId: number): Block {
+    console.log(rpcBlock);
     return {
       number: rpcBlock.number,
       hash: rpcBlock.hash,
@@ -24,9 +25,13 @@ export class BlockAdapter {
       receiptsRoot: rpcBlock.receiptsRoot,
       transactionsRoot: rpcBlock.transactionsRoot,
       uncles: rpcBlock.uncles,
-      mixHash: "",
+      mixHash: rpcBlock.mixHash,
       sha3Uncles: rpcBlock.sha3Uncles,
-      totalDifficulty: "",
+      totalDifficulty: BigInt(rpcBlock.difficulty).toString(),
+      blobGasUsed: rpcBlock.blobGasUsed,
+      excessBlobGas: rpcBlock.excessBlobGas,
+      withdrawalsRoot: rpcBlock.withdrawalsRoot,
+      withdrawals: rpcBlock.withdrawals
     };
   }
 }

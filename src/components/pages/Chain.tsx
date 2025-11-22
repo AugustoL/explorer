@@ -39,7 +39,6 @@ export default function Home() {
       <div className="home-content">
         <h1 className="home-title">OPENSCAN</h1>
         <SearchBox />
-
         {loading && <Loader text="Loading network stats..." />}
         {error && <p style={{ color: 'red' }}>Error: {error}</p>}
         {networkStats && <NetworkStatsDisplay networkStats={networkStats} />}

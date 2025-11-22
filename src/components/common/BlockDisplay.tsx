@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Block } from '../../types';
 
@@ -8,6 +8,8 @@ interface BlockDisplayProps {
 }
 
 const BlockDisplay: React.FC<BlockDisplayProps> = ({ block, chainId }) => {
+    const [showWithdrawals, setShowWithdrawals] = useState(false);
+    const [showTransactions, setShowTransactions] = useState(false);
     // Helper to truncate long hashes
     const truncate = (str: string, start = 6, end = 4) => {
         if (!str) return '';
@@ -147,7 +149,7 @@ const BlockDisplay: React.FC<BlockDisplayProps> = ({ block, chainId }) => {
                         color: 'var(--text-color, #1f2937)',
                         fontFamily: 'Outfit, sans-serif',
                         fontSize: '0.95rem'
-                    }}>{block.nonce}</span>
+                    }}>{Number(block.nonce).toString()}</span>
                 </div>
             </div>
 
@@ -474,6 +476,182 @@ const BlockDisplay: React.FC<BlockDisplayProps> = ({ block, chainId }) => {
                     }} title={block.extraData}>
                         {block.extraData.length > 20 ? truncate(block.extraData, 10, 8) : block.extraData}
                     </span>
+                </div>
+            )}
+
+            {/* Transactions */}
+            {block.transactions && block.transactions.length > 0 && (
+                <div style={{ marginTop: '16px' }}>
+                    <button
+                        onClick={() => setShowTransactions(!showTransactions)}
+                        style={{
+                            background: '#10b981',
+                            color: 'white',
+                            border: 'none',
+                            padding: '8px 16px',
+                            borderRadius: '8px',
+                            cursor: 'pointer',
+                            fontFamily: 'Outfit, sans-serif',
+                            fontWeight: '600',
+                            fontSize: '0.9rem',
+                            marginBottom: '10px'
+                        }}
+                    >
+                        {showTransactions ? 'Hide' : 'Show'} Transactions ({block.transactions.length})
+                    </button>
+                    
+                    {showTransactions && (
+                        <div style={{ 
+                            display: 'flex', 
+                            flexDirection: 'column', 
+                            gap: '10px' 
+                        }}>
+                            {block.transactions.map((txHash, index) => (
+                                <div key={index} style={{
+                                    background: 'rgba(16, 185, 129, 0.04)',
+                                    padding: '12px',
+                                    borderRadius: '8px',
+                                    border: '1px solid rgba(16, 185, 129, 0.2)',
+                                    borderLeft: '3px solid #10b981',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                    gap: '12px'
+                                }}>
+                                    <div style={{ 
+                                        fontFamily: 'Outfit, sans-serif', 
+                                        fontWeight: '600', 
+                                        color: '#6b7280',
+                                        fontSize: '0.85rem',
+                                        minWidth: '60px'
+                                    }}>
+                                        Tx {index}
+                                    </div>
+                                    {chainId ? (
+                                        <Link 
+                                            to={`/${chainId}/tx/${txHash}`}
+                                            style={{ 
+                                                color: '#10b981', 
+                                                fontWeight: '600',
+                                                textDecoration: 'none',
+                                                fontFamily: 'monospace',
+                                                fontSize: '0.85rem',
+                                                wordBreak: 'break-all',
+                                                flex: 1
+                                            }}
+                                        >
+                                            {txHash}
+                                        </Link>
+                                    ) : (
+                                        <span style={{ 
+                                            fontFamily: 'monospace', 
+                                            fontSize: '0.85rem',
+                                            wordBreak: 'break-all',
+                                            flex: 1
+                                        }}>
+                                            {txHash}
+                                        </span>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {/* Withdrawals */}
+            {block.withdrawals && block.withdrawals.length > 0 && (
+                <div style={{ marginTop: '16px' }}>
+                    <button
+                        onClick={() => setShowWithdrawals(!showWithdrawals)}
+                        style={{
+                            background: '#10b981',
+                            color: 'white',
+                            border: 'none',
+                            padding: '8px 16px',
+                            borderRadius: '8px',
+                            cursor: 'pointer',
+                            fontFamily: 'Outfit, sans-serif',
+                            fontWeight: '600',
+                            fontSize: '0.9rem',
+                            marginBottom: '10px'
+                        }}
+                    >
+                        {showWithdrawals ? 'Hide' : 'Show'} Withdrawals ({block.withdrawals.length})
+                    </button>
+                    
+                    {showWithdrawals && (
+                        <div style={{ 
+                            display: 'flex', 
+                            flexDirection: 'column', 
+                            gap: '10px' 
+                        }}>
+                            {block.withdrawals.map((withdrawal, index) => (
+                                <div key={index} style={{
+                                    background: 'rgba(16, 185, 129, 0.04)',
+                                    padding: '12px',
+                                    borderRadius: '8px',
+                                    border: '1px solid rgba(16, 185, 129, 0.2)',
+                                    borderLeft: '3px solid #10b981'
+                                }}>
+                                    <div style={{ 
+                                        fontFamily: 'Outfit, sans-serif', 
+                                        fontWeight: '600', 
+                                        color: '#10b981',
+                                        marginBottom: '8px',
+                                        fontSize: '0.9rem'
+                                    }}>
+                                        Withdrawal {index}
+                                    </div>
+                                    <div style={{ 
+                                        display: 'grid',
+                                        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                                        gap: '8px',
+                                        fontSize: '0.85rem'
+                                    }}>
+                                        <div>
+                                            <span style={{ fontWeight: '600', color: '#6b7280' }}>Index: </span>
+                                            <span style={{ fontFamily: 'Outfit, sans-serif', color: 'var(--text-color, #1f2937)' }}>
+                                                {Number(withdrawal.index).toLocaleString()}
+                                            </span>
+                                        </div>
+                                        <div>
+                                            <span style={{ fontWeight: '600', color: '#6b7280' }}>Validator Index: </span>
+                                            <span style={{ fontFamily: 'Outfit, sans-serif', color: 'var(--text-color, #1f2937)' }}>
+                                                {Number(withdrawal.validatorIndex).toLocaleString()}
+                                            </span>
+                                        </div>
+                                        <div>
+                                            <span style={{ fontWeight: '600', color: '#6b7280' }}>Amount: </span>
+                                            <span style={{ fontFamily: 'Outfit, sans-serif', color: '#059669', fontWeight: '600' }}>
+                                                {(Number(withdrawal.amount) / 1e9).toFixed(9)} ETH
+                                            </span>
+                                        </div>
+                                        <div style={{ gridColumn: '1 / -1' }}>
+                                            <span style={{ fontWeight: '600', color: '#6b7280' }}>Address: </span>
+                                            {chainId ? (
+                                                <Link 
+                                                    to={`/${chainId}/address/${withdrawal.address}`}
+                                                    style={{ 
+                                                        color: '#10b981', 
+                                                        fontWeight: '600',
+                                                        textDecoration: 'none',
+                                                        fontFamily: 'Outfit, sans-serif'
+                                                    }}
+                                                >
+                                                    {withdrawal.address}
+                                                </Link>
+                                            ) : (
+                                                <span style={{ fontFamily: 'monospace', fontSize: '0.85rem' }}>
+                                                    {withdrawal.address}
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
             )}
         </div>

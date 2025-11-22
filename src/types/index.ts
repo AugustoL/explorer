@@ -30,7 +30,16 @@ export interface Block {
   totalDifficulty: string
   transactions: string[]
   transactionsRoot: string
-  uncles: any[]
+  uncles: any[],
+  blobGasUsed: string,
+  excessBlobGas: string,
+  withdrawalsRoot: string,
+  withdrawals: Array<{
+    address: string;
+    amount: string;
+    index: string;
+    validatorIndex: string;
+  }>
 }
 
 export interface Transaction {
@@ -164,10 +173,6 @@ export type supportedChainsIds =
 
 export type RpcUrlsContextType = Record<supportedChainsIds, RPCUrls>;
 
-// ==================== HOOK CONFIGURATION TYPES ====================
-
-
-
 // ==================== SETTINGS TYPES ====================
 
 /**
@@ -206,6 +211,16 @@ export interface RPCBlock {
   transactions: string[] | RPCTransaction[]; // either hashes or full transactions
   uncles: string[];
   baseFeePerGas?: string; // hex
+  mixHash: string;
+  blobGasUsed: string;
+  excessBlobGas: string;
+  withdrawalsRoot: string;
+  withdrawals: Array<{
+    address: string;
+    amount: string;
+    index: string;
+    validatorIndex: string;
+  }>
 }
 
 export interface RPCTransaction {
