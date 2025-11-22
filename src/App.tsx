@@ -62,7 +62,17 @@ function AppContent() {
             <NotificationDisplay />
             <Routes>
               <Route path="/" element={<LazyHome />} />
+              <Route path=":chainId" element={<LazyHome />} />
+              <Route path=":chainId/blocks" element={<LazyHome />} />
+              <Route path=":chainId/block/:filter" element={<LazyHome />} />
+              <Route path=":chainId/txs" element={<LazyHome />} />
+              <Route path=":chainId/tx/:filter" element={<LazyHome />} />
+              <Route path=":chainId/address/:address" element={<LazyHome />} />
+              <Route path=":chainId/mempool" element={<LazyHome />} />
+              <Route path=":chainId/mempool/:filter" element={<LazyHome />} />
+
               <Route path="*" element={<Navigate to="/" replace />} />
+
             </Routes>
             <Footer />
           </div>
