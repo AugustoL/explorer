@@ -15,6 +15,26 @@ export function useZipJsonReader() {
       const entries = Object.keys(zip.files);
       console.log(entries)
 
+      let deployments: any = {}
+      for (const path of entries) {
+        const zipFile = zip.files[path]
+        if(!zipFile) continue;
+        if (
+          path.includes("deployed_addresses.json") && 
+          !zipFile.dir
+          ) {
+            const deploymentsFile = zip.files[path!]
+            if (!deploymentsFile) continue;
+            deployments = JSON.parse(await deploymentsFile.async("string"));
+          }
+      }
+
+      let contractDeployments: any = {}
+      Object.keys(deployments).forEach((key)=> {
+        const name = key.split("#")[1]
+        contractDeployments[name as string] = deployments[key]
+      })
+
       for (const path of entries) {
         const zipFile = zip.files[path]
         if(!zipFile) continue;
@@ -41,31 +61,10 @@ export function useZipJsonReader() {
             if (!sourceCodeFile) continue;
             const sourceCode = await sourceCodeFile.async("string");
             results[key]["sourceCode"] = sourceCode
+            results[key]["deployments"] = [contractDeployments[results[key].contractName]]
+            
           }
       }
-
-
-      // for (const path of entries) {
-      //   console.log(path)
-      //   const zipFile = zip.files[path];
-      //   if (!zipFile) continue;
-
-      //   // Only process .json files, skip directories
-      //   if (path.endsWith(".json") && !zipFile.dir) {
-
-      //     try {
-      //       const content = await zipFile.async("string");
-      //       results[path] = JSON.parse(content);
-      //     } catch (err) {
-      //       console.error("Invalid JSON in:", path, err);
-      //       setError(`Failed to parse JSON in ${path}`);
-      //     }
-      //   }
-
-      //   if (path.endsWith(".sol") && !zipFile.dir) {
-
-      //   }
-      // }
 
       setLoading(false);
       console.log(results)
