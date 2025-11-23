@@ -3,7 +3,6 @@ import Loading from "./common/Loading";
 
 // Lazy load page components
 const Home = lazy(() => import("./pages/Home"));
-const ConnectWallet = lazy(() => import("./pages/ConnectWallet"));
 const Chain = lazy(() => import("./pages/Chain"));
 const Blocks = lazy(() => import("./pages/Blocks"));
 const Block = lazy(() => import("./pages/Block"));
@@ -28,7 +27,6 @@ export const withSuspense = (Component: React.ComponentType<any>) => {
 
 // Export lazy components wrapped with Suspense
 export const LazyHome = withSuspense(Home);
-export const LazyConnectWallet = withSuspense(ConnectWallet);
 export const LazyChain = withSuspense(Chain);
 export const LazyBlocks = withSuspense(Blocks);
 export const LazyBlock = withSuspense(Block);
@@ -40,4 +38,4 @@ export const LazySettings = withSuspense(Settings);
 export const LazyDevTools = withSuspense(DevTools);
 export const LazyAbout = withSuspense(About);
 // Default exports for backward compatibility
-export { Home, ConnectWallet };
+export { Home };

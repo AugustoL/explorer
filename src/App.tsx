@@ -46,7 +46,6 @@ import { useAppReady, useOnAppReady } from "./hooks/useAppReady";
 import Loading from "./components/common/Loading";
 import {
 	LazyHome,
-	LazyConnectWallet,
 	LazyChain,
 	LazyBlocks,
 	LazyBlock,

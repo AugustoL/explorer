@@ -59,8 +59,6 @@ export const useWagmiConnection = () => {
 		// Utility methods
 		hasValidAddress: !!address && address !== "0x",
 
-		// Loading states for UI
-		showConnectWallet: !isConnected || !address,
 		showLoading: isConnecting || isReconnecting,
 	};
 };
