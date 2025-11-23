@@ -763,17 +763,21 @@
 
 .log-label {
 	font-weight: 600;
-	color: #6b7280;
+	color: #374151;
 }
 
 .log-value {
 	font-family: "monospace";
+	color: #111827;
+	font-weight: 500;
 }
 
 .log-topic-item {
 	font-family: "monospace";
 	font-size: 0.85rem;
 	margin-left: 10px;
+	color: #111827;
+	font-weight: 500;
 }
 
 /* Debug Trace */
@@ -878,6 +882,8 @@
 	word-break: break-all;
 	max-height: 300px;
 	overflow-y: auto;
+	color: #111827;
+	font-weight: 500;
 }
 
 /* Collapsible Button for Trace/Logs */
