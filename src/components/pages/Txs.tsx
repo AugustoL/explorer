@@ -122,7 +122,7 @@ export default function Txs() {
 
 	if (loading) {
 		return (
-			<div className="container-wide page-container-padded text-center">
+			<div className="container-wide page-container-padded text-center page-card">
 				<h1 className="page-title-small">Latest Transactions</h1>
 				<Loader text="Loading transactions..." />
 			</div>
@@ -131,7 +131,7 @@ export default function Txs() {
 
 	if (error) {
 		return (
-			<div className="container-wide page-container-padded text-center">
+			<div className="container-wide page-container-padded text-center page-card">
 				<h1 className="page-title-small">Latest Transactions</h1>
 				<p className="error-text">Error: {error}</p>
 			</div>
@@ -171,7 +171,7 @@ export default function Txs() {
 	};
 
 	return (
-		<div className="container-wide page-container-padded text-center">
+		<div className="container-wide page-container-padded text-center page-card">
 			<h1 className="page-title-small">Latest Transactions</h1>
 			<p className="page-subtitle-text no-margin-bottom">
 				{isAtLatest

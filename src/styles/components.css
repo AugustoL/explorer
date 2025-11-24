@@ -1203,7 +1203,6 @@
 /* DevTools Tabs */
 
 .devtools-container {
-	padding-top: 12px;
 }
 .devtools-tabs {
 	display: flex;
@@ -1218,7 +1217,6 @@
 .devtools-tab {
 	flex: 1;
 	padding: 10px 20px;
-	background: transparent;
 	border: none;
 	border-radius: 8px;
 	color: #6b7280;

@@ -116,7 +116,7 @@ export default function Blocks() {
 
 	if (loading) {
 		return (
-			<div className="container-wide page-container-padded text-center">
+			<div className="container-wide page-container-padded text-center page-card">
 				<h1 className="page-title-small">Latest Blocks</h1>
 				<Loader text="Loading blocks..." />
 			</div>
@@ -125,7 +125,7 @@ export default function Blocks() {
 
 	if (error) {
 		return (
-			<div className="container-wide page-container-padded text-center">
+			<div className="container-wide page-container-padded text-center page-card">
 				<h1 className="page-title-small">Latest Blocks</h1>
 				<p className="error-text">Error: {error}</p>
 			</div>
@@ -133,7 +133,7 @@ export default function Blocks() {
 	}
 
 	return (
-		<div className="container-wide page-container-padded text-center">
+		<div className="container-wide page-container-padded text-center page-card">
 			<h1 className="page-title-small">Latest Blocks</h1>
 			<p className="page-subtitle-text">
 				{isAtLatest 

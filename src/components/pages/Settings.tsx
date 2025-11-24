@@ -49,251 +49,70 @@ const Settings: React.FC = () => {
 	];
 
 	return (
-		<div
-			className="container-wide"
-			style={{
-				padding: "32px 24px",
-				fontFamily: "Outfit, sans-serif",
-				textAlign: "center",
-			}}
-		>
+		<div className="container-wide settings-container">
 			{/* Success Message */}
 			{saveSuccess && (
-				<div
-					style={{
-						background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
-						color: "white",
-						padding: "12px 16px",
-						borderRadius: "12px",
-						marginBottom: "24px",
-						display: "flex",
-						alignItems: "center",
-						gap: "10px",
-						fontWeight: "600",
-						fontSize: "0.9rem",
-						boxShadow: "0 4px 12px rgba(16, 185, 129, 0.3)",
-						animation: "slideDown 0.3s ease",
-					}}
-				>
+				<div className="settings-success-message">
 					✓ Settings saved successfully!
 				</div>
 			)}
 
 			{/* Appearance Settings Section */}
-			<div
-				style={{
-					background: "#ffffff",
-					borderRadius: "16px",
-					padding: "24px",
-					boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
-					border: "1px solid rgba(16, 185, 129, 0.1)",
-					marginBottom: "24px",
-				}}
-			>
-				<h2
-					style={{
-						fontSize: "1.25rem",
-						fontWeight: "700",
-						color: "#10b981",
-						marginBottom: "8px",
-						display: "flex",
-						alignItems: "center",
-						gap: "8px",
-					}}
-				>
+			<div className="settings-section no-margin">
+				<h2 className="settings-section-title">
 					🎨 Appearance
 				</h2>
-				<p
-					style={{
-						fontSize: "0.85rem",
-						color: "#6b7280",
-						marginBottom: "24px",
-					}}
-				>
+				<p className="settings-section-description">
 					Customize the visual appearance of the application.
 				</p>
 
-				<div
-					style={{
-						background: "rgba(16, 185, 129, 0.02)",
-						padding: "16px",
-						borderRadius: "12px",
-						border: "1px solid rgba(16, 185, 129, 0.15)",
-						display: "flex",
-						alignItems: "center",
-						justifyContent: "space-between",
-					}}
-				>
+				<div className="settings-item">
 					<div>
-						<div
-							style={{
-								fontWeight: "600",
-								color: "#1f2937",
-								fontSize: "0.95rem",
-							}}
-						>
+						<div className="settings-item-label">
 							Funny Background Blocks
 						</div>
-						<div
-							style={{
-								fontSize: "0.8rem",
-								color: "#6b7280",
-								marginTop: "2px",
-							}}
-						>
+						<div className="settings-item-description">
 							Show animated isometric blocks in the background
 						</div>
 					</div>
-					<label
-						style={{
-							position: "relative",
-							display: "inline-block",
-							width: "50px",
-							height: "26px",
-							cursor: "pointer",
-						}}
-					>
+					<label className="settings-toggle">
 						<input
 							type="checkbox"
 							checked={settings.showBackgroundBlocks ?? true}
 							onChange={(e) =>
 								updateSettings({ showBackgroundBlocks: e.target.checked })
 							}
-							style={{
-								opacity: 0,
-								width: 0,
-								height: 0,
-							}}
+							className="settings-toggle-input"
 						/>
-						<span
-							style={{
-								position: "absolute",
-								cursor: "pointer",
-								top: 0,
-								left: 0,
-								right: 0,
-								bottom: 0,
-								backgroundColor: settings.showBackgroundBlocks
-									? "#10b981"
-									: "#cbd5e1",
-								transition: "0.3s",
-								borderRadius: "26px",
-							}}
-						>
-							<span
-								style={{
-									position: "absolute",
-									content: '""',
-									height: "20px",
-									width: "20px",
-									left: settings.showBackgroundBlocks ? "27px" : "3px",
-									bottom: "3px",
-									backgroundColor: "white",
-									transition: "0.3s",
-									borderRadius: "50%",
-									boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",
-								}}
-							/>
+						<span className={`settings-toggle-slider ${settings.showBackgroundBlocks ? "active" : ""}`}>
+							<span className={`settings-toggle-knob ${settings.showBackgroundBlocks ? "active" : ""}`} />
 						</span>
 					</label>
 				</div>
 			</div>
 
 			{/* RPC Configuration Section */}
-			<div
-				style={{
-					background: "#ffffff",
-					borderRadius: "16px",
-					padding: "24px",
-					boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
-					border: "1px solid rgba(16, 185, 129, 0.1)",
-					marginBottom: "24px",
-				}}
-			>
-				<h2
-					style={{
-						fontSize: "1.25rem",
-						fontWeight: "700",
-						color: "#10b981",
-						marginBottom: "8px",
-						display: "flex",
-						alignItems: "center",
-						gap: "8px",
-					}}
-				>
+			<div className="settings-section">
+				<h2 className="settings-section-title">
 					🔗 RPC Endpoints
 				</h2>
-				<p
-					style={{
-						fontSize: "0.85rem",
-						color: "#6b7280",
-						marginBottom: "24px",
-					}}
-				>
+				<p className="settings-section-description">
 					Enter comma-separated RPC URLs for each network. Multiple URLs provide
 					fallback support.
 				</p>
 
-				<div
-					className="flex-column"
-					style={{
-						gap: "20px",
-					}}
-				>
+				<div className="flex-column settings-chain-list">
 					{chainConfigs.map((chain) => (
-						<div
-							key={chain.id}
-							style={{
-								background: "rgba(16, 185, 129, 0.02)",
-								padding: "16px",
-								borderRadius: "12px",
-								border: "1px solid rgba(16, 185, 129, 0.15)",
-								transition: "all 0.2s ease",
-							}}
-						>
-							<label
-								className="flex-column"
-								style={{
-									gap: "8px",
-								}}
-							>
-								<div
-									style={{
-										display: "flex",
-										alignItems: "center",
-										gap: "8px",
-										fontWeight: "600",
-										color: "#1f2937",
-										fontSize: "0.95rem",
-									}}
-								>
+						<div key={chain.id} className="settings-chain-item">
+							<label className="flex-column settings-chain-label">
+								<div className="settings-chain-name">
 									{chain.name}
-									<span
-										style={{
-											fontSize: "0.8rem",
-											color: "#6b7280",
-											fontWeight: "500",
-											background: "rgba(107, 114, 128, 0.1)",
-											padding: "2px 8px",
-											borderRadius: "6px",
-										}}
-									>
+									<span className="settings-chain-id-badge">
 										Chain ID: {chain.id}
 									</span>
 								</div>
 								<input
-									style={{
-										width: "100%",
-										padding: "10px 12px",
-										border: "2px solid rgba(16, 185, 129, 0.2)",
-										borderRadius: "8px",
-										fontSize: "0.85rem",
-										fontFamily: "monospace",
-										color: "#1f2937",
-										background: "#ffffff",
-										transition: "all 0.2s ease",
-										outline: "none",
-									}}
+									className="settings-rpc-input"
 									value={localRpc[chain.id]}
 									onChange={(e) =>
 										updateField(
@@ -302,39 +121,17 @@ const Settings: React.FC = () => {
 										)
 									}
 									placeholder="https://eth-mainnet.g.alchemy.com/v2/YOUR-API-KEY"
-									onFocus={(e) => (e.target.style.borderColor = "#10b981")}
-									onBlur={(e) =>
-										(e.target.style.borderColor = "rgba(16, 185, 129, 0.2)")
-									}
 								/>
 
 								{/* Help text for localhost network */}
 								{chain.id === 31337 && (
-									<div
-										style={{
-											fontSize: "0.8rem",
-											color: "#6b7280",
-											marginTop: "4px",
-											textAlign: "left",
-										}}
-									>
+									<div className="settings-help-text">
 										💡 Need to access your local network remotely?{" "}
 										<a
 											href="https://dashboard.ngrok.com/get-started/setup"
 											target="_blank"
 											rel="noopener noreferrer"
-											style={{
-												color: "#10b981",
-												textDecoration: "none",
-												fontWeight: "600",
-												borderBottom: "1px solid #10b981",
-											}}
-											onMouseEnter={(e) =>
-												(e.currentTarget.style.color = "#059669")
-											}
-											onMouseLeave={(e) =>
-												(e.currentTarget.style.color = "#10b981")
-											}
+											className="settings-link"
 										>
 											Learn how to set up a tunnel with ngrok
 										</a>
@@ -348,77 +145,21 @@ const Settings: React.FC = () => {
 									) &&
 									(rpcUrls[chain.id as keyof RpcUrlsContextType] as string[])
 										.length > 0 && (
-										<div
-											className="flex-column"
-											style={{
-												gap: "6px",
-												marginTop: "8px",
-												alignItems: "flex-start",
-											}}
-										>
-											<span
-												style={{
-													fontSize: "0.75rem",
-													fontWeight: "600",
-													color: "#6b7280",
-													textTransform: "uppercase",
-													letterSpacing: "0.5px",
-												}}
-											>
+										<div className="flex-column settings-rpc-list">
+											<span className="settings-rpc-list-label">
 												Current RPCs:
 											</span>
-											<div
-												className="flex-start"
-												style={{
-													flexWrap: "wrap",
-													gap: "8px",
-												}}
-											>
+											<div className="flex-start settings-rpc-tags">
 												{(
 													rpcUrls[
 														chain.id as keyof RpcUrlsContextType
 													] as string[]
 												).map((url, idx) => (
-													<div
-														key={idx}
-														style={{
-															background:
-																"linear-gradient(135deg, #10b981 0%, #059669 100%)",
-															color: "white",
-															padding: "6px 12px",
-															borderRadius: "8px",
-															fontSize: "0.75rem",
-															fontFamily: "monospace",
-															display: "flex",
-															alignItems: "center",
-															gap: "6px",
-															boxShadow: "0 2px 6px rgba(16, 185, 129, 0.25)",
-															maxWidth: "100%",
-															overflow: "hidden",
-															position: "relative",
-														}}
-													>
-														<span
-															style={{
-																background: "rgba(255, 255, 255, 0.25)",
-																padding: "2px 6px",
-																borderRadius: "4px",
-																fontWeight: "700",
-																fontSize: "0.7rem",
-																minWidth: "20px",
-																textAlign: "center",
-															}}
-														>
+													<div key={idx} className="settings-rpc-tag">
+														<span className="settings-rpc-tag-index">
 															{idx + 1}
 														</span>
-														<span
-															style={{
-																overflow: "hidden",
-																textOverflow: "ellipsis",
-																whiteSpace: "nowrap",
-																flex: 1,
-															}}
-														>
+														<span className="settings-rpc-tag-url">
 															{url}
 														</span>
 													</div>
@@ -430,32 +171,7 @@ const Settings: React.FC = () => {
 						</div>
 					))}
 
-					<button
-						onClick={save}
-						style={{
-							padding: "12px 24px",
-							background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
-							color: "white",
-							border: "none",
-							borderRadius: "10px",
-							fontWeight: "600",
-							fontSize: "0.95rem",
-							cursor: "pointer",
-							transition: "all 0.2s ease",
-							boxShadow: "0 4px 12px rgba(16, 185, 129, 0.3)",
-							fontFamily: "Outfit, sans-serif",
-						}}
-						onMouseOver={(e) => {
-							e.currentTarget.style.transform = "translateY(-2px)";
-							e.currentTarget.style.boxShadow =
-								"0 6px 16px rgba(16, 185, 129, 0.4)";
-						}}
-						onMouseOut={(e) => {
-							e.currentTarget.style.transform = "translateY(0)";
-							e.currentTarget.style.boxShadow =
-								"0 4px 12px rgba(16, 185, 129, 0.3)";
-						}}
-					>
+					<button onClick={save} className="settings-save-button">
 						💾 Save Configuration
 					</button>
 				</div>
