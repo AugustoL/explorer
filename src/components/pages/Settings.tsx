@@ -59,18 +59,14 @@ const Settings: React.FC = () => {
 
 			{/* Appearance Settings Section */}
 			<div className="settings-section no-margin">
-				<h2 className="settings-section-title">
-					🎨 Appearance
-				</h2>
+				<h2 className="settings-section-title">🎨 Appearance</h2>
 				<p className="settings-section-description">
 					Customize the visual appearance of the application.
 				</p>
 
 				<div className="settings-item">
 					<div>
-						<div className="settings-item-label">
-							Funny Background Blocks
-						</div>
+						<div className="settings-item-label">Funny Background Blocks</div>
 						<div className="settings-item-description">
 							Show animated isometric blocks in the background
 						</div>
@@ -84,8 +80,12 @@ const Settings: React.FC = () => {
 							}
 							className="settings-toggle-input"
 						/>
-						<span className={`settings-toggle-slider ${settings.showBackgroundBlocks ? "active" : ""}`}>
-							<span className={`settings-toggle-knob ${settings.showBackgroundBlocks ? "active" : ""}`} />
+						<span
+							className={`settings-toggle-slider ${settings.showBackgroundBlocks ? "active" : ""}`}
+						>
+							<span
+								className={`settings-toggle-knob ${settings.showBackgroundBlocks ? "active" : ""}`}
+							/>
 						</span>
 					</label>
 				</div>
@@ -93,9 +93,7 @@ const Settings: React.FC = () => {
 
 			{/* RPC Configuration Section */}
 			<div className="settings-section">
-				<h2 className="settings-section-title">
-					🔗 RPC Endpoints
-				</h2>
+				<h2 className="settings-section-title">🔗 RPC Endpoints</h2>
 				<p className="settings-section-description">
 					Enter comma-separated RPC URLs for each network. Multiple URLs provide
 					fallback support.
@@ -159,9 +157,7 @@ const Settings: React.FC = () => {
 														<span className="settings-rpc-tag-index">
 															{idx + 1}
 														</span>
-														<span className="settings-rpc-tag-url">
-															{url}
-														</span>
+														<span className="settings-rpc-tag-url">{url}</span>
 													</div>
 												))}
 											</div>

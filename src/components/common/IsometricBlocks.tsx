@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import React, {
+	useState,
+	useEffect,
+	useCallback,
+	useMemo,
+	useRef,
+} from "react";
 
 // Network colors matching the logo - Ethereum weighted more heavily
 const NETWORKS = [
@@ -11,9 +17,7 @@ const NETWORKS = [
 ];
 
 // Create weighted array for random selection
-const WEIGHTED_COLORS = NETWORKS.flatMap((n) =>
-	Array(n.weight).fill(n.color),
-);
+const WEIGHTED_COLORS = NETWORKS.flatMap((n) => Array(n.weight).fill(n.color));
 
 interface CubeData {
 	id: number;
@@ -29,12 +33,7 @@ interface IsometricCubeProps {
 	color: string;
 }
 
-const IsometricCube: React.FC<IsometricCubeProps> = ({
-	x,
-	y,
-	size,
-	color,
-}) => {
+const IsometricCube: React.FC<IsometricCubeProps> = ({ x, y, size, color }) => {
 	// Isometric cube dimensions
 	const h = size * 0.5; // height offset for 3D effect
 
@@ -48,9 +47,7 @@ const IsometricCube: React.FC<IsometricCubeProps> = ({
 	const rightPoints = `${x},${y + h} ${x + size},${y} ${x + size},${y + size} ${x},${y + h + size}`;
 
 	return (
-		<g 
-			className="isometric-cube isometric-blocks-container"
-		>
+		<g className="isometric-cube isometric-blocks-container">
 			{/* Right face - darkest */}
 			<polygon
 				points={rightPoints}
@@ -119,7 +116,8 @@ export const IsometricBlocks: React.FC<IsometricBlocksProps> = ({
 	const spawnCube = useCallback(() => {
 		const pos = gridPositions[Math.floor(Math.random() * gridPositions.length)];
 		if (!pos) return;
-		const network = WEIGHTED_COLORS[Math.floor(Math.random() * WEIGHTED_COLORS.length)];
+		const network =
+			WEIGHTED_COLORS[Math.floor(Math.random() * WEIGHTED_COLORS.length)];
 		if (!network) return;
 
 		const cubeId = nextIdRef.current++;

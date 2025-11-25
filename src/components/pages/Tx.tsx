@@ -55,9 +55,7 @@ export default function Tx() {
 				<div className="block-display-card">
 					<div className="block-display-header">
 						<span className="block-label">Transaction</span>
-						<span className="tx-mono header-subtitle">
-							{txHash}
-						</span>
+						<span className="tx-mono header-subtitle">{txHash}</span>
 					</div>
 					<div className="card-content-loading">
 						<Loader text="Loading transaction..." />
@@ -73,9 +71,7 @@ export default function Tx() {
 				<div className="block-display-card">
 					<div className="block-display-header">
 						<span className="block-label">Transaction</span>
-						<span className="tx-mono header-subtitle">
-							{txHash}
-						</span>
+						<span className="tx-mono header-subtitle">{txHash}</span>
 					</div>
 					<div className="card-content">
 						<p className="error-text margin-0">Error: {error}</p>

@@ -108,9 +108,7 @@ const NetworkStatsDisplay: React.FC<NetworkStatsDisplayProps> = ({
 	return (
 		<div className="container-wide network-stats-container">
 			<div className="block-display-card">
-				<h2 className="network-stats-title">
-					Network Statistics
-				</h2>
+				<h2 className="network-stats-title">Network Statistics</h2>
 
 				<div className="data-grid-3">
 					<div className="block-detail-item">
@@ -131,7 +129,9 @@ const NetworkStatsDisplay: React.FC<NetworkStatsDisplayProps> = ({
 						<span className="detail-label">Sync Status</span>
 						<span className="detail-value">
 							<span className="sync-status-indicator">
-								<span className={`sync-dot ${networkStats.isSyncing ? "sync-dot-warning" : "sync-dot-success"}`} />
+								<span
+									className={`sync-dot ${networkStats.isSyncing ? "sync-dot-warning" : "sync-dot-success"}`}
+								/>
 								{networkStats.isSyncing ? "Syncing" : "Synced"}
 							</span>
 						</span>

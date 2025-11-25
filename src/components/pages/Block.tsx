@@ -52,9 +52,7 @@ export default function Block() {
 				<div className="block-display-card">
 					<div className="block-display-header">
 						<span className="block-label">Block</span>
-						<span className="tx-mono header-subtitle">
-							#{filter}
-						</span>
+						<span className="tx-mono header-subtitle">#{filter}</span>
 					</div>
 					<div className="card-content-loading">
 						<Loader text="Loading block data..." />
@@ -70,9 +68,7 @@ export default function Block() {
 				<div className="block-display-card">
 					<div className="block-display-header">
 						<span className="block-label">Block</span>
-						<span className="tx-mono header-subtitle">
-							#{filter}
-						</span>
+						<span className="tx-mono header-subtitle">#{filter}</span>
 					</div>
 					<div className="card-content">
 						<p className="text-error margin-0">Error: {error}</p>

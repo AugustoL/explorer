@@ -1,4 +1,9 @@
-import { useParams, Link, useSearchParams, useNavigate } from "react-router-dom";
+import {
+	useParams,
+	Link,
+	useSearchParams,
+	useNavigate,
+} from "react-router-dom";
 import { useDataService } from "../../hooks/useDataService";
 import { useEffect, useState } from "react";
 import { Transaction } from "../../types";
@@ -17,8 +22,13 @@ export default function Txs() {
 	>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
-	const [latestBlockNumber, setLatestBlockNumber] = useState<number | null>(null);
-	const [blockRange, setBlockRange] = useState<{ from: number; to: number } | null>(null);
+	const [latestBlockNumber, setLatestBlockNumber] = useState<number | null>(
+		null,
+	);
+	const [blockRange, setBlockRange] = useState<{
+		from: number;
+		to: number;
+	} | null>(null);
 
 	// Get fromBlock from URL params, default to null (latest)
 	const fromBlockParam = searchParams.get("fromBlock");
@@ -47,10 +57,11 @@ export default function Txs() {
 				setBlockRange({ from: endBlock, to: startBlock });
 
 				// Fetch transactions from block range
-				const fetchedTransactions = await dataService.getTransactionsFromBlockRange(
-					startBlock,
-					BLOCKS_PER_PAGE
-				);
+				const fetchedTransactions =
+					await dataService.getTransactionsFromBlockRange(
+						startBlock,
+						BLOCKS_PER_PAGE,
+					);
 
 				console.log("Fetched transactions:", fetchedTransactions);
 				setTransactions(fetchedTransactions);
@@ -92,8 +103,11 @@ export default function Txs() {
 	// Navigation handlers
 	const goToNewerBlocks = () => {
 		if (!blockRange || latestBlockNumber === null) return;
-		const newFromBlock = Math.min(blockRange.to + BLOCKS_PER_PAGE, latestBlockNumber);
-		
+		const newFromBlock = Math.min(
+			blockRange.to + BLOCKS_PER_PAGE,
+			latestBlockNumber,
+		);
+
 		if (newFromBlock >= latestBlockNumber) {
 			// Go to latest (remove fromBlock param)
 			navigate(`/${chainId}/txs`);
@@ -105,7 +119,7 @@ export default function Txs() {
 	const goToOlderBlocks = () => {
 		if (!blockRange) return;
 		const newFromBlock = blockRange.from - 1;
-		
+
 		if (newFromBlock >= 0) {
 			navigate(`/${chainId}/txs?fromBlock=${newFromBlock}`);
 		}
@@ -116,9 +130,14 @@ export default function Txs() {
 	};
 
 	// Determine if we can navigate
-	const canGoNewer = fromBlock !== null && latestBlockNumber !== null && fromBlock < latestBlockNumber;
+	const canGoNewer =
+		fromBlock !== null &&
+		latestBlockNumber !== null &&
+		fromBlock < latestBlockNumber;
 	const canGoOlder = blockRange !== null && blockRange.from > 0;
-	const isAtLatest = fromBlock === null || (latestBlockNumber !== null && fromBlock >= latestBlockNumber);
+	const isAtLatest =
+		fromBlock === null ||
+		(latestBlockNumber !== null && fromBlock >= latestBlockNumber);
 
 	if (loading) {
 		return (
@@ -178,8 +197,7 @@ export default function Txs() {
 					? `Showing ${transactions.length} transactions from the last ${BLOCKS_PER_PAGE} blocks`
 					: blockRange
 						? `Showing ${transactions.length} transactions from blocks ${blockRange.from.toLocaleString()} - ${blockRange.to.toLocaleString()}`
-						: `Showing ${transactions.length} transactions`
-				}
+						: `Showing ${transactions.length} transactions`}
 			</p>
 
 			<Pagination />
