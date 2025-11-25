@@ -9,6 +9,7 @@ import {
 import LongString from "./LongString";
 import { DataService } from "../../services/DataService";
 import { TraceResult } from "../../services/EVM/L1/fetchers/trace";
+import { decodeEventLog, DecodedEvent, formatDecodedValue, getEventTypeColor } from "../../utils/eventDecoder";
 
 interface TransactionDisplayProps {
 	transaction: Transaction | TransactionArbitrum;
@@ -417,46 +418,95 @@ const TransactionDisplay: React.FC<TransactionDisplayProps> = ({
 						<span className="tx-section-title">Event Logs ({transaction.receipt.logs.length})</span>
 					</div>
 					<div className="tx-logs">
-						{transaction.receipt.logs.map((log: any, index: number) => (
-							<div key={index} className="tx-log">
-								<div className="tx-log-index">{index}</div>
-								<div className="tx-log-content">
-									<div className="tx-log-row">
-										<span className="tx-log-label">Address</span>
-										<span className="tx-log-value tx-mono">
-											{chainId ? (
-												<Link to={`/${chainId}/address/${log.address}`} className="link-accent">
-													{log.address}
-												</Link>
-											) : (
-												log.address
-											)}
-										</span>
-									</div>
-									{log.topics && log.topics.length > 0 && (
-										<div className="tx-log-row tx-log-topics">
-											<span className="tx-log-label">Topics</span>
-											<div className="tx-log-value">
-												{log.topics.map((topic: string, i: number) => (
-													<div key={i} className="tx-topic">
-														<span className="tx-topic-index">[{i}]</span>
-														<code className="tx-topic-value">{topic}</code>
-													</div>
-												))}
+						{transaction.receipt.logs.map((log: any, index: number) => {
+							const decoded: DecodedEvent | null = log.topics ? decodeEventLog(log.topics, log.data || "0x") : null;
+							
+							return (
+								<div key={index} className="tx-log">
+									<div className="tx-log-index">{index}</div>
+									<div className="tx-log-content">
+										{/* Decoded Event Header */}
+										{decoded && (
+											<div className="tx-log-decoded">
+												<span 
+													className="tx-event-badge" 
+													style={{ backgroundColor: getEventTypeColor(decoded.type) }}
+												>
+													{decoded.name}
+												</span>
+												<span className="tx-event-signature" title={decoded.description}>
+													{decoded.fullSignature}
+												</span>
 											</div>
-										</div>
-									)}
-									{log.data && log.data !== "0x" && (
+										)}
+										
+										{/* Address */}
 										<div className="tx-log-row">
-											<span className="tx-log-label">Data</span>
-											<div className="tx-log-value">
-												<code className="tx-log-data">{log.data}</code>
-											</div>
+											<span className="tx-log-label">Address</span>
+											<span className="tx-log-value tx-mono">
+												{chainId ? (
+													<Link to={`/${chainId}/address/${log.address}`} className="link-accent">
+														{log.address}
+													</Link>
+												) : (
+													log.address
+												)}
+											</span>
 										</div>
-									)}
+										
+										{/* Decoded Parameters */}
+										{decoded && decoded.params.length > 0 && (
+											<div className="tx-log-row tx-log-params">
+												<span className="tx-log-label">Decoded</span>
+												<div className="tx-log-value">
+													{decoded.params.map((param, i) => (
+														<div key={i} className="tx-decoded-param">
+															<span className="tx-param-name">{param.name}</span>
+															<span className="tx-param-type">({param.type})</span>
+															<span className={`tx-param-value ${param.type === "address" ? "tx-mono" : ""}`}>
+																{param.type === "address" && chainId ? (
+																	<Link to={`/${chainId}/address/${param.value}`} className="link-accent">
+																		{param.value}
+																	</Link>
+																) : (
+																	formatDecodedValue(param.value, param.type)
+																)}
+															</span>
+															{param.indexed && <span className="tx-param-indexed">indexed</span>}
+														</div>
+													))}
+												</div>
+											</div>
+										)}
+										
+										{/* Raw Topics (collapsed if decoded) */}
+										{log.topics && log.topics.length > 0 && (
+											<div className="tx-log-row tx-log-topics">
+												<span className="tx-log-label">{decoded ? "Raw Topics" : "Topics"}</span>
+												<div className="tx-log-value">
+													{log.topics.map((topic: string, i: number) => (
+														<div key={i} className="tx-topic">
+															<span className="tx-topic-index">[{i}]</span>
+															<code className="tx-topic-value">{topic}</code>
+														</div>
+													))}
+												</div>
+											</div>
+										)}
+										
+										{/* Raw Data */}
+										{log.data && log.data !== "0x" && (
+											<div className="tx-log-row">
+												<span className="tx-log-label">{decoded ? "Raw Data" : "Data"}</span>
+												<div className="tx-log-value">
+													<code className="tx-log-data">{log.data}</code>
+												</div>
+											</div>
+										)}
+									</div>
 								</div>
-							</div>
-						))}
+							);
+						})}
 					</div>
 				</div>
 			)}
