@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg 
+  width="512" 
+  height="512" 
+  viewBox="0 0 512 512"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <!-- Isometric Cube Logo -->
+  <g>
+    <!-- Right face - dark green (darkest) -->
+    <polygon
+      points="256,270.22222222222223 455.1111111111111,156.44444444444446 455.1111111111111,355.55555555555554 256,469.33333333333337"
+      fill="#065743"
+      stroke="#1f2937" stroke-width="2" stroke-linejoin="round"
+    />
+    <!-- Left face - Hardhat yellow (medium) -->
+    <polygon
+      points="56.88888888888887,156.44444444444446 256,270.22222222222223 256,469.33333333333337 56.88888888888887,355.55555555555554"
+      fill="#FFF100"
+      stroke="#1f2937" stroke-width="2" stroke-linejoin="round"
+    />
+    <!-- Top face - Ethereum blue (brightest) -->
+    <polygon
+      points="256,42.6666666666667 455.1111111111111,156.44444444444446 256,270.22222222222223 56.88888888888887,156.44444444444446"
+      fill="#627EEA"
+      stroke="#1f2937" stroke-width="2" stroke-linejoin="round"
+    />
+  </g>
+</svg>

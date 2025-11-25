@@ -2,8 +2,13 @@ import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import Artifacts from "../common/HH3IgnitionTool";
 
+type Section = "transactions" | "signatures" | "contracts" | "utils" | "development";
+
 const DevTools: React.FC = () => {
 	const { chainId } = useParams<{ chainId?: string }>();
+
+	// Active section state
+	const [activeSection, setActiveSection] = useState<Section>("utils");
 
 	// State for different tools
 	const [encodedData, setEncodedData] = useState("");
@@ -92,13 +97,41 @@ const DevTools: React.FC = () => {
 	};
 
 	return (
-		<div
-			className="container-wide"
-			style={{
-				padding: "32px 24px",
-				fontFamily: "Outfit, sans-serif",
-			}}
-		>
+		<div className="container-wide devtools-container" >
+			{/* Section Tabs */}
+			<div className="devtools-tabs">
+				<button
+					className={`devtools-tab ${activeSection === "transactions" ? "active" : ""}`}
+					onClick={() => setActiveSection("transactions")}
+				>
+					Transactions
+				</button>
+				<button
+					className={`devtools-tab ${activeSection === "signatures" ? "active" : ""}`}
+					onClick={() => setActiveSection("signatures")}
+				>
+					Signatures
+				</button>
+				<button
+					className={`devtools-tab ${activeSection === "contracts" ? "active" : ""}`}
+					onClick={() => setActiveSection("contracts")}
+				>
+					Contracts
+				</button>
+				<button
+					className={`devtools-tab ${activeSection === "utils" ? "active" : ""}`}
+					onClick={() => setActiveSection("utils")}
+				>
+					Utils
+				</button>
+				<button
+					className={`devtools-tab ${activeSection === "development" ? "active" : ""}`}
+					onClick={() => setActiveSection("development")}
+				>
+					Development
+				</button>
+			</div>
+
 			{/* Error Display */}
 			{error && (
 				<div
@@ -135,15 +168,51 @@ const DevTools: React.FC = () => {
 				</div>
 			)}
 
-			{/* Unit Converter */}
-			<div
-				style={{
-					background: "#ffffff",
-					borderRadius: "16px",
-					padding: "24px",
-					boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
-					border: "1px solid rgba(16, 185, 129, 0.1)",
-					marginBottom: "24px",
+			{/* Transactions Section */}
+			{activeSection === "transactions" && (
+				<div className="devtools-section">
+					<div className="devtools-coming-soon">
+						<span className="devtools-coming-soon-icon">🔄</span>
+						<h3>Transaction Tools</h3>
+						<p>More tools coming soon</p>
+					</div>
+				</div>
+			)}
+
+			{/* Signatures Section */}
+			{activeSection === "signatures" && (
+				<div className="devtools-section">
+					<div className="devtools-coming-soon">
+						<span className="devtools-coming-soon-icon">✍️</span>
+						<h3>Signature Tools</h3>
+						<p>More tools coming soon</p>
+					</div>
+				</div>
+			)}
+
+			{/* Contracts Section */}
+			{activeSection === "contracts" && (
+				<div className="devtools-section">
+					<div className="devtools-coming-soon">
+						<span className="devtools-coming-soon-icon">📄</span>
+						<h3>Contract Tools</h3>
+						<p>More tools coming soon</p>
+					</div>
+				</div>
+			)}
+
+			{/* Utils Section */}
+			{activeSection === "utils" && (
+				<div className="devtools-section">
+					{/* Unit Converter */}
+					<div
+						style={{
+							background: "#ffffff",
+							borderRadius: "16px",
+							padding: "24px",
+							boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
+							border: "1px solid rgba(16, 185, 129, 0.1)",
+							marginBottom: "24px",
 				}}
 			>
 				<h3
@@ -428,9 +497,16 @@ const DevTools: React.FC = () => {
 					</pre>
 				</div>
 			)}
+				</div>
+			)}
 
-			{/* Hardhat Artifacts Section */}
-			<Artifacts />
+			{/* Development Section */}
+			{activeSection === "development" && (
+				<div className="devtools-section">
+					{/* Hardhat Artifacts Section */}
+					<Artifacts />
+				</div>
+			)}
 		</div>
 	);
 };

@@ -36,7 +36,7 @@ export default function Chain() {
 
 	return (
 		<div className="home-container">
-			<div className="home-content">
+			<div className="home-content page-card">
 				<h1 className="home-title">OPENSCAN</h1>
 				<SearchBox />
 				{loading && <Loader text="Loading network stats..." />}
