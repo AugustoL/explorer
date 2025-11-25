@@ -1,6 +1,10 @@
 // src/services/EVM/Arbitrum/fetchers/address.ts
 import { RPCClient } from "../../common/RPCClient";
-import { TraceFilterResult, LogEntry, AddressTransactionsResult } from "../../../../types";
+import {
+	TraceFilterResult,
+	LogEntry,
+	AddressTransactionsResult,
+} from "../../../../types";
 
 export class AddressFetcher {
 	constructor(
@@ -69,20 +73,32 @@ export class AddressFetcher {
 		fromBlock: number | "earliest" = "earliest",
 		toBlock: number | "latest" = "latest",
 	): Promise<TraceFilterResult[]> {
-		const fromBlockParam = fromBlock === "earliest" ? "earliest" : `0x${fromBlock.toString(16)}`;
-		const toBlockParam = toBlock === "latest" ? "latest" : `0x${toBlock.toString(16)}`;
+		const fromBlockParam =
+			fromBlock === "earliest" ? "earliest" : `0x${fromBlock.toString(16)}`;
+		const toBlockParam =
+			toBlock === "latest" ? "latest" : `0x${toBlock.toString(16)}`;
 
-		const fromTraces = await this.rpcClient.call<TraceFilterResult[]>("trace_filter", [{
-			fromBlock: fromBlockParam,
-			toBlock: toBlockParam,
-			fromAddress: [address],
-		}]);
+		const fromTraces = await this.rpcClient.call<TraceFilterResult[]>(
+			"trace_filter",
+			[
+				{
+					fromBlock: fromBlockParam,
+					toBlock: toBlockParam,
+					fromAddress: [address],
+				},
+			],
+		);
 
-		const toTraces = await this.rpcClient.call<TraceFilterResult[]>("trace_filter", [{
-			fromBlock: fromBlockParam,
-			toBlock: toBlockParam,
-			toAddress: [address],
-		}]);
+		const toTraces = await this.rpcClient.call<TraceFilterResult[]>(
+			"trace_filter",
+			[
+				{
+					fromBlock: fromBlockParam,
+					toBlock: toBlockParam,
+					toAddress: [address],
+				},
+			],
+		);
 
 		return [...fromTraces, ...toTraces];
 	}
@@ -95,21 +111,28 @@ export class AddressFetcher {
 		fromBlock: number | "earliest" = "earliest",
 		toBlock: number | "latest" = "latest",
 	): Promise<LogEntry[]> {
-		const fromBlockParam = fromBlock === "earliest" ? "earliest" : `0x${fromBlock.toString(16)}`;
-		const toBlockParam = toBlock === "latest" ? "latest" : `0x${toBlock.toString(16)}`;
-		const paddedAddress = "0x" + address.toLowerCase().slice(2).padStart(64, "0");
+		const fromBlockParam =
+			fromBlock === "earliest" ? "earliest" : `0x${fromBlock.toString(16)}`;
+		const toBlockParam =
+			toBlock === "latest" ? "latest" : `0x${toBlock.toString(16)}`;
+		const paddedAddress =
+			"0x" + address.toLowerCase().slice(2).padStart(64, "0");
 
-		const logsAsTopic1 = await this.rpcClient.call<LogEntry[]>("eth_getLogs", [{
-			fromBlock: fromBlockParam,
-			toBlock: toBlockParam,
-			topics: [null, paddedAddress],
-		}]);
+		const logsAsTopic1 = await this.rpcClient.call<LogEntry[]>("eth_getLogs", [
+			{
+				fromBlock: fromBlockParam,
+				toBlock: toBlockParam,
+				topics: [null, paddedAddress],
+			},
+		]);
 
-		const logsAsTopic2 = await this.rpcClient.call<LogEntry[]>("eth_getLogs", [{
-			fromBlock: fromBlockParam,
-			toBlock: toBlockParam,
-			topics: [null, null, paddedAddress],
-		}]);
+		const logsAsTopic2 = await this.rpcClient.call<LogEntry[]>("eth_getLogs", [
+			{
+				fromBlock: fromBlockParam,
+				toBlock: toBlockParam,
+				topics: [null, null, paddedAddress],
+			},
+		]);
 
 		return [...logsAsTopic1, ...logsAsTopic2];
 	}
@@ -123,8 +146,12 @@ export class AddressFetcher {
 		toBlock: number | "latest" = "latest",
 	): Promise<AddressTransactionsResult> {
 		try {
-			const traces = await this.getTransactionsFromTrace(address, fromBlock, toBlock);
-			
+			const traces = await this.getTransactionsFromTrace(
+				address,
+				fromBlock,
+				toBlock,
+			);
+
 			const sortedTraces = traces.sort((a, b) => b.blockNumber - a.blockNumber);
 			const sortedHashes: string[] = [];
 			const seen = new Set<string>();
@@ -141,14 +168,17 @@ export class AddressFetcher {
 				isComplete: true,
 			};
 		} catch (error: any) {
-			console.log("trace_filter not available on Arbitrum, falling back to logs:", error.message);
+			console.log(
+				"trace_filter not available on Arbitrum, falling back to logs:",
+				error.message,
+			);
 		}
 
 		try {
 			const logs = await this.getLogsForAddress(address, fromBlock, toBlock);
-			
-			const sortedLogs = logs.sort((a, b) => 
-				parseInt(b.blockNumber, 16) - parseInt(a.blockNumber, 16)
+
+			const sortedLogs = logs.sort(
+				(a, b) => parseInt(b.blockNumber, 16) - parseInt(a.blockNumber, 16),
 			);
 			const sortedHashes: string[] = [];
 			const seen = new Set<string>();
@@ -163,7 +193,8 @@ export class AddressFetcher {
 				transactions: sortedHashes,
 				source: "logs",
 				isComplete: false,
-				message: "Showing transactions from event logs only. ETH transfers and transactions without events are not included.",
+				message:
+					"Showing transactions from event logs only. ETH transfers and transactions without events are not included.",
 			};
 		} catch (error: any) {
 			console.error("eth_getLogs failed on Arbitrum:", error.message);

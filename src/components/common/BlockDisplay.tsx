@@ -89,7 +89,10 @@ const BlockDisplay: React.FC<BlockDisplayProps> = ({ block, chainId }) => {
 	const blockNumber = Number(block.number);
 	const timestampFormatted = formatTimestamp(block.timestamp);
 	const timestampAge = formatTimeAgo(block.timestamp);
-	const gasUsedPct = ((Number(block.gasUsed) / Number(block.gasLimit)) * 100).toFixed(1);
+	const gasUsedPct = (
+		(Number(block.gasUsed) / Number(block.gasLimit)) *
+		100
+	).toFixed(1);
 
 	// Calculate burnt fees if baseFeePerGas exists
 	const burntFees = block.baseFeePerGas
@@ -107,15 +110,25 @@ const BlockDisplay: React.FC<BlockDisplayProps> = ({ block, chainId }) => {
 				<div className="tx-row">
 					<span className="tx-label">Block Height:</span>
 					<span className="tx-value">
-						<span className="block-height-value">{blockNumber.toLocaleString()}</span>
+						<span className="block-height-value">
+							{blockNumber.toLocaleString()}
+						</span>
 						{chainId && (
 							<span className="block-nav">
 								{blockNumber > 0 && (
-									<Link to={`/${chainId}/block/${blockNumber - 1}`} className="block-nav-btn" title="Previous block">
+									<Link
+										to={`/${chainId}/block/${blockNumber - 1}`}
+										className="block-nav-btn"
+										title="Previous block"
+									>
 										←
 									</Link>
 								)}
-								<Link to={`/${chainId}/block/${blockNumber + 1}`} className="block-nav-btn" title="Next block">
+								<Link
+									to={`/${chainId}/block/${blockNumber + 1}`}
+									className="block-nav-btn"
+									title="Next block"
+								>
 									→
 								</Link>
 							</span>
@@ -138,8 +151,8 @@ const BlockDisplay: React.FC<BlockDisplayProps> = ({ block, chainId }) => {
 					<span className="tx-value">
 						<span className="tx-value-highlight">
 							{block.transactions ? block.transactions.length : 0} transactions
-						</span>
-						{" "}in this block
+						</span>{" "}
+						in this block
 					</span>
 				</div>
 
@@ -148,7 +161,8 @@ const BlockDisplay: React.FC<BlockDisplayProps> = ({ block, chainId }) => {
 					<div className="tx-row">
 						<span className="tx-label">Withdrawals:</span>
 						<span className="tx-value">
-							{block.withdrawals.length} withdrawal{block.withdrawals.length !== 1 ? "s" : ""} in this block
+							{block.withdrawals.length} withdrawal
+							{block.withdrawals.length !== 1 ? "s" : ""} in this block
 						</span>
 					</div>
 				)}
@@ -158,7 +172,10 @@ const BlockDisplay: React.FC<BlockDisplayProps> = ({ block, chainId }) => {
 					<span className="tx-label">Fee Recipient:</span>
 					<span className="tx-value tx-mono">
 						{chainId ? (
-							<Link to={`/${chainId}/address/${block.miner}`} className="link-accent">
+							<Link
+								to={`/${chainId}/address/${block.miner}`}
+								className="link-accent"
+							>
 								{block.miner}
 							</Link>
 						) : (
@@ -179,7 +196,9 @@ const BlockDisplay: React.FC<BlockDisplayProps> = ({ block, chainId }) => {
 				{/* Gas Limit */}
 				<div className="tx-row">
 					<span className="tx-label">Gas Limit:</span>
-					<span className="tx-value">{Number(block.gasLimit).toLocaleString()}</span>
+					<span className="tx-value">
+						{Number(block.gasLimit).toLocaleString()}
+					</span>
 				</div>
 
 				{/* Base Fee Per Gas */}
@@ -204,9 +223,7 @@ const BlockDisplay: React.FC<BlockDisplayProps> = ({ block, chainId }) => {
 				{block.extraData && block.extraData !== "0x" && (
 					<div className="tx-row">
 						<span className="tx-label">Extra Data:</span>
-						<span className="tx-value tx-mono">
-							{block.extraData}
-						</span>
+						<span className="tx-value tx-mono">{block.extraData}</span>
 					</div>
 				)}
 
@@ -214,7 +231,9 @@ const BlockDisplay: React.FC<BlockDisplayProps> = ({ block, chainId }) => {
 				{Number(block.difficulty) > 0 && (
 					<div className="tx-row">
 						<span className="tx-label">Difficulty:</span>
-						<span className="tx-value">{Number(block.difficulty).toLocaleString()}</span>
+						<span className="tx-value">
+							{Number(block.difficulty).toLocaleString()}
+						</span>
 					</div>
 				)}
 
@@ -222,14 +241,18 @@ const BlockDisplay: React.FC<BlockDisplayProps> = ({ block, chainId }) => {
 				{Number(block.totalDifficulty) > 0 && (
 					<div className="tx-row">
 						<span className="tx-label">Total Difficulty:</span>
-						<span className="tx-value">{Number(block.totalDifficulty).toLocaleString()}</span>
+						<span className="tx-value">
+							{Number(block.totalDifficulty).toLocaleString()}
+						</span>
 					</div>
 				)}
 
 				{/* Size */}
 				<div className="tx-row">
 					<span className="tx-label">Size:</span>
-					<span className="tx-value">{Number(block.size).toLocaleString()} bytes</span>
+					<span className="tx-value">
+						{Number(block.size).toLocaleString()} bytes
+					</span>
 				</div>
 
 				{/* Arbitrum-specific fields */}
@@ -237,7 +260,9 @@ const BlockDisplay: React.FC<BlockDisplayProps> = ({ block, chainId }) => {
 					<>
 						<div className="tx-row tx-row-arbitrum">
 							<span className="tx-label">L1 Block Number:</span>
-							<span className="tx-value">{Number(block.l1BlockNumber).toLocaleString()}</span>
+							<span className="tx-value">
+								{Number(block.l1BlockNumber).toLocaleString()}
+							</span>
 						</div>
 						<div className="tx-row tx-row-arbitrum">
 							<span className="tx-label">Send Count:</span>
@@ -258,7 +283,7 @@ const BlockDisplay: React.FC<BlockDisplayProps> = ({ block, chainId }) => {
 					>
 						{showMoreDetails ? "− Hide" : "+ Show"} More Details
 					</button>
-					
+
 					{showMoreDetails && (
 						<div className="more-details-content">
 							<div className="detail-row">
@@ -268,8 +293,13 @@ const BlockDisplay: React.FC<BlockDisplayProps> = ({ block, chainId }) => {
 							<div className="detail-row">
 								<span className="detail-label">Parent Hash:</span>
 								<span className="detail-value tx-mono">
-									{chainId && block.parentHash !== "0x0000000000000000000000000000000000000000000000000000000000000000" ? (
-										<Link to={`/${chainId}/block/${blockNumber - 1}`} className="link-accent">
+									{chainId &&
+									block.parentHash !==
+										"0x0000000000000000000000000000000000000000000000000000000000000000" ? (
+										<Link
+											to={`/${chainId}/block/${blockNumber - 1}`}
+											className="link-accent"
+										>
 											{block.parentHash}
 										</Link>
 									) : (
@@ -283,16 +313,22 @@ const BlockDisplay: React.FC<BlockDisplayProps> = ({ block, chainId }) => {
 							</div>
 							<div className="detail-row">
 								<span className="detail-label">Transactions Root:</span>
-								<span className="detail-value tx-mono">{block.transactionsRoot}</span>
+								<span className="detail-value tx-mono">
+									{block.transactionsRoot}
+								</span>
 							</div>
 							<div className="detail-row">
 								<span className="detail-label">Receipts Root:</span>
-								<span className="detail-value tx-mono">{block.receiptsRoot}</span>
+								<span className="detail-value tx-mono">
+									{block.receiptsRoot}
+								</span>
 							</div>
 							{block.withdrawalsRoot && (
 								<div className="detail-row">
 									<span className="detail-label">Withdrawals Root:</span>
-									<span className="detail-value tx-mono">{block.withdrawalsRoot}</span>
+									<span className="detail-value tx-mono">
+										{block.withdrawalsRoot}
+									</span>
 								</div>
 							)}
 							<div className="detail-row">
@@ -329,7 +365,9 @@ const BlockDisplay: React.FC<BlockDisplayProps> = ({ block, chainId }) => {
 							<span className="tx-section-title">
 								Transactions ({block.transactions.length})
 							</span>
-							<span className="tx-section-arrow">{showTransactions ? "▼" : "▶"}</span>
+							<span className="tx-section-arrow">
+								{showTransactions ? "▼" : "▶"}
+							</span>
 						</button>
 					</div>
 					{showTransactions && (
@@ -339,7 +377,10 @@ const BlockDisplay: React.FC<BlockDisplayProps> = ({ block, chainId }) => {
 									<span className="tx-list-index">{index}</span>
 									<span className="tx-list-hash tx-mono">
 										{chainId ? (
-											<Link to={`/${chainId}/tx/${txHash}`} className="link-accent">
+											<Link
+												to={`/${chainId}/tx/${txHash}`}
+												className="link-accent"
+											>
 												{txHash}
 											</Link>
 										) : (
@@ -364,7 +405,9 @@ const BlockDisplay: React.FC<BlockDisplayProps> = ({ block, chainId }) => {
 							<span className="tx-section-title">
 								Withdrawals ({block.withdrawals.length})
 							</span>
-							<span className="tx-section-arrow">{showWithdrawals ? "▼" : "▶"}</span>
+							<span className="tx-section-arrow">
+								{showWithdrawals ? "▼" : "▶"}
+							</span>
 						</button>
 					</div>
 					{showWithdrawals && (
@@ -375,17 +418,24 @@ const BlockDisplay: React.FC<BlockDisplayProps> = ({ block, chainId }) => {
 									<div className="tx-log-content">
 										<div className="tx-log-row">
 											<span className="tx-log-label">Index</span>
-											<span className="tx-log-value">{Number(withdrawal.index).toLocaleString()}</span>
+											<span className="tx-log-value">
+												{Number(withdrawal.index).toLocaleString()}
+											</span>
 										</div>
 										<div className="tx-log-row">
 											<span className="tx-log-label">Validator</span>
-											<span className="tx-log-value">{Number(withdrawal.validatorIndex).toLocaleString()}</span>
+											<span className="tx-log-value">
+												{Number(withdrawal.validatorIndex).toLocaleString()}
+											</span>
 										</div>
 										<div className="tx-log-row">
 											<span className="tx-log-label">Address</span>
 											<span className="tx-log-value tx-mono">
 												{chainId ? (
-													<Link to={`/${chainId}/address/${withdrawal.address}`} className="link-accent">
+													<Link
+														to={`/${chainId}/address/${withdrawal.address}`}
+														className="link-accent"
+													>
 														{withdrawal.address}
 													</Link>
 												) : (

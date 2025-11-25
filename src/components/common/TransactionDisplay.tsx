@@ -9,7 +9,12 @@ import {
 import LongString from "./LongString";
 import { DataService } from "../../services/DataService";
 import { TraceResult } from "../../services/EVM/L1/fetchers/trace";
-import { decodeEventLog, DecodedEvent, formatDecodedValue, getEventTypeColor } from "../../utils/eventDecoder";
+import {
+	decodeEventLog,
+	DecodedEvent,
+	formatDecodedValue,
+	getEventTypeColor,
+} from "../../utils/eventDecoder";
 
 interface TransactionDisplayProps {
 	transaction: Transaction | TransactionArbitrum;
@@ -170,11 +175,11 @@ const TransactionDisplay: React.FC<TransactionDisplayProps> = ({
 			: `in ${diffSeconds} second${diffSeconds === 1 ? "" : "s"}`;
 	};
 
-		const timestampMs = parseTimestampToMs(transaction.timestamp);
-		const formattedTimestamp = timestampMs
-			? formatAbsoluteTimestamp(timestampMs)
-			: null;
-		const timestampAge = timestampMs ? formatTimeAgo(timestampMs) : null;
+	const timestampMs = parseTimestampToMs(transaction.timestamp);
+	const formattedTimestamp = timestampMs
+		? formatAbsoluteTimestamp(timestampMs)
+		: null;
+	const timestampAge = timestampMs ? formatTimeAgo(timestampMs) : null;
 
 	const getStatusBadge = (status?: string) => {
 		if (!status) return null;
@@ -211,7 +216,9 @@ const TransactionDisplay: React.FC<TransactionDisplayProps> = ({
 				{/* Status */}
 				<div className="tx-row">
 					<span className="tx-label">Status:</span>
-					<span className="tx-value">{getStatusBadge(transaction.receipt?.status)}</span>
+					<span className="tx-value">
+						{getStatusBadge(transaction.receipt?.status)}
+					</span>
 				</div>
 
 				{/* Block */}
@@ -219,7 +226,10 @@ const TransactionDisplay: React.FC<TransactionDisplayProps> = ({
 					<span className="tx-label">Block:</span>
 					<span className="tx-value">
 						{chainId ? (
-							<Link to={`/${chainId}/block/${transaction.blockNumber}`} className="link-accent">
+							<Link
+								to={`/${chainId}/block/${transaction.blockNumber}`}
+								className="link-accent"
+							>
 								{Number(transaction.blockNumber).toLocaleString()}
 							</Link>
 						) : (
@@ -227,7 +237,8 @@ const TransactionDisplay: React.FC<TransactionDisplayProps> = ({
 						)}
 						{confirmations !== null && (
 							<span className="tx-confirmations">
-								{confirmations > 100 ? "+100" : confirmations.toLocaleString()} Block Confirmations
+								{confirmations > 100 ? "+100" : confirmations.toLocaleString()}{" "}
+								Block Confirmations
 							</span>
 						)}
 					</span>
@@ -249,7 +260,10 @@ const TransactionDisplay: React.FC<TransactionDisplayProps> = ({
 					<span className="tx-label">From:</span>
 					<span className="tx-value tx-mono">
 						{chainId ? (
-							<Link to={`/${chainId}/address/${transaction.from}`} className="link-accent">
+							<Link
+								to={`/${chainId}/address/${transaction.from}`}
+								className="link-accent"
+							>
 								{transaction.from}
 							</Link>
 						) : (
@@ -260,11 +274,16 @@ const TransactionDisplay: React.FC<TransactionDisplayProps> = ({
 
 				{/* To */}
 				<div className="tx-row">
-					<span className="tx-label">{transaction.to ? "To:" : "Interacted With:"}</span>
+					<span className="tx-label">
+						{transaction.to ? "To:" : "Interacted With:"}
+					</span>
 					<span className="tx-value tx-mono">
 						{transaction.to ? (
 							chainId ? (
-								<Link to={`/${chainId}/address/${transaction.to}`} className="link-accent">
+								<Link
+									to={`/${chainId}/address/${transaction.to}`}
+									className="link-accent"
+								>
 									{transaction.to}
 								</Link>
 							) : (
@@ -282,7 +301,10 @@ const TransactionDisplay: React.FC<TransactionDisplayProps> = ({
 						<span className="tx-label">Contract Created:</span>
 						<span className="tx-value tx-mono">
 							{chainId ? (
-								<Link to={`/${chainId}/address/${transaction.receipt.contractAddress}`} className="link-accent">
+								<Link
+									to={`/${chainId}/address/${transaction.receipt.contractAddress}`}
+									className="link-accent"
+								>
 									{transaction.receipt.contractAddress}
 								</Link>
 							) : (
@@ -295,7 +317,9 @@ const TransactionDisplay: React.FC<TransactionDisplayProps> = ({
 				{/* Value */}
 				<div className="tx-row">
 					<span className="tx-label">Value:</span>
-					<span className="tx-value tx-value-highlight">{formatValue(transaction.value)}</span>
+					<span className="tx-value tx-value-highlight">
+						{formatValue(transaction.value)}
+					</span>
 				</div>
 
 				{/* Transaction Fee */}
@@ -329,7 +353,13 @@ const TransactionDisplay: React.FC<TransactionDisplayProps> = ({
 								{" | "}
 								{Number(transaction.receipt.gasUsed).toLocaleString()}
 								<span className="tx-gas-pct">
-									({((Number(transaction.receipt.gasUsed) / Number(transaction.gas)) * 100).toFixed(1)}%)
+									(
+									{(
+										(Number(transaction.receipt.gasUsed) /
+											Number(transaction.gas)) *
+										100
+									).toFixed(1)}
+									%)
 								</span>
 							</>
 						)}
@@ -337,45 +367,70 @@ const TransactionDisplay: React.FC<TransactionDisplayProps> = ({
 				</div>
 
 				{/* Effective Gas Price (if different from gas price) */}
-				{transaction.receipt && transaction.receipt.effectiveGasPrice !== transaction.gasPrice && (
-					<div className="tx-row">
-						<span className="tx-label">Effective Gas Price:</span>
-						<span className="tx-value">{formatGwei(transaction.receipt.effectiveGasPrice)}</span>
-					</div>
-				)}
+				{transaction.receipt &&
+					transaction.receipt.effectiveGasPrice !== transaction.gasPrice && (
+						<div className="tx-row">
+							<span className="tx-label">Effective Gas Price:</span>
+							<span className="tx-value">
+								{formatGwei(transaction.receipt.effectiveGasPrice)}
+							</span>
+						</div>
+					)}
 
 				{/* Arbitrum-specific fields */}
-				{isArbitrumTx(transaction) && transaction.receipt && isArbitrumReceipt(transaction.receipt) && (
-					<>
-						<div className="tx-row tx-row-arbitrum">
-							<span className="tx-label">L1 Block Number:</span>
-							<span className="tx-value">{Number(transaction.receipt.l1BlockNumber).toLocaleString()}</span>
-						</div>
-						<div className="tx-row tx-row-arbitrum">
-							<span className="tx-label">Gas Used for L1:</span>
-							<span className="tx-value">{Number(transaction.receipt.gasUsedForL1).toLocaleString()}</span>
-						</div>
-					</>
-				)}
+				{isArbitrumTx(transaction) &&
+					transaction.receipt &&
+					isArbitrumReceipt(transaction.receipt) && (
+						<>
+							<div className="tx-row tx-row-arbitrum">
+								<span className="tx-label">L1 Block Number:</span>
+								<span className="tx-value">
+									{Number(transaction.receipt.l1BlockNumber).toLocaleString()}
+								</span>
+							</div>
+							<div className="tx-row tx-row-arbitrum">
+								<span className="tx-label">Gas Used for L1:</span>
+								<span className="tx-value">
+									{Number(transaction.receipt.gasUsedForL1).toLocaleString()}
+								</span>
+							</div>
+						</>
+					)}
 
 				{/* OP Stack fields (Optimism, Base) */}
 				{transaction.receipt && isOptimismReceipt(transaction.receipt) && (
 					<>
-						<div className={`tx-row ${chainId === "8453" ? "tx-row-base" : "tx-row-optimism"}`}>
+						<div
+							className={`tx-row ${chainId === "8453" ? "tx-row-base" : "tx-row-optimism"}`}
+						>
 							<span className="tx-label">L1 Fee:</span>
-							<span className="tx-value">{formatValue(transaction.receipt.l1Fee)}</span>
+							<span className="tx-value">
+								{formatValue(transaction.receipt.l1Fee)}
+							</span>
 						</div>
-						<div className={`tx-row ${chainId === "8453" ? "tx-row-base" : "tx-row-optimism"}`}>
+						<div
+							className={`tx-row ${chainId === "8453" ? "tx-row-base" : "tx-row-optimism"}`}
+						>
 							<span className="tx-label">L1 Gas Price:</span>
-							<span className="tx-value">{formatGwei(transaction.receipt.l1GasPrice)}</span>
+							<span className="tx-value">
+								{formatGwei(transaction.receipt.l1GasPrice)}
+							</span>
 						</div>
-						<div className={`tx-row ${chainId === "8453" ? "tx-row-base" : "tx-row-optimism"}`}>
+						<div
+							className={`tx-row ${chainId === "8453" ? "tx-row-base" : "tx-row-optimism"}`}
+						>
 							<span className="tx-label">L1 Gas Used:</span>
-							<span className="tx-value">{Number(transaction.receipt.l1GasUsed).toLocaleString()}</span>
+							<span className="tx-value">
+								{Number(transaction.receipt.l1GasUsed).toLocaleString()}
+							</span>
 						</div>
-						<div className={`tx-row ${chainId === "8453" ? "tx-row-base" : "tx-row-optimism"}`}>
+						<div
+							className={`tx-row ${chainId === "8453" ? "tx-row-base" : "tx-row-optimism"}`}
+						>
 							<span className="tx-label">L1 Fee Scalar:</span>
-							<span className="tx-value">{transaction.receipt.l1FeeScalar}</span>
+							<span className="tx-value">
+								{transaction.receipt.l1FeeScalar}
+							</span>
 						</div>
 					</>
 				)}
@@ -385,7 +440,9 @@ const TransactionDisplay: React.FC<TransactionDisplayProps> = ({
 					<span className="tx-label">Other Attributes:</span>
 					<span className="tx-value tx-attrs">
 						<span className="tx-attr">Nonce: {transaction.nonce}</span>
-						<span className="tx-attr">Position: {transaction.transactionIndex}</span>
+						<span className="tx-attr">
+							Position: {transaction.transactionIndex}
+						</span>
 						<span className="tx-attr">Type: {transaction.type}</span>
 					</span>
 				</div>
@@ -407,12 +464,16 @@ const TransactionDisplay: React.FC<TransactionDisplayProps> = ({
 			{transaction.receipt && transaction.receipt.logs.length > 0 && (
 				<div className="tx-section">
 					<div className="tx-section-header">
-						<span className="tx-section-title">Event Logs ({transaction.receipt.logs.length})</span>
+						<span className="tx-section-title">
+							Event Logs ({transaction.receipt.logs.length})
+						</span>
 					</div>
 					<div className="tx-logs">
 						{transaction.receipt.logs.map((log: any, index: number) => {
-							const decoded: DecodedEvent | null = log.topics ? decodeEventLog(log.topics, log.data || "0x") : null;
-							
+							const decoded: DecodedEvent | null = log.topics
+								? decodeEventLog(log.topics, log.data || "0x")
+								: null;
+
 							return (
 								<div key={index} className="tx-log">
 									<div className="tx-log-index">{index}</div>
@@ -420,24 +481,32 @@ const TransactionDisplay: React.FC<TransactionDisplayProps> = ({
 										{/* Decoded Event Header */}
 										{decoded && (
 											<div className="tx-log-decoded">
-												<span 
-													className="tx-event-badge" 
-													style={{ backgroundColor: getEventTypeColor(decoded.type) }}
+												<span
+													className="tx-event-badge"
+													style={{
+														backgroundColor: getEventTypeColor(decoded.type),
+													}}
 												>
 													{decoded.name}
 												</span>
-												<span className="tx-event-signature" title={decoded.description}>
+												<span
+													className="tx-event-signature"
+													title={decoded.description}
+												>
 													{decoded.fullSignature}
 												</span>
 											</div>
 										)}
-										
+
 										{/* Address */}
 										<div className="tx-log-row">
 											<span className="tx-log-label">Address</span>
 											<span className="tx-log-value tx-mono">
 												{chainId ? (
-													<Link to={`/${chainId}/address/${log.address}`} className="link-accent">
+													<Link
+														to={`/${chainId}/address/${log.address}`}
+														className="link-accent"
+													>
 														{log.address}
 													</Link>
 												) : (
@@ -445,7 +514,7 @@ const TransactionDisplay: React.FC<TransactionDisplayProps> = ({
 												)}
 											</span>
 										</div>
-										
+
 										{/* Decoded Parameters */}
 										{decoded && decoded.params.length > 0 && (
 											<div className="tx-log-row tx-log-params">
@@ -453,28 +522,43 @@ const TransactionDisplay: React.FC<TransactionDisplayProps> = ({
 												<div className="tx-log-value">
 													{decoded.params.map((param, i) => (
 														<div key={i} className="tx-decoded-param">
-															<span className="tx-param-name">{param.name}</span>
-															<span className="tx-param-type">({param.type})</span>
-															<span className={`tx-param-value ${param.type === "address" ? "tx-mono" : ""}`}>
+															<span className="tx-param-name">
+																{param.name}
+															</span>
+															<span className="tx-param-type">
+																({param.type})
+															</span>
+															<span
+																className={`tx-param-value ${param.type === "address" ? "tx-mono" : ""}`}
+															>
 																{param.type === "address" && chainId ? (
-																	<Link to={`/${chainId}/address/${param.value}`} className="link-accent">
+																	<Link
+																		to={`/${chainId}/address/${param.value}`}
+																		className="link-accent"
+																	>
 																		{param.value}
 																	</Link>
 																) : (
 																	formatDecodedValue(param.value, param.type)
 																)}
 															</span>
-															{param.indexed && <span className="tx-param-indexed">indexed</span>}
+															{param.indexed && (
+																<span className="tx-param-indexed">
+																	indexed
+																</span>
+															)}
 														</div>
 													))}
 												</div>
 											</div>
 										)}
-										
+
 										{/* Raw Topics (collapsed if decoded) */}
 										{log.topics && log.topics.length > 0 && (
 											<div className="tx-log-row tx-log-topics">
-												<span className="tx-log-label">{decoded ? "Raw Topics" : "Topics"}</span>
+												<span className="tx-log-label">
+													{decoded ? "Raw Topics" : "Topics"}
+												</span>
 												<div className="tx-log-value">
 													{log.topics.map((topic: string, i: number) => (
 														<div key={i} className="tx-topic">
@@ -485,11 +569,13 @@ const TransactionDisplay: React.FC<TransactionDisplayProps> = ({
 												</div>
 											</div>
 										)}
-										
+
 										{/* Raw Data */}
 										{log.data && log.data !== "0x" && (
 											<div className="tx-log-row">
-												<span className="tx-log-label">{decoded ? "Raw Data" : "Data"}</span>
+												<span className="tx-log-label">
+													{decoded ? "Raw Data" : "Data"}
+												</span>
 												<div className="tx-log-value">
 													<code className="tx-log-data">{log.data}</code>
 												</div>

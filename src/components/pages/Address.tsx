@@ -1,7 +1,11 @@
 import { useParams } from "react-router-dom";
 import { useDataService } from "../../hooks/useDataService";
 import { useContext, useEffect, useState } from "react";
-import { Address as AddressType, AddressTransactionsResult, Transaction } from "../../types";
+import {
+	Address as AddressType,
+	AddressTransactionsResult,
+	Transaction,
+} from "../../types";
 import AddressDisplay from "../common/AddressDisplay";
 import Loader from "../common/Loader";
 import { useZipJsonReader } from "../../hooks/useZipJsonReader";
@@ -15,8 +19,11 @@ export default function Address() {
 	const numericChainId = Number(chainId) || 1;
 	const dataService = useDataService(numericChainId);
 	const [addressData, setAddressData] = useState<AddressType | null>(null);
-	const [transactionsResult, setTransactionsResult] = useState<AddressTransactionsResult | null>(null);
-	const [transactionDetails, setTransactionDetails] = useState<Transaction[]>([]);
+	const [transactionsResult, setTransactionsResult] =
+		useState<AddressTransactionsResult | null>(null);
+	const [transactionDetails, setTransactionDetails] = useState<Transaction[]>(
+		[],
+	);
 	const [loadingTxDetails, setLoadingTxDetails] = useState(false);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
@@ -55,20 +62,22 @@ export default function Address() {
 			.then(async (result) => {
 				console.log("Fetched transactions result:", result);
 				setTransactionsResult(result);
-				
+
 				// Fetch full transaction details for first 25 transactions
 				if (result.transactions.length > 0) {
 					setLoadingTxDetails(true);
 					const txsToFetch = result.transactions.slice(0, 25);
 					const details = await Promise.all(
-						txsToFetch.map(hash => 
-							dataService.getTransaction(hash).catch(err => {
+						txsToFetch.map((hash) =>
+							dataService.getTransaction(hash).catch((err) => {
 								console.error(`Failed to fetch tx ${hash}:`, err);
 								return null;
-							})
-						)
+							}),
+						),
 					);
-					setTransactionDetails(details.filter((tx): tx is Transaction => tx !== null));
+					setTransactionDetails(
+						details.filter((tx): tx is Transaction => tx !== null),
+					);
 					setLoadingTxDetails(false);
 				}
 			})
@@ -90,9 +99,7 @@ export default function Address() {
 				<div className="block-display-card">
 					<div className="block-display-header">
 						<span className="block-label">Address</span>
-						<span className="tx-mono header-subtitle">
-							{address}
-						</span>
+						<span className="tx-mono header-subtitle">{address}</span>
 					</div>
 					<div className="card-content-loading">
 						<Loader text="Loading address data..." />
@@ -108,9 +115,7 @@ export default function Address() {
 				<div className="block-display-card">
 					<div className="block-display-header">
 						<span className="block-label">Address</span>
-						<span className="tx-mono header-subtitle">
-							{address}
-						</span>
+						<span className="tx-mono header-subtitle">{address}</span>
 					</div>
 					<div className="card-content">
 						<p className="text-error margin-0">Error: {error}</p>

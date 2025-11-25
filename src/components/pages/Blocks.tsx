@@ -1,4 +1,9 @@
-import { useParams, Link, useSearchParams, useNavigate } from "react-router-dom";
+import {
+	useParams,
+	Link,
+	useSearchParams,
+	useNavigate,
+} from "react-router-dom";
 import { useDataService } from "../../hooks/useDataService";
 import { useEffect, useState } from "react";
 import { Block } from "../../types";
@@ -15,7 +20,9 @@ export default function Blocks() {
 	const [blocks, setBlocks] = useState<Block[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
-	const [latestBlockNumber, setLatestBlockNumber] = useState<number | null>(null);
+	const [latestBlockNumber, setLatestBlockNumber] = useState<number | null>(
+		null,
+	);
 
 	// Get fromBlock from URL params, default to null (latest)
 	const fromBlockParam = searchParams.get("fromBlock");
@@ -42,12 +49,12 @@ export default function Blocks() {
 				// Calculate block numbers to fetch (going backwards from startBlock)
 				const blockNumbers = Array.from(
 					{ length: BLOCKS_PER_PAGE },
-					(_, i) => startBlock - i
+					(_, i) => startBlock - i,
 				).filter((num) => num >= 0);
 
 				// Fetch blocks in parallel
 				const fetchedBlocks = await Promise.all(
-					blockNumbers.map((num) => dataService.getBlock(num))
+					blockNumbers.map((num) => dataService.getBlock(num)),
 				);
 
 				console.log("Fetched blocks:", fetchedBlocks);
@@ -82,8 +89,11 @@ export default function Blocks() {
 	const goToNewerBlocks = () => {
 		if (blocks.length === 0 || latestBlockNumber === null || !blocks[0]) return;
 		const newestBlockInPage = Number(blocks[0].number);
-		const newFromBlock = Math.min(newestBlockInPage + BLOCKS_PER_PAGE, latestBlockNumber);
-		
+		const newFromBlock = Math.min(
+			newestBlockInPage + BLOCKS_PER_PAGE,
+			latestBlockNumber,
+		);
+
 		if (newFromBlock >= latestBlockNumber) {
 			// Go to latest (remove fromBlock param)
 			navigate(`/${chainId}/blocks`);
@@ -98,7 +108,7 @@ export default function Blocks() {
 		if (!lastBlock) return;
 		const oldestBlockInPage = Number(lastBlock.number);
 		const newFromBlock = oldestBlockInPage - 1;
-		
+
 		if (newFromBlock >= 0) {
 			navigate(`/${chainId}/blocks?fromBlock=${newFromBlock}`);
 		}
@@ -110,9 +120,15 @@ export default function Blocks() {
 
 	// Determine if we can navigate
 	const lastBlock = blocks[blocks.length - 1];
-	const canGoNewer = fromBlock !== null && latestBlockNumber !== null && fromBlock < latestBlockNumber;
-	const canGoOlder = blocks.length > 0 && lastBlock && Number(lastBlock.number) > 0;
-	const isAtLatest = fromBlock === null || (latestBlockNumber !== null && fromBlock >= latestBlockNumber);
+	const canGoNewer =
+		fromBlock !== null &&
+		latestBlockNumber !== null &&
+		fromBlock < latestBlockNumber;
+	const canGoOlder =
+		blocks.length > 0 && lastBlock && Number(lastBlock.number) > 0;
+	const isAtLatest =
+		fromBlock === null ||
+		(latestBlockNumber !== null && fromBlock >= latestBlockNumber);
 
 	if (loading) {
 		return (
@@ -136,10 +152,9 @@ export default function Blocks() {
 		<div className="container-wide page-container-padded text-center page-card">
 			<h1 className="page-title-small">Latest Blocks</h1>
 			<p className="page-subtitle-text">
-				{isAtLatest 
+				{isAtLatest
 					? `Showing ${blocks.length} most recent blocks`
-					: `Showing blocks ${Number(blocks[blocks.length - 1]?.number || 0).toLocaleString()} - ${Number(blocks[0]?.number || 0).toLocaleString()}`
-				}
+					: `Showing blocks ${Number(blocks[blocks.length - 1]?.number || 0).toLocaleString()} - ${Number(blocks[0]?.number || 0).toLocaleString()}`}
 			</p>
 
 			<div className="table-wrapper">

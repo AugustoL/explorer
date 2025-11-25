@@ -59,7 +59,11 @@ import {
 	LazyAbout,
 } from "./components/LazyComponents";
 import { NotificationProvider } from "./context/NotificationContext";
-import { SettingsProvider, useTheme, useSettings } from "./context/SettingsContext";
+import {
+	SettingsProvider,
+	useTheme,
+	useSettings,
+} from "./context/SettingsContext";
 
 // Detect GH Pages once
 const isGhPages =
@@ -111,7 +115,10 @@ function AppContent() {
 							<Route path=":chainId/block/:filter" element={<LazyBlock />} />
 							<Route path=":chainId/txs" element={<LazyTxs />} />
 							<Route path=":chainId/tx/:filter" element={<LazyTx />} />
-							<Route path=":chainId/address/:address" element={<LazyAddress />} />
+							<Route
+								path=":chainId/address/:address"
+								element={<LazyAddress />}
+							/>
 							<Route path=":chainId/mempool" element={<LazyMempool />} />
 							<Route path=":chainId/mempool/:filter" element={<LazyTx />} />
 							<Route path="*" element={<Navigate to="/" replace />} />

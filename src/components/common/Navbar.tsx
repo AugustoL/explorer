@@ -75,20 +75,11 @@ const Navbar = () => {
 								xmlns="http://www.w3.org/2000/svg"
 							>
 								{/* Top face - brightest */}
-								<polygon
-									points="20,6 34,14 20,22 6,14"
-									fill="#067455ff"
-								/>
+								<polygon points="20,6 34,14 20,22 6,14" fill="#067455ff" />
 								{/* Left face - medium */}
-								<polygon
-									points="6,14 20,22 20,36 6,28"
-									fill="#07634aff"
-								/>
+								<polygon points="6,14 20,22 20,36 6,28" fill="#07634aff" />
 								{/* Right face - darkest */}
-								<polygon
-									points="20,22 34,14 34,28 20,36"
-									fill="#065743ff"
-								/>
+								<polygon points="20,22 34,14 34,28 20,36" fill="#065743ff" />
 							</svg>
 						</Link>
 					</li>

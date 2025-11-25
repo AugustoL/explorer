@@ -40,7 +40,10 @@ const events = eventsDatabase as EventsDatabase;
  * Parse event signature to extract parameter types
  * e.g., "Transfer(address,address,uint256)" -> [{type: "address"}, {type: "address"}, {type: "uint256"}]
  */
-function parseEventSignature(signature: string): { name: string; params: EventParam[] } {
+function parseEventSignature(signature: string): {
+	name: string;
+	params: EventParam[];
+} {
 	const match = signature.match(/^(\w+)\((.*)\)$/);
 	if (!match) {
 		return { name: signature, params: [] };
@@ -117,10 +120,14 @@ function decodeInt256(hex: string): string {
 	try {
 		const value = BigInt("0x" + cleaned);
 		// Check if negative (highest bit set)
-		const maxPositive = BigInt("0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
+		const maxPositive = BigInt(
+			"0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+		);
 		if (value > maxPositive) {
 			// Two's complement for negative numbers
-			const maxUint = BigInt("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
+			const maxUint = BigInt(
+				"0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+			);
 			return (-(maxUint - value + BigInt(1))).toString();
 		}
 		return value.toString();
@@ -201,13 +208,13 @@ function decodeEventData(data: string, params: EventParam[]): string[] {
  */
 export function lookupEvent(topic0: string): EventInfo | null {
 	const normalizedTopic = topic0.toLowerCase();
-	
+
 	for (const [sig, info] of Object.entries(events)) {
 		if (sig.toLowerCase() === normalizedTopic) {
 			return info;
 		}
 	}
-	
+
 	return null;
 }
 
@@ -216,13 +223,13 @@ export function lookupEvent(topic0: string): EventInfo | null {
  */
 export function decodeEventLog(
 	topics: string[],
-	data: string
+	data: string,
 ): DecodedEvent | null {
 	if (!topics || topics.length === 0) return null;
 
 	const topic0 = topics[0];
 	if (!topic0) return null;
-	
+
 	const eventInfo = lookupEvent(topic0);
 
 	if (!eventInfo) return null;
@@ -240,7 +247,7 @@ export function decodeEventLog(
 	for (let i = 0; i < params.length && topicIndex < topics.length; i++) {
 		const param = params[i];
 		if (!param) continue;
-		
+
 		const topicValue = topics[topicIndex];
 		// Common indexed types: address, uint256, bytes32
 		// For Transfer/Approval: first two addresses are indexed
@@ -262,7 +269,7 @@ export function decodeEventLog(
 	for (let i = 0; i < remainingParams.length; i++) {
 		const param = remainingParams[i];
 		if (!param) continue;
-		
+
 		decodedParams.push({
 			name: getParamName(name, decodedParams.length),
 			type: param.type,
@@ -290,7 +297,14 @@ function getParamName(eventName: string, index: number): string {
 		Transfer: ["from", "to", "value"],
 		Approval: ["owner", "spender", "value"],
 		ApprovalForAll: ["owner", "operator", "approved"],
-		Swap: ["sender", "amount0In", "amount1In", "amount0Out", "amount1Out", "to"],
+		Swap: [
+			"sender",
+			"amount0In",
+			"amount1In",
+			"amount0Out",
+			"amount1Out",
+			"to",
+		],
 		Mint: ["sender", "amount0", "amount1"],
 		Burn: ["sender", "amount0", "amount1", "to"],
 		Sync: ["reserve0", "reserve1"],

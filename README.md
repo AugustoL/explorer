@@ -75,6 +75,14 @@ npm start
 
 The app will open at `http://localhost:3000`
 
+### Use with Anvil/Foundry
+
+After following the installation steps here https://getfoundry.sh/introduction/installation/ you can just run an anvil mainnet fork with `anvil --fork-url https://reth-ethereum.ithaca.xyz/rpc` or if you run any Anvil instance on the port 8545 it would be automatically detected by Openscan, if you run Anvil on a different port make sure to change the RPC on the app settings.
+
+### Use with Hardhat node
+
+If you run any Hardhat node instance on the port 8545 it would be automatically detected by Openscan, if you run hardhat node on a different port make sure to change the RPC on the app settings.
+
 ### Build for Production
 
 ```bash
