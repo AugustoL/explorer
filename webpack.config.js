@@ -108,7 +108,6 @@ module.exports = {
 				},
 			],
 		}),
-		new DotenvWebpackPlugin(),
 		...(process.env.NODE_ENV !== "production"
 			? [new webpack.HotModuleReplacementPlugin()]
 			: []),
@@ -122,6 +121,12 @@ module.exports = {
 			),
 			"process.env.REACT_APP_VERSION": JSON.stringify(
 				process.env.REACT_APP_VERSION || packageJson.version,
+			),
+			"process.env.REACT_APP_OPENSCAN_NETWORKS": JSON.stringify(
+				process.env.REACT_APP_OPENSCAN_NETWORKS || "",
+			),
+			"process.env.REACT_APP_ENVIRONMENT": JSON.stringify(
+				process.env.NODE_ENV || "production",
 			),
 		}),
 	],
