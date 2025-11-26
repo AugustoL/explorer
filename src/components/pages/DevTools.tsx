@@ -23,13 +23,22 @@ const DevTools: React.FC = () => {
 	const [encodedData, setEncodedData] = useState("");
 	const [decodedData, setDecodedData] = useState("");
 	const [ethAmount, setEthAmount] = useState("");
+	const [finneyAmount, setFinneyAmount] = useState("");
+	const [szaboAmount, setSzaboAmount] = useState("");
 	const [gweiAmount, setGweiAmount] = useState("");
+	const [mweiAmount, setMweiAmount] = useState("");
+	const [kweiAmount, setKweiAmount] = useState("");
 	const [weiAmount, setWeiAmount] = useState("");
 
 	const [blockResult, setBlockResult] = useState<any>(null);
 	const [txResult, setTxResult] = useState<any>(null);
 	const [addressResult, setAddressResult] = useState<any>(null);
 	const [error, setError] = useState("");
+
+	// Collapsible section states
+	const [showUnitConverter, setShowUnitConverter] = useState(false);
+	const [showKeccakHasher, setShowKeccakHasher] = useState(false);
+	const [showHexEncoder, setShowHexEncoder] = useState(false);
 
 	// Keccak tool state
 	const [keccakInput, setKeccakInput] = useState("");
@@ -168,25 +177,45 @@ const DevTools: React.FC = () => {
 		}
 	};
 
-	const convertEth = (value: string, from: "eth" | "gwei" | "wei") => {
+	const convertEth = (value: string, from: "eth" | "finney" | "szabo" | "gwei" | "mwei" | "kwei" | "wei") => {
 		try {
 			const num = parseFloat(value);
 			if (isNaN(num)) return;
 
+			// Convert to wei first, then to all other units
+			let weiValue: number;
 			switch (from) {
 				case "eth":
-					setGweiAmount((num * 1e9).toString());
-					setWeiAmount((num * 1e18).toString());
+					weiValue = num * 1e18;
+					break;
+				case "finney":
+					weiValue = num * 1e15;
+					break;
+				case "szabo":
+					weiValue = num * 1e12;
 					break;
 				case "gwei":
-					setEthAmount((num / 1e9).toString());
-					setWeiAmount((num * 1e9).toString());
+					weiValue = num * 1e9;
+					break;
+				case "mwei":
+					weiValue = num * 1e6;
+					break;
+				case "kwei":
+					weiValue = num * 1e3;
 					break;
 				case "wei":
-					setEthAmount((num / 1e18).toString());
-					setGweiAmount((num / 1e9).toString());
+					weiValue = num;
 					break;
 			}
+
+			// Update all fields except the source
+			if (from !== "eth") setEthAmount((weiValue / 1e18).toString());
+			if (from !== "finney") setFinneyAmount((weiValue / 1e15).toString());
+			if (from !== "szabo") setSzaboAmount((weiValue / 1e12).toString());
+			if (from !== "gwei") setGweiAmount((weiValue / 1e9).toString());
+			if (from !== "mwei") setMweiAmount((weiValue / 1e6).toString());
+			if (from !== "kwei") setKweiAmount((weiValue / 1e3).toString());
+			if (from !== "wei") setWeiAmount(weiValue.toString());
 		} catch (err: any) {
 			setError(err.message || "Failed to convert");
 		}
@@ -290,235 +319,315 @@ const DevTools: React.FC = () => {
 				<div className="devtools-section">
 					{/* Unit Converter */}
 					<div className="devtools-card">
-						<h3 className="devtools-tool-title">
-							💱 Unit Converter (ETH ⟷ Gwei ⟷ Wei)
-						</h3>
-						<div className="data-grid-3">
-							<div>
-								<label className="devtools-input-label">ETH</label>
-								<input
-									type="text"
-									placeholder="1.5"
-									value={ethAmount}
-									onChange={(e) => {
-										setEthAmount(e.target.value);
-										convertEth(e.target.value, "eth");
-									}}
-									className="devtools-input"
-								/>
-							</div>
-							<div>
-								<label className="devtools-input-label">Gwei</label>
-								<input
-									type="text"
-									placeholder="1500000000"
-									value={gweiAmount}
-									onChange={(e) => {
-										setGweiAmount(e.target.value);
-										convertEth(e.target.value, "gwei");
-									}}
-									className="devtools-input"
-								/>
-							</div>
-							<div>
-								<label className="devtools-input-label">Wei</label>
-								<input
-									type="text"
-									placeholder="1500000000000000000"
-									value={weiAmount}
-									onChange={(e) => {
-										setWeiAmount(e.target.value);
-										convertEth(e.target.value, "wei");
-									}}
-									className="devtools-input"
-								/>
-							</div>
+						<div 
+							className="devtools-tool-header cursor-pointer"
+							onClick={() => setShowUnitConverter(!showUnitConverter)}
+						>
+							<h3 className="devtools-tool-title">⇄ Unit Converter</h3>
+							<span className="devtools-section-toggle">
+								{showUnitConverter ? "▼" : "▶"}
+							</span>
 						</div>
+						{showUnitConverter && (
+							<div className="unit-converter-list">
+								<div className="unit-converter-row">
+									<label className="unit-converter-label">ETH (10¹⁸)</label>
+									<input
+										type="text"
+										placeholder="1.0"
+										value={ethAmount}
+										onChange={(e) => {
+											setEthAmount(e.target.value);
+											convertEth(e.target.value, "eth");
+										}}
+										className="devtools-input"
+									/>
+								</div>
+								<div className="unit-converter-row">
+									<label className="unit-converter-label">Finney (10¹⁵)</label>
+									<input
+										type="text"
+										placeholder="1000"
+										value={finneyAmount}
+										onChange={(e) => {
+											setFinneyAmount(e.target.value);
+											convertEth(e.target.value, "finney");
+										}}
+										className="devtools-input"
+									/>
+								</div>
+								<div className="unit-converter-row">
+									<label className="unit-converter-label">Szabo (10¹²)</label>
+									<input
+										type="text"
+										placeholder="1000000"
+										value={szaboAmount}
+										onChange={(e) => {
+											setSzaboAmount(e.target.value);
+											convertEth(e.target.value, "szabo");
+										}}
+										className="devtools-input"
+									/>
+								</div>
+								<div className="unit-converter-row">
+									<label className="unit-converter-label">Gwei (10⁹)</label>
+									<input
+										type="text"
+										placeholder="1000000000"
+										value={gweiAmount}
+										onChange={(e) => {
+											setGweiAmount(e.target.value);
+											convertEth(e.target.value, "gwei");
+										}}
+										className="devtools-input"
+									/>
+								</div>
+								<div className="unit-converter-row">
+									<label className="unit-converter-label">Mwei (10⁶)</label>
+									<input
+										type="text"
+										placeholder="1000000000000"
+										value={mweiAmount}
+										onChange={(e) => {
+											setMweiAmount(e.target.value);
+											convertEth(e.target.value, "mwei");
+										}}
+										className="devtools-input"
+									/>
+								</div>
+								<div className="unit-converter-row">
+									<label className="unit-converter-label">Kwei (10³)</label>
+									<input
+										type="text"
+										placeholder="1000000000000000"
+										value={kweiAmount}
+										onChange={(e) => {
+											setKweiAmount(e.target.value);
+											convertEth(e.target.value, "kwei");
+										}}
+										className="devtools-input"
+									/>
+								</div>
+								<div className="unit-converter-row">
+									<label className="unit-converter-label">Wei (10⁰)</label>
+									<input
+										type="text"
+										placeholder="1000000000000000000"
+										value={weiAmount}
+										onChange={(e) => {
+											setWeiAmount(e.target.value);
+											convertEth(e.target.value, "wei");
+										}}
+										className="devtools-input"
+									/>
+								</div>
+							</div>
+						)}
 					</div>
 
 					{/* Keccak256 Tool */}
 					<div className="devtools-card">
-						<h3 className="devtools-tool-title">#️⃣ Keccak256 Hasher</h3>
-						<div className="flex-column" style={{ gap: "12px" }}>
-							{/* Type selector and input on same line */}
-							<div className="keccak-input-row">
-								<select
-									value={keccakInputType}
-									onChange={(e) => setKeccakInputType(e.target.value as SolidityType)}
-									className="devtools-select keccak-type-select"
+						<div 
+							className="devtools-tool-header cursor-pointer"
+							onClick={() => setShowKeccakHasher(!showKeccakHasher)}
+						>
+							<h3 className="devtools-tool-title">#️⃣ Keccak256 Hasher</h3>
+							<span className="devtools-section-toggle">
+								{showKeccakHasher ? "▼" : "▶"}
+							</span>
+						</div>
+						{showKeccakHasher && (
+							<div className="flex-column" style={{ gap: "12px" }}>
+								{/* Type selector and input on same line */}
+								<div className="keccak-input-row">
+									<select
+										value={keccakInputType}
+										onChange={(e) => setKeccakInputType(e.target.value as SolidityType)}
+										className="devtools-select keccak-type-select"
+									>
+										<optgroup label="Dynamic Types">
+											<option value="string">string</option>
+											<option value="bytes">bytes</option>
+										</optgroup>
+										<optgroup label="Fixed Types">
+											<option value="address">address</option>
+											<option value="bool">bool</option>
+											<option value="bytes32">bytes32</option>
+											<option value="bytes4">bytes4</option>
+										</optgroup>
+										<optgroup label="Numeric Types">
+											<option value="uint256">uint256</option>
+											<option value="uint128">uint128</option>
+											<option value="uint64">uint64</option>
+											<option value="uint32">uint32</option>
+											<option value="uint8">uint8</option>
+											<option value="int256">int256</option>
+										</optgroup>
+									</select>
+									<input
+										type="text"
+										placeholder={
+											keccakInputType === "string" ? "Enter text (e.g., transfer(address,uint256))" :
+											keccakInputType === "address" ? "Enter address (0x...)" :
+											keccakInputType === "bool" ? "Enter true/false or 1/0" :
+											keccakInputType.startsWith("uint") || keccakInputType.startsWith("int") ? "Enter number" :
+											"Enter hex value (0x...)"
+										}
+										value={keccakInput}
+										onChange={(e) => setKeccakInput(e.target.value)}
+										className="devtools-input"
+									/>
+								</div>
+
+								<button
+									onClick={computeKeccak}
+									className="devtools-btn"
 								>
-									<optgroup label="Dynamic Types">
-										<option value="string">string</option>
-										<option value="bytes">bytes</option>
-									</optgroup>
-									<optgroup label="Fixed Types">
-										<option value="address">address</option>
-										<option value="bool">bool</option>
-										<option value="bytes32">bytes32</option>
-										<option value="bytes4">bytes4</option>
-									</optgroup>
-									<optgroup label="Numeric Types">
-										<option value="uint256">uint256</option>
-										<option value="uint128">uint128</option>
-										<option value="uint64">uint64</option>
-										<option value="uint32">uint32</option>
-										<option value="uint8">uint8</option>
-										<option value="int256">int256</option>
-									</optgroup>
-								</select>
-								<input
-									type="text"
-									placeholder={
-										keccakInputType === "string" ? "Enter text (e.g., transfer(address,uint256))" :
-										keccakInputType === "address" ? "Enter address (0x...)" :
-										keccakInputType === "bool" ? "Enter true/false or 1/0" :
-										keccakInputType.startsWith("uint") || keccakInputType.startsWith("int") ? "Enter number" :
-										"Enter hex value (0x...)"
-									}
-									value={keccakInput}
-									onChange={(e) => setKeccakInput(e.target.value)}
-									className="devtools-input"
-								/>
-							</div>
+									Hash
+								</button>
 
-							<button
-								onClick={computeKeccak}
-								className="devtools-btn"
-							>
-								Hash
-							</button>
+								{/* Results */}
+								{keccakResults && !keccakResults.error && keccakResults.rawHash && (
+									<div className="keccak-results">
+										{/* Encoded Bytes - show for all types */}
+										{keccakResults.encodedBytes && (
+											<div className="keccak-result-item">
+												<div className="keccak-result-header">
+													<span className="keccak-result-label">Encoded Bytes</span>
+													<button
+														onClick={() => copyToClipboard(keccakResults.encodedBytes!)}
+														className="devtools-copy-btn"
+													>
+														📋
+													</button>
+												</div>
+												<div className="keccak-result-value">{keccakResults.encodedBytes}</div>
+											</div>
+										)}
 
-							{/* Results */}
-							{keccakResults && !keccakResults.error && keccakResults.rawHash && (
-								<div className="keccak-results">
-									{/* Encoded Bytes - show for all types */}
-									{keccakResults.encodedBytes && (
+										{/* Raw Keccak256 Hash */}
 										<div className="keccak-result-item">
 											<div className="keccak-result-header">
-												<span className="keccak-result-label">Encoded Bytes</span>
+												<span className="keccak-result-label">Keccak256 Hash</span>
 												<button
-													onClick={() => copyToClipboard(keccakResults.encodedBytes!)}
+													onClick={() => copyToClipboard(keccakResults.rawHash!)}
 													className="devtools-copy-btn"
 												>
 													📋
 												</button>
 											</div>
-											<div className="keccak-result-value">{keccakResults.encodedBytes}</div>
+											<div className="keccak-result-value">{keccakResults.rawHash}</div>
 										</div>
-									)}
 
-									{/* Raw Keccak256 Hash */}
-									<div className="keccak-result-item">
-										<div className="keccak-result-header">
-											<span className="keccak-result-label">Keccak256 Hash</span>
-											<button
-												onClick={() => copyToClipboard(keccakResults.rawHash!)}
-												className="devtools-copy-btn"
-											>
-												📋
-											</button>
-										</div>
-										<div className="keccak-result-value">{keccakResults.rawHash}</div>
-									</div>
-
-									{/* Solidity abi.encodePacked */}
-									<div className="keccak-result-item">
-										<div className="keccak-result-header">
-											<span className="keccak-result-label">keccak256(abi.encodePacked(input))</span>
-											<button
-												onClick={() => copyToClipboard(keccakResults.solidityEncodePacked!)}
-												className="devtools-copy-btn"
-											>
-												📋
-											</button>
-										</div>
-										<div className="keccak-result-value">{keccakResults.solidityEncodePacked}</div>
-									</div>
-
-									{/* Solidity abi.encode */}
-									<div className="keccak-result-item">
-										<div className="keccak-result-header">
-											<span className="keccak-result-label">keccak256(abi.encode(input))</span>
-											<button
-												onClick={() => copyToClipboard(keccakResults.solidityEncode!)}
-												className="devtools-copy-btn"
-											>
-												📋
-											</button>
-										</div>
-										<div className="keccak-result-value">{keccakResults.solidityEncode}</div>
-									</div>
-
-									{/* Function Selector (if applicable) */}
-									{keccakResults.isFunctionSignature && keccakResults.functionSelector && (
-										<div className="keccak-result-item keccak-selector">
+										{/* Solidity abi.encodePacked */}
+										<div className="keccak-result-item">
 											<div className="keccak-result-header">
-												<span className="keccak-result-label">
-													🎯 Function Selector (bytes4)
-												</span>
+												<span className="keccak-result-label">keccak256(abi.encodePacked(input))</span>
 												<button
-													onClick={() => copyToClipboard(keccakResults.functionSelector!)}
+													onClick={() => copyToClipboard(keccakResults.solidityEncodePacked!)}
 													className="devtools-copy-btn"
 												>
 													📋
 												</button>
 											</div>
-											<div className="keccak-result-value keccak-selector-value">
-												{keccakResults.functionSelector}
-											</div>
+											<div className="keccak-result-value">{keccakResults.solidityEncodePacked}</div>
 										</div>
-									)}
-								</div>
-							)}
 
-							{/* Error display */}
-							{keccakResults?.error && (
-								<div className="keccak-error">
-									⚠️ {keccakResults.error}
-								</div>
-							)}
-						</div>
+										{/* Solidity abi.encode */}
+										<div className="keccak-result-item">
+											<div className="keccak-result-header">
+												<span className="keccak-result-label">keccak256(abi.encode(input))</span>
+												<button
+													onClick={() => copyToClipboard(keccakResults.solidityEncode!)}
+													className="devtools-copy-btn"
+												>
+													📋
+												</button>
+											</div>
+											<div className="keccak-result-value">{keccakResults.solidityEncode}</div>
+										</div>
+
+										{/* Function Selector (if applicable) */}
+										{keccakResults.isFunctionSignature && keccakResults.functionSelector && (
+											<div className="keccak-result-item keccak-selector">
+												<div className="keccak-result-header">
+													<span className="keccak-result-label">
+														🎯 Function Selector (bytes4)
+													</span>
+													<button
+														onClick={() => copyToClipboard(keccakResults.functionSelector!)}
+														className="devtools-copy-btn"
+													>
+														📋
+													</button>
+												</div>
+												<div className="keccak-result-value keccak-selector-value">
+													{keccakResults.functionSelector}
+												</div>
+											</div>
+										)}
+									</div>
+								)}
+
+								{/* Error display */}
+								{keccakResults?.error && (
+									<div className="keccak-error">
+										⚠️ {keccakResults.error}
+									</div>
+								)}
+							</div>
+						)}
 					</div>
 
 					{/* Hex Encoder/Decoder */}
 					<div className="devtools-card">
-						<h3 className="devtools-tool-title">🔤 Hex Encoder/Decoder</h3>
-						<div className="flex-column" style={{ gap: "12px" }}>
-							<textarea
-								placeholder="Enter text or hex data"
-								value={encodedData}
-								onChange={(e) => setEncodedData(e.target.value)}
-								className="devtools-textarea"
-							/>
-							<div className="flex-between" style={{ gap: "12px" }}>
-								<button
-									onClick={() => convertToHex(encodedData)}
-									className="devtools-btn"
-								>
-									Encode to Hex
-								</button>
-								<button
-									onClick={() => convertFromHex(encodedData)}
-									className="devtools-btn"
-								>
-									Decode from Hex
-								</button>
-							</div>
-							{decodedData && (
-								<div className="devtools-result">
-									<div className="devtools-result-header">
-										<span className="devtools-result-label">Result:</span>
-										<button
-											onClick={() => copyToClipboard(decodedData)}
-											className="devtools-copy-btn"
-										>
-											📋 Copy
-										</button>
-									</div>
-									<div className="devtools-result-value">{decodedData}</div>
-								</div>
-							)}
+						<div 
+							className="devtools-tool-header cursor-pointer"
+							onClick={() => setShowHexEncoder(!showHexEncoder)}
+						>
+							<h3 className="devtools-tool-title">🔤 Hex Encoder/Decoder</h3>
+							<span className="devtools-section-toggle">
+								{showHexEncoder ? "▼" : "▶"}
+							</span>
 						</div>
+						{showHexEncoder && (
+							<div className="flex-column" style={{ gap: "12px" }}>
+								<textarea
+									placeholder="Enter text or hex data"
+									value={encodedData}
+									onChange={(e) => setEncodedData(e.target.value)}
+									className="devtools-textarea"
+								/>
+								<div className="flex-between" style={{ gap: "12px" }}>
+									<button
+										onClick={() => convertToHex(encodedData)}
+										className="devtools-btn"
+									>
+										Encode to Hex
+									</button>
+									<button
+										onClick={() => convertFromHex(encodedData)}
+										className="devtools-btn"
+									>
+										Decode from Hex
+									</button>
+								</div>
+								{decodedData && (
+									<div className="devtools-result">
+										<div className="devtools-result-header">
+											<span className="devtools-result-label">Result:</span>
+											<button
+												onClick={() => copyToClipboard(decodedData)}
+												className="devtools-copy-btn"
+											>
+												📋 Copy
+											</button>
+										</div>
+										<div className="devtools-result-value">{decodedData}</div>
+									</div>
+								)}
+							</div>
+						)}
 					</div>
 
 					{/* Results Section */}

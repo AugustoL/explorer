@@ -2425,10 +2425,27 @@
 	font-size: 1.1rem;
 	font-weight: 700;
 	color: #10b981;
-	margin-bottom: 16px;
+	margin: 0;
 	display: flex;
 	align-items: center;
 	gap: 8px;
+}
+
+.devtools-tool-header {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-bottom: 16px;
+}
+
+.devtools-tool-header:hover .devtools-section-toggle {
+	color: #059669;
+}
+
+.devtools-section-toggle {
+	font-size: 0.9rem;
+	color: #10b981;
+	transition: color 0.2s ease;
 }
 
 .devtools-tool-title-inline {
