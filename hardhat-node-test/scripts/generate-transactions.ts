@@ -430,9 +430,6 @@ async function main() {
 
 	// Insufficient balance transfer
 	console.log("  Attempting insufficient balance transfer...");
-	const tokenAUser4 = await viem.getContractAt("TestToken", tokenA.address, {
-		client: { wallet: user4 },
-	});
 	await sendRawTx(
 		user4,
 		tokenA.address,
