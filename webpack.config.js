@@ -118,7 +118,7 @@ module.exports = {
 			),
 			"process.env.REACT_APP_GITHUB_REPO": JSON.stringify(
 				process.env.REACT_APP_GITHUB_REPO ||
-					"https://github.com/AugustoL/openscan",
+					"https://github.com/openscan-explorer/explorer",
 			),
 			"process.env.REACT_APP_VERSION": JSON.stringify(
 				process.env.REACT_APP_VERSION || packageJson.version,
