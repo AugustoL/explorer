@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { 
 	keccak256, 
@@ -12,7 +12,16 @@ import {
 	Signature,
 	getBytes,
 	concat,
-	zeroPadValue
+	zeroPadValue,
+	JsonRpcProvider,
+	BrowserProvider,
+	Wallet,
+	parseEther,
+	formatEther,
+	parseUnits,
+	formatUnits,
+	TransactionResponse,
+	TransactionRequest,
 } from "ethers";
 import Artifacts from "../common/HH3IgnitionTool";
 
@@ -100,6 +109,250 @@ const DevTools: React.FC = () => {
 		decodedMessage?: string;
 		error?: string;
 	} | null>(null);
+
+// ---------------------- Transaction Builder state ----------------------
+const [txFrom, setTxFrom] = useState("");
+const [txTo, setTxTo] = useState("");
+const [txValue, setTxValue] = useState("");
+const [txData, setTxData] = useState("");
+const [txGasLimit, setTxGasLimit] = useState<string | undefined>(undefined);
+const [txGasPrice, setTxGasPrice] = useState<string | undefined>(undefined);
+const [txMaxFeePerGas, setTxMaxFeePerGas] = useState<string | undefined>(undefined);
+const [txMaxPriorityFeePerGas, setTxMaxPriorityFeePerGas] = useState<string | undefined>(undefined);
+const [txNonce, setTxNonce] = useState<number | undefined>(undefined);
+const [txChainId, setTxChainId] = useState<number | undefined>(undefined);
+const [txType, setTxType] = useState<0 | 2>(2); // 0 = legacy, 2 = EIP-1559
+const [useMetaMask, setUseMetaMask] = useState(true);
+const [localPrivateKey, setLocalPrivateKey] = useState("");
+const [estimatedGas, setEstimatedGas] = useState<string | null>(null);
+const [suggestedFees, setSuggestedFees] = useState<any>(null);
+const [ethUsdPrice, setEthUsdPrice] = useState<number | null>(null);
+const [estimatedCostEth, setEstimatedCostEth] = useState<string | null>(null);
+const [estimatedCostUsd, setEstimatedCostUsd] = useState<string | null>(null);
+const [txSending, setTxSending] = useState(false);
+const [txHashResult, setTxHashResult] = useState<string | null>(null);
+const [txError, setTxError] = useState<string | null>(null);
+const [txWillRevert, setTxWillRevert] = useState<boolean>(false);
+const [revertReason, setRevertReason] = useState<string | null>(null);
+const [builtTx, setBuiltTx] = useState<string | null>(null);
+const [showAdvancedRaw, setShowAdvancedRaw] = useState(false);
+const [rawRlp, setRawRlp] = useState("");
+
+// Basic network rpc map (can be replaced by app config)
+const NETWORKS: Record<number, { name: string; rpc: string }> = {
+	1: { name: "Ethereum Mainnet", rpc: "https://mainnet.infura.io/v3/" },
+	10: { name: "Optimism", rpc: "https://mainnet.optimism.io" },
+	42161: { name: "Arbitrum One", rpc: "https://arb1.arbitrum.io/rpc" },
+	8453: { name: "Base", rpc: "https://mainnet.base.org" },
+	137: { name: "Polygon", rpc: "https://polygon-rpc.com" },
+};
+
+
+// Fetch a simple ETH/USD price from CoinGecko
+const fetchEthPrice = async () => {
+	try {
+		const res = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd");
+		const json = await res.json();
+		const price = json?.ethereum?.usd;
+		if (price) setEthUsdPrice(price);
+	} catch (err) {
+		// ignore
+	}
+};
+
+useEffect(() => { fetchEthPrice(); }, []);
+
+// Helpers
+const parseEtherSafe = (v?: string): bigint => {
+	if (!v) return BigInt(0);
+	try {
+		return parseEther(v);
+	} catch {
+		return BigInt(0);
+	}
+};
+
+const formatEthValue = (bn: bigint) => formatEther(bn);
+
+// Estimate gas and fees using rpc
+const estimateGasAndFees = async () => {
+	setTxError(null);
+	setTxWillRevert(false);
+	setRevertReason(null);
+	try {
+		const chainId = txChainId || 1;
+		const net = NETWORKS[chainId];
+		if (!net) throw new Error("Unknown network - select a supported chainId");
+		const provider = new JsonRpcProvider(net.rpc);
+
+		const to = txTo || undefined;
+		const value = parseEtherSafe(txValue);
+		const txReq: any = { to, value, data: txData || undefined };
+
+		let gas: bigint;
+		let willRevert = false;
+		let revertMsg: string | null = null;
+
+		// First, try to simulate with eth_call to detect revert
+		try {
+			await provider.call(txReq);
+		} catch (callErr: any) {
+			willRevert = true;
+			// Extract revert reason from error
+			const errMsg = callErr.message || String(callErr);
+			if (callErr.data) {
+				revertMsg = `Revert data: ${callErr.data}`;
+			} else if (errMsg.includes("revert")) {
+				revertMsg = errMsg;
+			} else if (errMsg.includes("execution reverted")) {
+				revertMsg = errMsg;
+			} else {
+				revertMsg = `Transaction will fail: ${errMsg}`;
+			}
+		}
+
+		// Try to estimate gas - may fail if tx reverts
+		try {
+			gas = await provider.estimateGas(txReq);
+		} catch (estErr: any) {
+			// If estimation fails, use a high default for display purposes
+			// The actual gas used would be up to the block gas limit
+			gas = BigInt(500000); // Fallback estimate
+			if (!willRevert) {
+				willRevert = true;
+				revertMsg = estErr.message || "Gas estimation failed - transaction may revert";
+			}
+		}
+
+		setEstimatedGas(gas.toString());
+		setTxWillRevert(willRevert);
+		setRevertReason(revertMsg);
+
+		// Fee suggestion
+		const feeData = await provider.getFeeData();
+		setSuggestedFees(feeData);
+
+		// compute cost
+		const gasPriceBN = txType === 0 ? (feeData.gasPrice ?? BigInt(0)) : (feeData.maxFeePerGas ?? BigInt(0));
+		const cost = gas * gasPriceBN;
+		setEstimatedCostEth(formatEthValue(cost));
+		if (ethUsdPrice) setEstimatedCostUsd((parseFloat(formatEthValue(cost)) * ethUsdPrice).toFixed(6));
+	} catch (err: any) {
+		setTxError(err.message || String(err));
+	}
+};
+
+const fetchNonceForAddress = async (address: string, chainId?: number) => {
+	try {
+		const cid = chainId || txChainId || 1;
+		const net = NETWORKS[cid];
+		if (!net) throw new Error("Unknown network");
+		const provider = new JsonRpcProvider(net.rpc);
+		const n = await provider.getTransactionCount(address);
+		setTxNonce(n);
+		return n;
+	} catch (err) {
+		return undefined;
+	}
+};
+
+// Send transaction (signed either via local key or MetaMask)
+const sendTransaction = async () => {
+	setTxError(null);
+	setTxHashResult(null);
+	setTxSending(true);
+	try {
+		const chainId = txChainId || 1;
+		const net = NETWORKS[chainId];
+		if (!net) throw new Error("Unknown network");
+		const provider = new JsonRpcProvider(net.rpc);
+
+		const txRequest: TransactionRequest = {
+			to: txTo || undefined,
+			value: parseEtherSafe(txValue),
+			data: txData || undefined,
+			gasLimit: txGasLimit ? BigInt(txGasLimit) : (estimatedGas ? BigInt(estimatedGas) : undefined),
+		};
+
+		if (txType === 2) {
+			if (txMaxFeePerGas) txRequest.maxFeePerGas = parseUnits(txMaxFeePerGas, "gwei");
+			if (txMaxPriorityFeePerGas) txRequest.maxPriorityFeePerGas = parseUnits(txMaxPriorityFeePerGas, "gwei");
+		} else {
+			if (txGasPrice) txRequest.gasPrice = parseUnits(txGasPrice, "gwei");
+		}
+
+		if (typeof txNonce === "number") txRequest.nonce = txNonce;
+		txRequest.chainId = BigInt(chainId);
+
+		let sentTx: TransactionResponse;
+
+		if (!useMetaMask && localPrivateKey) {
+			const wallet = new Wallet(localPrivateKey, provider);
+			sentTx = await wallet.sendTransaction(txRequest);
+		} else {
+			// MetaMask signing
+			if (!(window as any).ethereum) throw new Error("No injected wallet (window.ethereum) found");
+			const web3Provider = new BrowserProvider((window as any).ethereum as any);
+			const signer = await web3Provider.getSigner();
+			sentTx = await signer.sendTransaction(txRequest);
+		}
+
+		setTxHashResult(sentTx.hash);
+		setTxSending(false);
+	} catch (err: any) {
+		setTxError(err.message || String(err));
+		setTxSending(false);
+	}
+};
+
+// Build unsigned transaction object (for offline signing, multisig, etc.)
+const buildTransaction = () => {
+	setTxError(null);
+	setBuiltTx(null);
+	try {
+		const chainId = txChainId || 1;
+
+		const txObj: Record<string, any> = {
+			type: txType,
+			chainId: chainId,
+			to: txTo || null,
+			value: txValue ? parseEtherSafe(txValue).toString() : "0",
+			data: txData || "0x",
+			gasLimit: txGasLimit || estimatedGas || null,
+		};
+
+		if (txFrom) txObj.from = txFrom;
+		if (typeof txNonce === "number") txObj.nonce = txNonce;
+
+		if (txType === 2) {
+			txObj.maxFeePerGas = txMaxFeePerGas ? parseUnits(txMaxFeePerGas, "gwei").toString() : null;
+			txObj.maxPriorityFeePerGas = txMaxPriorityFeePerGas ? parseUnits(txMaxPriorityFeePerGas, "gwei").toString() : null;
+		} else {
+			txObj.gasPrice = txGasPrice ? parseUnits(txGasPrice, "gwei").toString() : null;
+		}
+
+		setBuiltTx(JSON.stringify(txObj, null, 2));
+	} catch (err: any) {
+		setTxError(err.message || String(err));
+	}
+};
+
+const sendRawRlpTx = async () => {
+	setTxSending(true);
+	setTxError(null);
+	try {
+		const chainId = txChainId || 1;
+		const net = NETWORKS[chainId];
+		if (!net) throw new Error("Unknown network");
+		const provider = new JsonRpcProvider(net.rpc);
+		const res = await provider.broadcastTransaction(rawRlp);
+		setTxHashResult(res.hash);
+	} catch (err: any) {
+		setTxError(err.message || String(err));
+	} finally {
+		setTxSending(false);
+	}
+};
 	const [eip712Mode, setEip712Mode] = useState<"encode" | "decode">("encode");
 	const [eip712DecodeTypes, setEip712DecodeTypes] = useState(JSON.stringify({
 		Person: [
@@ -552,10 +805,173 @@ const DevTools: React.FC = () => {
 			{/* Transactions Section */}
 			{activeSection === "transactions" && (
 				<div className="devtools-section">
-					<div className="devtools-coming-soon">
-						<span className="devtools-coming-soon-icon">🔄</span>
-						<h3>Transaction Tools</h3>
-						<p>More tools coming soon</p>
+					<div className="devtools-card">
+						<h3 className="devtools-tool-title">🧾 Transaction Builder</h3>
+						<div className="flex-column" style={{ gap: "10px" }}>
+							<div className="row" style={{ gap: "10px" }}>
+								<label className="input-label">Network</label>
+								<select
+									value={txChainId ?? 1}
+									onChange={(e) => setTxChainId(parseInt(e.target.value, 10))}
+									className="devtools-input"
+								>
+									<option value={1}>Ethereum Mainnet (1)</option>
+									<option value={10}>Optimism (10)</option>
+									<option value={42161}>Arbitrum One (42161)</option>
+									<option value={8453}>Base (8453)</option>
+									<option value={137}>Polygon (137)</option>
+								</select>
+							</div>
+
+							<div className="row" style={{ gap: "10px" }}>
+								<div style={{ flex: 1 }}>
+									<label className="input-label">From (address, optional)</label>
+									<input type="text" className="devtools-input" value={txFrom} onChange={(e) => setTxFrom(e.target.value)} placeholder="0x... (for building unsigned tx)" />
+								</div>
+								<div style={{ flex: 1 }}>
+									<label className="input-label">To (address)</label>
+									<input type="text" className="devtools-input" value={txTo} onChange={(e) => setTxTo(e.target.value)} placeholder="0x..." />
+								</div>
+							</div>
+
+							<div className="row" style={{ gap: "10px" }}>
+								<div style={{ flex: 1 }}>
+									<label className="input-label">Value (ETH)</label>
+									<input type="text" className="devtools-input" value={txValue} onChange={(e) => setTxValue(e.target.value)} placeholder="0.01" />
+								</div>
+								<div style={{ width: 220 }}>
+									<label className="input-label">Nonce (optional)</label>
+									<input type="number" className="devtools-input" value={txNonce ?? ""} onChange={(e) => setTxNonce(e.target.value === "" ? undefined : parseInt(e.target.value, 10))} placeholder="auto" />
+								</div>
+							</div>
+
+							<div className="flex-column">
+								<label className="input-label">Data (hex, optional)</label>
+								<textarea className="devtools-input mono" value={txData} onChange={(e) => setTxData(e.target.value)} style={{ minHeight: 80 }} placeholder="0x..." />
+							</div>
+
+							<div className="row" style={{ gap: "10px", alignItems: "flex-end" }}>
+								<div>
+									<label className="input-label">Tx Type</label>
+									<select className="devtools-input" value={txType} onChange={(e) => setTxType(Number(e.target.value) as 0 | 2)}>
+										<option value={2}>EIP-1559 (type 2)</option>
+										<option value={0}>Legacy (type 0)</option>
+									</select>
+								</div>
+								<div style={{ flex: 1 }}>
+									<label className="input-label">Gas Limit (optional)</label>
+									<input className="devtools-input" value={txGasLimit ?? ""} onChange={(e) => setTxGasLimit(e.target.value === "" ? undefined : e.target.value)} placeholder="auto-estimate" />
+								</div>
+							</div>
+
+							{txType === 0 ? (
+								<div className="row" style={{ gap: "10px" }}>
+									<div style={{ flex: 1 }}>
+										<label className="input-label">Gas Price (gwei)</label>
+										<input className="devtools-input" value={txGasPrice ?? ""} onChange={(e) => setTxGasPrice(e.target.value === "" ? undefined : e.target.value)} placeholder="suggested" />
+									</div>
+								</div>
+							) : (
+								<div className="row" style={{ gap: "10px" }}>
+									<div style={{ flex: 1 }}>
+										<label className="input-label">Max Fee Per Gas (gwei)</label>
+										<input className="devtools-input" value={txMaxFeePerGas ?? ""} onChange={(e) => setTxMaxFeePerGas(e.target.value === "" ? undefined : e.target.value)} placeholder="suggested" />
+									</div>
+									<div style={{ width: 220 }}>
+										<label className="input-label">Max Priority Fee (gwei)</label>
+										<input className="devtools-input" value={txMaxPriorityFeePerGas ?? ""} onChange={(e) => setTxMaxPriorityFeePerGas(e.target.value === "" ? undefined : e.target.value)} placeholder="suggested" />
+									</div>
+								</div>
+							)}
+
+							<div className="row" style={{ gap: "10px", alignItems: "center" }}>
+								<label className="input-label" style={{ marginRight: 8 }}>Signing</label>
+								<select className="devtools-input" value={useMetaMask ? "metamask" : "local"} onChange={(e) => setUseMetaMask(e.target.value === "metamask")} style={{ width: 220 }}>
+									<option value="metamask">MetaMask / Injected</option>
+									<option value="local">Local Private Key</option>
+								</select>
+								{!useMetaMask && (
+									<input className="devtools-input mono" placeholder="0xYOURPRIVATEKEY" value={localPrivateKey} onChange={(e) => setLocalPrivateKey(e.target.value)} style={{ marginLeft: 8, marginTop: 8 }} />
+								)}
+							</div>
+
+							<div className="row" style={{ gap: "16px", justifyContent: "center", flexWrap: "wrap" }}>
+								<button className="devtools-button" onClick={estimateGasAndFees}>Estimate Gas & Fees</button>
+								<button className="devtools-button" onClick={() => { if ((window as any).ethereum) fetchNonceForAddress((window as any).ethereum.selectedAddress || (window as any).ethereum?.accounts?.[0]); }}>Fetch Nonce</button>
+								<button className="devtools-button" onClick={buildTransaction}>Build Transaction</button>
+								<button className="devtools-button primary" onClick={sendTransaction} disabled={txSending}>{txSending ? "Sending..." : "Sign & Send"}</button>
+							</div>
+
+							{estimatedGas && (
+								<div className="devtools-results">
+									<div>Estimated Gas: <span className="mono">{estimatedGas}</span>{txWillRevert && <span style={{ color: "#f59e0b", marginLeft: 8 }}>(fallback estimate)</span>}</div>
+									{suggestedFees && (
+										<div>Suggested: <span className="mono">{txType === 0 ? `${suggestedFees.gasPrice ? formatUnits(suggestedFees.gasPrice, 'gwei') : 'N/A'} gwei` : `${suggestedFees.maxFeePerGas ? formatUnits(suggestedFees.maxFeePerGas, 'gwei') : 'N/A'} / ${suggestedFees.maxPriorityFeePerGas ? formatUnits(suggestedFees.maxPriorityFeePerGas, 'gwei') : 'N/A'} gwei`}</span></div>
+									)}
+									{estimatedCostEth && (
+										<div>Estimated Cost: <span className="mono">{estimatedCostEth} ETH</span> {estimatedCostUsd && <span> (~${estimatedCostUsd} USD)</span>}</div>
+									)}
+								</div>
+							)}
+
+							{builtTx && (
+								<div className="devtools-results">
+									<div style={{ marginBottom: 8, fontWeight: 500 }}>Unsigned Transaction:</div>
+									<textarea 
+										className="devtools-input mono" 
+										value={builtTx} 
+										readOnly 
+										style={{ minHeight: 150, resize: "vertical" }} 
+									/>
+									<button 
+										className="devtools-button" 
+										style={{ marginTop: 8 }}
+										onClick={() => navigator.clipboard.writeText(builtTx)}
+									>
+										Copy to Clipboard
+									</button>
+								</div>
+							)}
+
+							{txWillRevert && (
+								<div className="devtools-error" style={{ backgroundColor: "rgba(245, 158, 11, 0.1)", borderColor: "#f59e0b", color: "#f59e0b" }}>
+									⚠️ Transaction will likely revert!
+									{revertReason && <div style={{ marginTop: 4, fontSize: "0.9em", opacity: 0.9 }}>{revertReason}</div>}
+								</div>
+							)}
+
+							{txHashResult && (
+								<div className="devtools-results">Transaction sent: <a className="mono" href={`https://etherscan.io/tx/${txHashResult}`} target="_blank" rel="noreferrer">{txHashResult}</a></div>
+							)}
+
+							{txError && (
+								<div className="devtools-error">{txError}</div>
+							)}
+						</div>
+					</div>
+
+					{/* Advanced: Raw RLP Section */}
+					<div className="devtools-card">
+						<div 
+							className="devtools-tool-header cursor-pointer"
+							onClick={() => setShowAdvancedRaw(!showAdvancedRaw)}
+						>
+							<h3 className="devtools-tool-title">📦 Raw RLP Transaction</h3>
+							<span className="devtools-section-toggle">
+								{showAdvancedRaw ? "▼" : "▶"}
+							</span>
+						</div>
+						{showAdvancedRaw && (
+							<div className="flex-column" style={{ gap: "12px" }}>
+								<div className="flex-column" style={{ gap: "4px" }}>
+									<label className="input-label">Signed Transaction (RLP hex)</label>
+									<textarea className="devtools-input mono" value={rawRlp} onChange={(e) => setRawRlp(e.target.value)} placeholder="0x..." style={{ minHeight: 120 }} />
+								</div>
+								<div className="row" style={{ gap: 16, justifyContent: "center" }}>
+									<button className="devtools-button" onClick={sendRawRlpTx} disabled={txSending}>{txSending ? "Sending..." : "Send Raw Transaction"}</button>
+								</div>
+							</div>
+						)}
 					</div>
 				</div>
 			)}
