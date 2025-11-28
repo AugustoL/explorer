@@ -1001,3 +1001,63 @@
 	font-weight: 600;
 	color: #6b7280;
 }
+
+/* ================================================
+   Sourcify Verification Styles
+   ================================================ */
+
+.sourcify-grid-2col {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 12px;
+}
+
+@media (max-width: 768px) {
+	.sourcify-grid-2col {
+		grid-template-columns: 1fr;
+	}
+}
+
+.sourcify-sources-textarea {
+	min-height: 200px;
+	font-family: 'Courier New', monospace;
+	font-size: 0.85rem;
+	line-height: 1.5;
+}
+
+.sourcify-settings-textarea {
+	min-height: 120px;
+	font-family: 'Courier New', monospace;
+	font-size: 0.85rem;
+	line-height: 1.5;
+}
+
+.sourcify-metadata-textarea {
+	min-height: 250px;
+	font-family: 'Courier New', monospace;
+	font-size: 0.85rem;
+	line-height: 1.5;
+}
+
+.sourcify-result-json {
+	background: rgba(16, 185, 129, 0.05);
+	border: 1px solid rgba(16, 185, 129, 0.2);
+	border-radius: 8px;
+	padding: 16px;
+	overflow-x: auto;
+	font-size: 0.85rem;
+	line-height: 1.6;
+	max-height: 400px;
+	overflow-y: auto;
+}
+
+.sourcify-similarity-hint {
+	color: #6b7280;
+	font-size: 0.9rem;
+	font-style: italic;
+	margin: 0;
+	padding: 12px;
+	background: rgba(16, 185, 129, 0.05);
+	border-left: 3px solid #10b981;
+	border-radius: 4px;
+}
