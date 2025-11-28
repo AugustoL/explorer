@@ -204,7 +204,6 @@ export type supportedChainsIds =
 	| 1 // mainnet
 	| 11155111 // sepolia testnet
 	| 31337 // local node (hardhat, anvil, aztec)
-	| 677868 // aztec sandobx
 	| 42161 // arbitrum one
 	| 10 // optimism mainnet
 	| 8453 // base mainnet
