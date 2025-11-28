@@ -1,15 +1,15 @@
 <p align="center">
-  <img src="https://augustol.github.io/openscan/openscan-logo.png" alt="OpenScan Logo" width="128" height="128">
+  <img src="https://openscan.github.io/explorer/openscan-logo.png" alt="OpenScan Logo" width="128" height="128">
 </p>
 
 # OpenScan
 
-![Production IPFS Hash](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/AugustoL/e3a56e2c5255a748f6334af4c9c58bfc/raw/ipfs-hash.json)
+![Production IPFS Hash](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/openscan-explorer/explorer/meta/ipfs-hash.json)
 
 A trustless, open-source, standalone web-app, multi-chain blockchain explorer for Ethereum, Layer 2 networks, and local development chains, allowing the direct interaction with verified smart contracts.
 
 **Official URL:** [https://openscan.eth.link/](https://openscan.eth.link/)  
-**GitHub Pages:** [https://augustol.github.io/openscan/](https://augustol.github.io/openscan/)
+**GitHub Pages:** [https://openscan.github.io/explorer/](https://openscan.github.io/explorer/)
 
 ## Features
 
