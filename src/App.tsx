@@ -57,6 +57,7 @@ import {
 	LazySettings,
 	LazyDevTools,
 	LazyAbout,
+	LazySubscriptions,
 } from "./components/LazyComponents";
 import { NotificationProvider } from "./context/NotificationContext";
 import {
@@ -109,6 +110,7 @@ function AppContent() {
 							<Route path="/" element={<LazyHome />} />
 							<Route path="settings" element={<LazySettings />} />
 							<Route path="about" element={<LazyAbout />} />
+							<Route path="subscriptions" element={<LazySubscriptions />} />
 							<Route path="devtools" element={<LazyDevTools />} />
 							<Route path=":chainId" element={<LazyChain />} />
 							<Route path=":chainId/blocks" element={<LazyBlocks />} />
