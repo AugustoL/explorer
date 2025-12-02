@@ -13,16 +13,19 @@ const Mempool = lazy(() => import("./pages/Mempool"));
 const Settings = lazy(() => import("./pages/Settings"));
 const DevTools = lazy(() => import("./pages/DevTools"));
 const About = lazy(() => import("./pages/About"));
+const Subscriptions = lazy(() => import("./pages/Subscriptions"));
 
 // Higher-order component to wrap lazy components with Suspense
+// biome-ignore lint/suspicious/noExplicitAny: <TODO>
 export const withSuspense = (Component: React.ComponentType<any>) => {
-	return function SuspenseWrapper(props: any) {
-		return (
-			<Suspense fallback={<Loading />}>
-				<Component {...props} />
-			</Suspense>
-		);
-	};
+  // biome-ignore lint/suspicious/noExplicitAny: <TODO>
+  return function SuspenseWrapper(props: any) {
+    return (
+      <Suspense fallback={<Loading />}>
+        <Component {...props} />
+      </Suspense>
+    );
+  };
 };
 
 // Export lazy components wrapped with Suspense
@@ -37,5 +40,6 @@ export const LazyMempool = withSuspense(Mempool);
 export const LazySettings = withSuspense(Settings);
 export const LazyDevTools = withSuspense(DevTools);
 export const LazyAbout = withSuspense(About);
+export const LazySubscriptions = withSuspense(Subscriptions);
 // Default exports for backward compatibility
 export { Home };

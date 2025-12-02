@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://openscan.github.io/explorer/openscan-logo.png" alt="OpenScan Logo" width="128" height="128">
+  <img src="https://openscan-explorer.github.io/explorer/openscan-logo.png" alt="OpenScan Logo" width="128" height="128">
 </p>
 
 # OpenScan
@@ -9,7 +9,7 @@
 A trustless, open-source, standalone web-app, multi-chain blockchain explorer for Ethereum, Layer 2 networks, and local development chains, allowing the direct interaction with verified smart contracts.
 
 **Official URL:** [https://openscan.eth.link/](https://openscan.eth.link/)  
-**GitHub Pages:** [https://openscan.github.io/explorer/](https://openscan.github.io/explorer/)
+**GitHub Pages:** [https://openscan-explorer.github.io/explorer/](https://openscan.github.io/explorer/)
 
 ## Features
 
@@ -83,7 +83,7 @@ The app will open at `http://localhost:3000`
 
 ### Use with Anvil/Foundry
 
-After following the installation steps here https://getfoundry.sh/introduction/installation/ you can just run an anvil mainnet fork with `anvil --fork-url https://reth-ethereum.ithaca.xyz/rpc` or if you run any Anvil instance on the port 8545 it would be automatically detected by Openscan, if you run Anvil on a different port make sure to change the RPC on the app settings.
+After following the installation steps here <https://getfoundry.sh/introduction/installation/> you can just run an anvil mainnet fork with `anvil --fork-url https://reth-ethereum.ithaca.xyz/rpc` or if you run any Anvil instance on the port 8545 it would be automatically detected by Openscan, if you run Anvil on a different port make sure to change the RPC on the app settings.
 
 ### Use with Hardhat node
 
@@ -102,6 +102,7 @@ bash scripts/run-test-hardhat-env.sh
 ```
 
 This script will:
+
 1. Start a Hardhat or Anvil node on port 8545.
 2. Deploy test contracts and generate sample transactions
 3. Start OpenScan with only Ethereum Mainnet and Localhost networks enabled
@@ -122,10 +123,56 @@ npm run typecheck
 ### Lint and prettier
 
 ```bash
+npm run format:fix
+```
+
+```bash
 npm run lint:fix
 ```
 
 ## Configuration
+
+### Git pre-commit
+
+1. Create a new file under `.git/hooks/pre-commit`
+
+```bash
+#!/bin/sh
+set -eu
+
+npx @biomejs/biome check --staged --files-ignore-unknown=true --no-errors-on-unmatched
+```
+
+2. Make it executable
+
+```bash
+chmod +x pre-commit
+```
+
+### Environment Variables
+
+#### `REACT_APP_OPENSCAN_NETWORKS`
+
+Controls which networks are displayed in the application. This is useful for limiting the explorer to specific chains.
+
+**Format:** Comma-separated list of chain IDs
+
+**Default:** If not set, all supported networks are enabled.
+
+**Examples:**
+
+```bash
+# Show only Ethereum Mainnet and Localhost
+REACT_APP_OPENSCAN_NETWORKS="1,31337" npm start
+
+# Show only Layer 2 networks
+REACT_APP_OPENSCAN_NETWORKS="42161,10,8453" npm start
+
+# Show only testnets
+REACT_APP_OPENSCAN_NETWORKS="11155111,97" npm start
+```
+
+The networks will be displayed in the order specified in the environment variable.
 
 ### Custom RPC Endpoints
 
