@@ -8,6 +8,7 @@ import {
 } from "ethers";
 import type React from "react";
 import { useState } from "react";
+import MessageSigner from "./MessageSigner";
 
 const SignaturesSection: React.FC = () => {
   const [showSignatureInspector, setShowSignatureInspector] = useState(false);
@@ -287,6 +288,9 @@ const SignaturesSection: React.FC = () => {
 
   return (
     <div className="devtools-section">
+      {/* Message Signer */}
+      <MessageSigner />
+
       {/* Signature Inspector */}
       <div className="devtools-card">
         {/** biome-ignore lint/a11y/noStaticElementInteractions: <TODO> */}
