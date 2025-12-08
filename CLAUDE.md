@@ -12,7 +12,7 @@ OpenScan is a trustless, open-source, standalone web-app and multi-chain blockch
 
 ```bash
 npm start
-# Runs on http://localhost:3000
+# Runs on http://localhost:3030
 ```
 
 ### Build for Production

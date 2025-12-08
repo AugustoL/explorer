@@ -35,7 +35,7 @@ module.exports = {
 			path.resolve(__dirname, "dist"),
 		],
 		historyApiFallback: true,
-		port: 3000,
+		port: 3030,
 		open: true,
 		hot: true,
 		liveReload: false,
