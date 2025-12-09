@@ -4309,12 +4309,26 @@ code {
 
 .block-display-header {
   display: flex;
-  align-items: baseline;
+  align-items: center;
+  justify-content: space-between;
   gap: 12px;
   margin-bottom: 20px;
   padding-bottom: 16px;
   border-bottom: 2px solid var(--color-primary-alpha-20);
   flex-wrap: wrap;
+}
+
+.block-header-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.block-header-info {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
 }
 
 .block-label {
@@ -4331,6 +4345,50 @@ code {
   font-weight: 700;
   color: var(--color-primary);
   letter-spacing: -1px;
+}
+
+.block-header-divider {
+  color: var(--text-secondary);
+  font-size: 1rem;
+  opacity: 0.5;
+}
+
+.block-header-timestamp {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9rem;
+}
+
+.block-timestamp-age {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.block-timestamp-full {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+.block-status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.block-status-finalized {
+  background: var(--color-success-alpha-15);
+  color: var(--color-success);
+}
+
+.block-status-pending {
+  background: var(--color-warning-alpha-15);
+  color: var(--color-warning);
 }
 
 .block-display-grid {
@@ -4404,6 +4462,22 @@ code {
 
   .block-display-header {
     gap: 8px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .block-header-main {
+    gap: 8px;
+  }
+
+  .block-header-timestamp {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+
+  .block-header-divider {
+    display: none;
   }
 
   .block-detail-item {

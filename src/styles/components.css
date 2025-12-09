@@ -4384,3 +4384,38 @@
 	flex-shrink: 0;
 }
 
+/* Extra Data Display */
+.extra-data-display {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	flex-wrap: wrap;
+}
+
+.extra-data-value {
+	word-break: break-word;
+}
+
+.extra-data-decoded {
+	color: var(--color-primary-muted);
+	font-weight: 500;
+}
+
+.extra-data-toggle {
+	padding: 2px 8px;
+	font-size: 0.75rem;
+	font-family: "Outfit", sans-serif;
+	font-weight: 500;
+	background: rgba(16, 185, 129, 0.1);
+	color: var(--color-primary);
+	border: 1px solid rgba(16, 185, 129, 0.2);
+	border-radius: 4px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	flex-shrink: 0;
+}
+
+.extra-data-toggle:hover {
+	background: rgba(16, 185, 129, 0.2);
+}
+
