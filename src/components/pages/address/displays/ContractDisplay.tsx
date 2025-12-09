@@ -1,5 +1,5 @@
 import type React from "react";
-import { useContext, useMemo } from "react";
+import { useContext, useMemo, useState } from "react";
 import { AppContext } from "../../../../context";
 import { useSourcify } from "../../../../hooks/useSourcify";
 import type {
@@ -51,6 +51,7 @@ const ContractDisplay: React.FC<ContractDisplayProps> = ({
   isMainnet = true,
 }) => {
   const { jsonFiles } = useContext(AppContext);
+  const [showBytecode, setShowBytecode] = useState(false);
 
   // Fetch Sourcify data
   const {
@@ -181,6 +182,25 @@ const ContractDisplay: React.FC<ContractDisplayProps> = ({
             <div className="tx-row">
               <span className="tx-label">Compiler:</span>
               <span className="tx-value tx-mono">{contractData.compilerVersion}</span>
+            </div>
+          )}
+
+          {/* Bytecode for unverified contracts */}
+          {!hasVerifiedContract && address.code && address.code !== "0x" && (
+            <div className="tx-row-vertical">
+              <button
+                type="button"
+                className="source-toggle-container btn-reset-block"
+                onClick={() => setShowBytecode(!showBytecode)}
+              >
+                <span className="tx-label">Contract Bytecode</span>
+                <span className="source-toggle-icon">{showBytecode ? "▼" : "▶"}</span>
+              </button>
+              {showBytecode && (
+                <div className="tx-input-data">
+                  <code>{address.code}</code>
+                </div>
+              )}
             </div>
           )}
         </div>
