@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import type { Block, BlockArbitrum, RPCMetadata } from "../../../types";
+import ExtraDataDisplay from "../../common/ExtraDataDisplay";
 import { RPCIndicator } from "../../common/RPCIndicator";
 
 interface BlockDisplayProps {
@@ -101,15 +102,38 @@ const BlockDisplay: React.FC<BlockDisplayProps> = React.memo(
 
     return (
       <div className="block-display-card">
-        <div
-          className="block-display-header"
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <span className="block-label">Block Details</span>
+        <div className="block-display-header">
+          <div className="block-header-main">
+            {networkId && blockNumber > 0 && (
+              <Link
+                to={`/${networkId}/block/${blockNumber - 1}`}
+                className="block-nav-btn"
+                title="Previous block"
+              >
+                ←
+              </Link>
+            )}
+            <div className="block-header-info">
+              <span className="block-label">Block</span>
+              <span className="block-number">#{blockNumber.toLocaleString()}</span>
+            </div>
+            {networkId && (
+              <Link
+                to={`/${networkId}/block/${blockNumber + 1}`}
+                className="block-nav-btn"
+                title="Next block"
+              >
+                →
+              </Link>
+            )}
+            <span className="block-header-divider">•</span>
+            <span className="block-header-timestamp">
+              <span className="block-timestamp-age">{timestampAge}</span>
+              <span className="block-timestamp-full">({timestampFormatted})</span>
+            </span>
+            <span className="block-header-divider">•</span>
+            <span className="block-status-badge block-status-finalized">Finalized</span>
+          </div>
           {metadata && selectedProvider !== undefined && onProviderSelect && (
             <RPCIndicator
               metadata={metadata}
@@ -120,43 +144,6 @@ const BlockDisplay: React.FC<BlockDisplayProps> = React.memo(
         </div>
 
         <div className="tx-details">
-          {/* Block Height */}
-          <div className="tx-row">
-            <span className="tx-label">Block Height:</span>
-            <span className="tx-value">
-              <span className="block-height-value">{blockNumber.toLocaleString()}</span>
-              {networkId && (
-                <span className="block-nav">
-                  {blockNumber > 0 && (
-                    <Link
-                      to={`/${networkId}/block/${blockNumber - 1}`}
-                      className="block-nav-btn"
-                      title="Previous block"
-                    >
-                      ←
-                    </Link>
-                  )}
-                  <Link
-                    to={`/${networkId}/block/${blockNumber + 1}`}
-                    className="block-nav-btn"
-                    title="Next block"
-                  >
-                    →
-                  </Link>
-                </span>
-              )}
-            </span>
-          </div>
-
-          {/* Timestamp */}
-          <div className="tx-row">
-            <span className="tx-label">Timestamp:</span>
-            <span className="tx-value">
-              <span className="tx-age">{timestampAge}</span>
-              <span className="tx-timestamp-full">({timestampFormatted})</span>
-            </span>
-          </div>
-
           {/* Transactions */}
           <div className="tx-row">
             <span className="tx-label">Transactions:</span>
@@ -230,7 +217,9 @@ const BlockDisplay: React.FC<BlockDisplayProps> = React.memo(
           {block.extraData && block.extraData !== "0x" && (
             <div className="tx-row">
               <span className="tx-label">Extra Data:</span>
-              <span className="tx-value tx-mono">{block.extraData}</span>
+              <span className="tx-value">
+                <ExtraDataDisplay hexData={block.extraData} />
+              </span>
             </div>
           )}
 

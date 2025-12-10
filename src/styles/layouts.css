@@ -1,4 +1,7 @@
-/* Layout Utilities */
+/* Layout Utilities
+   Note: Base flex and spacing utilities are in base.css.
+   This file contains semantic spacing (small/medium/large) and grid layouts.
+*/
 
 /* Grid Layouts */
 .data-grid-2 {
@@ -37,7 +40,7 @@
 .unit-converter-label {
 	font-size: 0.85rem;
 	font-weight: 600;
-	color: #6b7280;
+	color: var(--text-secondary);
 	min-width: 110px;
 	flex-shrink: 0;
 }
@@ -185,7 +188,7 @@
 .subtitle {
 	font-family: "Outfit", sans-serif;
 	font-size: 1.1rem;
-	color: #0da978ff;
+	color: var(--color-primary);
 	text-align: center;
 	margin-top: 0px;
 	margin-bottom: 16px;
