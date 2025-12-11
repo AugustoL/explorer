@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { getSubdomainForNetwork } from "../../config/subdomains";
+import type { NetworkConfig } from "../../config/networks";
+import { getSubdomainForNetwork, subdomainConfig } from "../../config/subdomains";
 import { useNetworks } from "../../context/AppContext";
 import { getBaseDomainUrl, getSubdomain, getSubdomainRedirect } from "../../utils/subdomainUtils";
 import NetworkIcon from "../common/NetworkIcon";
@@ -76,6 +77,28 @@ export default function NavbarLogo() {
     return enabledNetworks.find((n) => n.networkId === activeNetworkId);
   }, [activeNetworkId, enabledNetworks]);
 
+  // Get all networks that have subdomain support (enabled networks with subdomain config)
+  const networksWithSubdomain = useMemo(() => {
+    const networkSubdomains = subdomainConfig.filter(
+      (config) => config.enabled && /^\/\d+$/.test(config.redirect),
+    );
+
+    const networks: NetworkConfig[] = [];
+    for (const config of networkSubdomains) {
+      const networkId = Number(config.redirect.slice(1));
+      const networkConfig = enabledNetworks.find((n) => n.networkId === networkId);
+      if (networkConfig) {
+        networks.push(networkConfig);
+      }
+    }
+    return networks;
+  }, [enabledNetworks]);
+
+  // Other networks (not the current one) for the dropdown
+  const otherNetworks = useMemo(() => {
+    return networksWithSubdomain.filter((n) => n.networkId !== activeNetworkId);
+  }, [networksWithSubdomain, activeNetworkId]);
+
   // Determine if we're currently on the subdomain for this network
   const isOnSubdomain = Boolean(subdomain && networkIdFromSubdomain);
 
@@ -108,16 +131,17 @@ export default function NavbarLogo() {
     setIsDropdownOpen(false);
   }, [isOnSubdomain]);
 
-  const handleGoToNetwork = useCallback(() => {
-    if (isOnSubdomain && subdomainRedirect) {
-      // On subdomain, go to network index page (e.g., /1)
-      window.location.href = subdomainRedirect;
-    } else if (activeNetworkId) {
-      // On base domain, go to network page path
-      window.location.href = `/${activeNetworkId}`;
-    }
-    setIsDropdownOpen(false);
-  }, [isOnSubdomain, subdomainRedirect, activeNetworkId]);
+  const handleGoToNetwork = useCallback(
+    (networkId?: number) => {
+      const targetNetworkId = networkId ?? activeNetworkId;
+      if (!targetNetworkId) return;
+
+      // Navigate to network page path
+      window.location.href = `/${targetNetworkId}`;
+      setIsDropdownOpen(false);
+    },
+    [activeNetworkId],
+  );
 
   // If not on a network subdomain, show the regular OpenScan cube
   if (!showNetworkLogo) {
@@ -145,7 +169,7 @@ export default function NavbarLogo() {
         <button
           type="button"
           className="navbar-logo-network"
-          onClick={handleGoToNetwork}
+          onClick={() => handleGoToNetwork()}
           title={`Go to ${network.name}`}
         >
           <NetworkIcon network={network} size={28} />
@@ -154,9 +178,36 @@ export default function NavbarLogo() {
 
       {isDropdownOpen && (
         <div className="navbar-logo-dropdown">
+          {/* Current network first */}
+          <button
+            type="button"
+            className="navbar-logo-dropdown-item active"
+            onClick={() => handleGoToNetwork()}
+          >
+            <NetworkIcon network={network} size={24} />
+            <span>{network.name}</span>
+          </button>
+
+          {/* Other networks with subdomain support */}
+          {otherNetworks.map((otherNetwork) => (
+            <button
+              key={otherNetwork.networkId}
+              type="button"
+              className="navbar-logo-dropdown-item"
+              onClick={() => handleGoToNetwork(otherNetwork.networkId)}
+            >
+              <NetworkIcon network={otherNetwork} size={24} />
+              <span>{otherNetwork.name}</span>
+            </button>
+          ))}
+
+          {/* Divider */}
+          <div className="navbar-logo-dropdown-divider" />
+
+          {/* OpenScan home */}
           <button type="button" className="navbar-logo-dropdown-item" onClick={handleGoToHome}>
             <OpenScanCube />
-            <span>Openscan</span>
+            <span>OpenScan</span>
           </button>
         </div>
       )}

@@ -223,8 +223,18 @@ body {
   background: var(--color-primary-alpha-10);
 }
 
+.navbar-logo-dropdown-item.active {
+  background: var(--overlay-light-10);
+}
+
 .navbar-logo-dropdown-item svg {
   flex-shrink: 0;
+}
+
+.navbar-logo-dropdown-divider {
+  height: 1px;
+  background: var(--border-primary);
+  margin: 4px 0;
 }
 
 .navbar a:hover {
