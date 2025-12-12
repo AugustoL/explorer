@@ -1,4 +1,4 @@
-import { EthLog } from "explorer-network-connectors";
+import type { EthLog } from "explorer-network-connectors";
 import type React from "react";
 
 // ==================== CORE DOMAIN TYPES ====================
@@ -33,7 +33,6 @@ export interface Block {
   totalDifficulty: string;
   transactions: string[];
   transactionsRoot: string;
-  // biome-ignore lint/suspicious/noExplicitAny: <TODO>
   uncles: string[];
   blobGasUsed: string;
   excessBlobGas: string;
