@@ -4693,10 +4693,23 @@ code {
    ======================================== */
 
 .settings-container {
-  max-width: 800px;
+  max-width: 100%;
   margin: 0 auto;
   font-family: 'Outfit', sans-serif;
   text-align: center;
+}
+
+.settings-top-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 768px) {
+  .settings-top-row {
+    grid-template-columns: 1fr;
+  }
 }
 
 .settings-success-message {

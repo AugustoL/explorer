@@ -51,7 +51,7 @@ const Settings: React.FC = () => {
   }, []);
 
   return (
-    <div className="container-wide">
+    <div className="container-medium page-container-padded">
       <div className="page-card settings-container">
         <h1 className="page-title-small">Settings</h1>
 
@@ -60,68 +60,69 @@ const Settings: React.FC = () => {
           <div className="settings-success-message">✓ Settings saved successfully!</div>
         )}
 
-        {/* Appearance Settings Section */}
-        <div className="settings-section no-margin">
-          <h2 className="settings-section-title">🎨 Appearance</h2>
-          <p className="settings-section-description">
-            Customize the visual appearance of the application.
-          </p>
+        {/* Top Row: Appearance and RPC Strategy side by side */}
+        <div className="settings-top-row">
+          {/* Appearance Settings Section */}
+          <div className="settings-section no-margin">
+            <h2 className="settings-section-title">🎨 Appearance</h2>
+            <p className="settings-section-description">
+              Customize the visual appearance of the application.
+            </p>
 
-          <div className="settings-item">
-            <div>
-              <div className="settings-item-label">Funny Background Blocks</div>
-              <div className="settings-item-description">
-                Show animated isometric blocks in the background
+            <div className="settings-item">
+              <div>
+                <div className="settings-item-label">Funny Background Blocks</div>
+                <div className="settings-item-description">
+                  Show animated isometric blocks in the background
+                </div>
               </div>
-            </div>
-            <label className="settings-toggle">
-              <input
-                type="checkbox"
-                checked={settings.showBackgroundBlocks ?? true}
-                onChange={(e) => updateSettings({ showBackgroundBlocks: e.target.checked })}
-                className="settings-toggle-input"
-              />
-              <span
-                className={`settings-toggle-slider ${settings.showBackgroundBlocks ? "active" : ""}`}
-              >
-                <span
-                  className={`settings-toggle-knob ${settings.showBackgroundBlocks ? "active" : ""}`}
+              <label className="settings-toggle">
+                <input
+                  type="checkbox"
+                  checked={settings.showBackgroundBlocks ?? true}
+                  onChange={(e) => updateSettings({ showBackgroundBlocks: e.target.checked })}
+                  className="settings-toggle-input"
                 />
-              </span>
-            </label>
-          </div>
-        </div>
-
-        {/* RPC Strategy Section */}
-        <div className="settings-section">
-          <h2 className="settings-section-title">⚡ RPC Request Strategy</h2>
-          <p className="settings-section-description">
-            Choose how requests are sent to multiple RPC endpoints.
-          </p>
-
-          <div className="settings-item">
-            <div>
-              <div className="settings-item-label">Request Strategy</div>
-              <div className="settings-item-description">
-                <strong>Fallback:</strong> Try endpoints one by one until one succeeds (reliable,
-                slower).
-                <br />
-                <strong>Parallel:</strong> Query all endpoints simultaneously and use the first
-                successful response (faster, more bandwidth).
-              </div>
+                <span
+                  className={`settings-toggle-slider ${settings.showBackgroundBlocks ? "active" : ""}`}
+                >
+                  <span
+                    className={`settings-toggle-knob ${settings.showBackgroundBlocks ? "active" : ""}`}
+                  />
+                </span>
+              </label>
             </div>
-            <select
-              value={settings.rpcStrategy || "fallback"}
-              onChange={(e) =>
-                updateSettings({
-                  rpcStrategy: e.target.value as "fallback" | "parallel",
-                })
-              }
-              className="settings-select"
-            >
-              <option value="fallback">Fallback (Default)</option>
-              <option value="parallel">Parallel</option>
-            </select>
+          </div>
+
+          {/* RPC Strategy Section */}
+          <div className="settings-section no-margin">
+            <h2 className="settings-section-title">⚡ RPC Strategy</h2>
+            <p className="settings-section-description">
+              Choose how requests are sent to multiple RPC endpoints.
+            </p>
+
+            <div className="settings-item">
+              <div>
+                <div className="settings-item-label">Request Strategy</div>
+                <div className="settings-item-description">
+                  <strong>Fallback:</strong> Try endpoints one by one until one succeeds.
+                  <br />
+                  <strong>Parallel:</strong> Query all endpoints simultaneously.
+                </div>
+              </div>
+              <select
+                value={settings.rpcStrategy || "fallback"}
+                onChange={(e) =>
+                  updateSettings({
+                    rpcStrategy: e.target.value as "fallback" | "parallel",
+                  })
+                }
+                className="settings-select"
+              >
+                <option value="fallback">Fallback (Default)</option>
+                <option value="parallel">Parallel</option>
+              </select>
+            </div>
           </div>
         </div>
 
