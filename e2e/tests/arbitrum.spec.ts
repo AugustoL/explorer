@@ -2,13 +2,13 @@ import { test, expect } from "../fixtures/test";
 import { BlockPage } from "../pages/block.page";
 import { AddressPage } from "../pages/address.page";
 import { TransactionPage } from "../pages/transaction.page";
-import { BASE } from "../fixtures/base";
+import { ARBITRUM } from "../fixtures/arbitrum";
 
-const CHAIN_ID = BASE.chainId;
+const CHAIN_ID = ARBITRUM.chainId;
 
 // Transaction hash constants for readability
-const AERODROME_SWAP = "0x961cf2c57f006d8c6fdbe266b2ef201159dd135dc560155e8c16d307ee321681";
-const USDC_TRANSFER = "0x6b212a5069286d710f388b948364452d28b8c33e0f39b8f50b394ff4deff1f03";
+const UNISWAP_SWAP = "0x87815a816c02b5a563a026e4a37d423734204b50972e75284b62f05e4134ae44";
+const USDC_TRANSFER = "0x160687cbf03f348cf36997dbab53abbd32d91af5971bccac4cfa1577da27607e";
 
 // Helper to wait for block content or error
 async function waitForBlockContent(page: import("@playwright/test").Page) {
@@ -60,17 +60,16 @@ async function waitForTxContent(page: import("@playwright/test").Page) {
 // BLOCK TESTS
 // ============================================
 
-test.describe("Base Network - Block Page", () => {
-  test("genesis block #0 - Base mainnet launch", async ({ page }) => {
+test.describe("Arbitrum One - Block Page", () => {
+  test("genesis block #0 - Arbitrum One launch", async ({ page }) => {
     const blockPage = new BlockPage(page);
-    const block = BASE.blocks["0"];
+    const block = ARBITRUM.blocks["0"];
     await blockPage.goto(block.number, CHAIN_ID);
 
     const loaded = await waitForBlockContent(page);
     if (loaded) {
       // Header section
       await expect(blockPage.blockNumber).toBeVisible();
-      await expect(blockPage.timestampAge).toBeVisible();
 
       // Genesis block should have 0 transactions
       await expect(page.locator("text=Transactions:")).toBeVisible();
@@ -81,102 +80,64 @@ test.describe("Base Network - Block Page", () => {
 
       // Gas Limit
       await expect(page.locator("text=Gas Limit:")).toBeVisible();
+      await expect(page.locator(`text=${block.gasLimit}`)).toBeVisible();
     }
   });
 
-  test("block #1,000,000 - early Base block with gas details", async ({ page }) => {
+  test("block #22,207,817 - Nitro upgrade block", async ({ page }) => {
     const blockPage = new BlockPage(page);
-    const block = BASE.blocks["1000000"];
+    const block = ARBITRUM.blocks["22207817"];
     await blockPage.goto(block.number, CHAIN_ID);
 
     const loaded = await waitForBlockContent(page);
     if (loaded) {
-      // Header
+      await expect(blockPage.blockNumber).toBeVisible();
+
+      // Nitro upgrade block - 0 transactions
+      await expect(page.locator("text=Transactions:")).toBeVisible();
+      await expect(page.locator("text=0 transactions in this block")).toBeVisible();
+
+      // Size
+      await expect(page.locator("text=Size:")).toBeVisible();
+      await expect(page.locator(`text=${block.size}`)).toBeVisible();
+    }
+  });
+
+  test("block #100,000,000 - post-Nitro with gas details", async ({ page }) => {
+    const blockPage = new BlockPage(page);
+    const block = ARBITRUM.blocks["100000000"];
+    await blockPage.goto(block.number, CHAIN_ID);
+
+    const loaded = await waitForBlockContent(page);
+    if (loaded) {
       await expect(blockPage.blockNumber).toBeVisible();
       await expect(blockPage.statusBadge).toContainText("Finalized");
 
       // Transaction count
       await expect(page.locator("text=Transactions:")).toBeVisible();
-      await expect(page.locator(`text=${block.txCount} transaction`)).toBeVisible();
+      await expect(page.locator(`text=${block.txCount} transactions in this block`)).toBeVisible();
 
-      // Gas Used with percentage
+      // Gas Used with value
       await expect(page.locator("text=Gas Used:")).toBeVisible();
       await expect(page.locator(`text=${block.gasUsed}`)).toBeVisible();
 
-      // Gas Limit
-      await expect(page.locator("text=Gas Limit:")).toBeVisible();
-      await expect(page.locator(`text=${block.gasLimit}`)).toBeVisible();
-
-      // Size
+      // Size with value
       await expect(page.locator("text=Size:")).toBeVisible();
       await expect(page.locator(`text=${block.size}`)).toBeVisible();
 
-      // Base Fee Per Gas (Base always has EIP-1559)
+      // Base Fee Per Gas
       await expect(page.locator("text=Base Fee Per Gas:")).toBeVisible();
 
-      // Fee Recipient (SequencerFeeVault)
+      // Fee Recipient (sequencer address)
       await expect(page.locator("text=Fee Recipient:")).toBeVisible();
       const feeRecipient = await blockPage.getFeeRecipient();
       expect(feeRecipient.toLowerCase()).toContain(block.feeRecipientPartial.toLowerCase());
     }
   });
 
-  test("block #10,000,000 - pre-Ecotone block", async ({ page }) => {
+  test("block #100,000,000 more details section shows correct hashes", async ({ page }) => {
     const blockPage = new BlockPage(page);
-    const block = BASE.blocks["10000000"];
-    await blockPage.goto(block.number, CHAIN_ID);
-
-    const loaded = await waitForBlockContent(page);
-    if (loaded) {
-      await expect(blockPage.blockNumber).toBeVisible();
-      await expect(blockPage.statusBadge).toContainText("Finalized");
-
-      // Transaction count
-      await expect(page.locator("text=Transactions:")).toBeVisible();
-      await expect(page.locator(`text=${block.txCount} transactions in this block`)).toBeVisible();
-
-      // Gas details
-      await expect(page.locator("text=Gas Used:")).toBeVisible();
-      await expect(page.locator(`text=${block.gasUsed}`)).toBeVisible();
-
-      await expect(page.locator("text=Gas Limit:")).toBeVisible();
-      await expect(page.locator(`text=${block.gasLimit}`)).toBeVisible();
-
-      // Size
-      await expect(page.locator("text=Size:")).toBeVisible();
-      await expect(page.locator(`text=${block.size}`)).toBeVisible();
-    }
-  });
-
-  test("block #25,000,000 - post-Holocene with increased gas limit", async ({ page }) => {
-    const blockPage = new BlockPage(page);
-    const block = BASE.blocks["25000000"];
-    await blockPage.goto(block.number, CHAIN_ID);
-
-    const loaded = await waitForBlockContent(page);
-    if (loaded) {
-      await expect(blockPage.blockNumber).toBeVisible();
-
-      // Should have many transactions
-      await expect(page.locator("text=Transactions:")).toBeVisible();
-      await expect(page.locator(`text=${block.txCount} transactions in this block`)).toBeVisible();
-
-      // Gas details - higher gas limit post-Holocene
-      await expect(page.locator("text=Gas Limit:")).toBeVisible();
-      await expect(page.locator(`text=${block.gasLimit}`)).toBeVisible();
-
-      // Size
-      await expect(page.locator("text=Size:")).toBeVisible();
-      await expect(page.locator(`text=${block.size}`)).toBeVisible();
-
-      // Base Fee Per Gas
-      await expect(page.locator("text=Base Fee Per Gas:")).toBeVisible();
-    }
-  });
-
-  test("genesis block more details section shows correct hashes", async ({ page }) => {
-    const blockPage = new BlockPage(page);
-    const block = BASE.blocks["0"];
+    const block = ARBITRUM.blocks["100000000"];
     await blockPage.goto(block.number, CHAIN_ID);
 
     const loaded = await waitForBlockContent(page);
@@ -190,17 +151,118 @@ test.describe("Base Network - Block Page", () => {
         await expect(page.getByText("Hash:", { exact: true })).toBeVisible();
         await expect(page.getByText("Parent Hash:", { exact: true })).toBeVisible();
 
-        // Genesis block hash
+        // Block hash
         await expect(page.locator(`text=${block.hash}`)).toBeVisible();
-        // Genesis parent hash (all zeros) - use first() as it appears in multiple places (also in logs bloom)
-        await expect(page.locator(`text=${block.parentHash}`).first()).toBeVisible();
+        // Parent hash
+        await expect(page.locator(`text=${block.parentHash}`)).toBeVisible();
       }
     }
   });
 
-  test("block navigation buttons work on Base", async ({ page }) => {
+  test("block #200,000,000 - post-ArbOS 20 Atlas (Dencun)", async ({ page }) => {
     const blockPage = new BlockPage(page);
-    await blockPage.goto(BASE.blocks["1000000"].number, CHAIN_ID);
+    const block = ARBITRUM.blocks["200000000"];
+    await blockPage.goto(block.number, CHAIN_ID);
+
+    const loaded = await waitForBlockContent(page);
+    if (loaded) {
+      await expect(blockPage.blockNumber).toBeVisible();
+      await expect(blockPage.statusBadge).toContainText("Finalized");
+
+      // Transaction count
+      await expect(page.locator("text=Transactions:")).toBeVisible();
+      await expect(page.locator(`text=${block.txCount} transactions in this block`)).toBeVisible();
+
+      // Gas Used with value
+      await expect(page.locator("text=Gas Used:")).toBeVisible();
+      await expect(page.locator(`text=${block.gasUsed}`)).toBeVisible();
+
+      // Size with value
+      await expect(page.locator("text=Size:")).toBeVisible();
+      await expect(page.locator(`text=${block.size}`)).toBeVisible();
+
+      // Fee Recipient
+      await expect(page.locator("text=Fee Recipient:")).toBeVisible();
+      const feeRecipient = await blockPage.getFeeRecipient();
+      expect(feeRecipient.toLowerCase()).toContain(block.feeRecipientPartial.toLowerCase());
+    }
+  });
+
+  test("block #200,000,000 more details shows hashes", async ({ page }) => {
+    const blockPage = new BlockPage(page);
+    const block = ARBITRUM.blocks["200000000"];
+    await blockPage.goto(block.number, CHAIN_ID);
+
+    const loaded = await waitForBlockContent(page);
+    if (loaded) {
+      const showMoreBtn = page.locator("text=Show More Details");
+      if (await showMoreBtn.isVisible()) {
+        await showMoreBtn.click();
+        await expect(page.locator("text=Hide More Details")).toBeVisible();
+
+        // Block hash
+        await expect(page.locator(`text=${block.hash}`)).toBeVisible();
+        // Parent hash
+        await expect(page.locator(`text=${block.parentHash}`)).toBeVisible();
+      }
+    }
+  });
+
+  test("block #300,000,000 - post-ArbOS 32 Bianca (Stylus)", async ({ page }) => {
+    const blockPage = new BlockPage(page);
+    const block = ARBITRUM.blocks["300000000"];
+    await blockPage.goto(block.number, CHAIN_ID);
+
+    const loaded = await waitForBlockContent(page);
+    if (loaded) {
+      await expect(blockPage.blockNumber).toBeVisible();
+
+      // Transaction count
+      await expect(page.locator("text=Transactions:")).toBeVisible();
+      await expect(page.locator(`text=${block.txCount} transactions in this block`)).toBeVisible();
+
+      // Gas Used with value
+      await expect(page.locator("text=Gas Used:")).toBeVisible();
+      await expect(page.locator(`text=${block.gasUsed}`)).toBeVisible();
+
+      // Size with value
+      await expect(page.locator("text=Size:")).toBeVisible();
+      await expect(page.locator(`text=${block.size}`)).toBeVisible();
+
+      // Base Fee Per Gas
+      await expect(page.locator("text=Base Fee Per Gas:")).toBeVisible();
+
+      // Fee Recipient
+      await expect(page.locator("text=Fee Recipient:")).toBeVisible();
+      const feeRecipient = await blockPage.getFeeRecipient();
+      expect(feeRecipient.toLowerCase()).toContain(block.feeRecipientPartial.toLowerCase());
+    }
+  });
+
+  test("genesis block more details section shows correct hash", async ({ page }) => {
+    const blockPage = new BlockPage(page);
+    const block = ARBITRUM.blocks["0"];
+    await blockPage.goto(block.number, CHAIN_ID);
+
+    const loaded = await waitForBlockContent(page);
+    if (loaded) {
+      const showMoreBtn = page.locator("text=Show More Details");
+      if (await showMoreBtn.isVisible()) {
+        await showMoreBtn.click();
+        await expect(page.locator("text=Hide More Details")).toBeVisible();
+
+        // Verify hash field labels
+        await expect(page.getByText("Hash:", { exact: true })).toBeVisible();
+
+        // Genesis block hash
+        await expect(page.locator(`text=${block.hash}`)).toBeVisible();
+      }
+    }
+  });
+
+  test("block navigation buttons work on Arbitrum", async ({ page }) => {
+    const blockPage = new BlockPage(page);
+    await blockPage.goto(ARBITRUM.blocks["100000000"].number, CHAIN_ID);
 
     const loaded = await waitForBlockContent(page);
     if (loaded) {
@@ -223,10 +285,10 @@ test.describe("Base Network - Block Page", () => {
 // TRANSACTION TESTS
 // ============================================
 
-test.describe("Base Network - Transaction Page", () => {
-  test("displays Aerodrome DEX swap with all details", async ({ page }) => {
+test.describe("Arbitrum One - Transaction Page", () => {
+  test("displays Uniswap V3 swap with all details", async ({ page }) => {
     const txPage = new TransactionPage(page);
-    const tx = BASE.transactions[AERODROME_SWAP];
+    const tx = ARBITRUM.transactions[UNISWAP_SWAP];
 
     await txPage.goto(tx.hash, CHAIN_ID);
 
@@ -238,15 +300,17 @@ test.describe("Base Network - Transaction Page", () => {
       await expect(page.locator("text=Block:")).toBeVisible();
       await expect(page.locator("text=From:")).toBeVisible();
       await expect(page.locator("text=To:")).toBeVisible();
+      await expect(page.locator("text=Value:")).toBeVisible();
 
       // Verify gas information
       await expect(page.locator("text=Gas Limit")).toBeVisible();
+      await expect(page.getByText("Gas Price:", { exact: true })).toBeVisible();
     }
   });
 
   test("shows correct from and to addresses for swap", async ({ page }) => {
     const txPage = new TransactionPage(page);
-    const tx = BASE.transactions[AERODROME_SWAP];
+    const tx = ARBITRUM.transactions[UNISWAP_SWAP];
 
     await txPage.goto(tx.hash, CHAIN_ID);
 
@@ -260,9 +324,26 @@ test.describe("Base Network - Transaction Page", () => {
     }
   });
 
-  test("displays USDC transfer transaction", async ({ page }) => {
+  test("displays transaction value and fee", async ({ page }) => {
     const txPage = new TransactionPage(page);
-    const tx = BASE.transactions[USDC_TRANSFER];
+    const tx = ARBITRUM.transactions[UNISWAP_SWAP];
+
+    await txPage.goto(tx.hash, CHAIN_ID);
+
+    const loaded = await waitForTxContent(page);
+    if (loaded) {
+      // Verify value contains ETH
+      const value = await txPage.getValue();
+      expect(value).toContain("ETH");
+
+      // Verify transaction fee is displayed
+      await expect(page.locator("text=Transaction Fee:")).toBeVisible();
+    }
+  });
+
+  test("displays USDC transfer transaction (EIP-1559)", async ({ page }) => {
+    const txPage = new TransactionPage(page);
+    const tx = ARBITRUM.transactions[USDC_TRANSFER];
 
     await txPage.goto(tx.hash, CHAIN_ID);
 
@@ -281,7 +362,7 @@ test.describe("Base Network - Transaction Page", () => {
 
   test("displays transaction with input data", async ({ page }) => {
     const txPage = new TransactionPage(page);
-    const tx = BASE.transactions[AERODROME_SWAP];
+    const tx = ARBITRUM.transactions[UNISWAP_SWAP];
 
     await txPage.goto(tx.hash, CHAIN_ID);
 
@@ -292,9 +373,9 @@ test.describe("Base Network - Transaction Page", () => {
     }
   });
 
-  test("displays other attributes section", async ({ page }) => {
+  test("displays other attributes section with nonce", async ({ page }) => {
     const txPage = new TransactionPage(page);
-    const tx = BASE.transactions[AERODROME_SWAP];
+    const tx = ARBITRUM.transactions[UNISWAP_SWAP];
 
     await txPage.goto(tx.hash, CHAIN_ID);
 
@@ -308,7 +389,7 @@ test.describe("Base Network - Transaction Page", () => {
 
   test("displays block number link", async ({ page }) => {
     const txPage = new TransactionPage(page);
-    const tx = BASE.transactions[AERODROME_SWAP];
+    const tx = ARBITRUM.transactions[UNISWAP_SWAP];
 
     await txPage.goto(tx.hash, CHAIN_ID);
 
@@ -317,6 +398,22 @@ test.describe("Base Network - Transaction Page", () => {
       await expect(page.locator("text=Block:")).toBeVisible();
       const blockValue = await txPage.getBlockNumber();
       expect(blockValue).toBeTruthy();
+    }
+  });
+
+  test("USDC transfer shows correct addresses", async ({ page }) => {
+    const txPage = new TransactionPage(page);
+    const tx = ARBITRUM.transactions[USDC_TRANSFER];
+
+    await txPage.goto(tx.hash, CHAIN_ID);
+
+    const loaded = await waitForTxContent(page);
+    if (loaded) {
+      const from = await txPage.getFromAddress();
+      expect(from.toLowerCase()).toContain(tx.from.toLowerCase().slice(0, 10));
+
+      const to = await txPage.getToAddress();
+      expect(to?.toLowerCase()).toContain(tx.to?.toLowerCase().slice(0, 10));
     }
   });
 
@@ -334,10 +431,10 @@ test.describe("Base Network - Transaction Page", () => {
 // ADDRESS TESTS
 // ============================================
 
-test.describe("Base Network - Address Page", () => {
-  test("displays USDC contract details", async ({ page }) => {
+test.describe("Arbitrum One - Address Page", () => {
+  test("displays native USDC contract details", async ({ page }) => {
     const addressPage = new AddressPage(page);
-    const addr = BASE.addresses.usdc;
+    const addr = ARBITRUM.addresses.usdc;
 
     await addressPage.goto(addr.address, CHAIN_ID);
 
@@ -350,9 +447,9 @@ test.describe("Base Network - Address Page", () => {
     }
   });
 
-  test("displays USDbC (bridged USDC) contract", async ({ page }) => {
+  test("displays bridged USDC.e contract", async ({ page }) => {
     const addressPage = new AddressPage(page);
-    const addr = BASE.addresses.usdbc;
+    const addr = ARBITRUM.addresses.usdce;
 
     await addressPage.goto(addr.address, CHAIN_ID);
 
@@ -363,9 +460,9 @@ test.describe("Base Network - Address Page", () => {
     }
   });
 
-  test("displays WETH predeploy contract", async ({ page }) => {
+  test("displays WETH contract", async ({ page }) => {
     const addressPage = new AddressPage(page);
-    const addr = BASE.addresses.weth;
+    const addr = ARBITRUM.addresses.weth;
 
     await addressPage.goto(addr.address, CHAIN_ID);
 
@@ -376,9 +473,9 @@ test.describe("Base Network - Address Page", () => {
     }
   });
 
-  test("displays AERO token contract", async ({ page }) => {
+  test("displays ARB governance token contract", async ({ page }) => {
     const addressPage = new AddressPage(page);
-    const addr = BASE.addresses.aero;
+    const addr = ARBITRUM.addresses.arb;
 
     await addressPage.goto(addr.address, CHAIN_ID);
 
@@ -389,9 +486,22 @@ test.describe("Base Network - Address Page", () => {
     }
   });
 
-  test("displays Aerodrome Router contract with details", async ({ page }) => {
+  test("displays GMX token contract", async ({ page }) => {
     const addressPage = new AddressPage(page);
-    const addr = BASE.addresses.aerodromeRouter;
+    const addr = ARBITRUM.addresses.gmx;
+
+    await addressPage.goto(addr.address, CHAIN_ID);
+
+    const loaded = await waitForAddressContent(page);
+    if (loaded) {
+      const isContract = await addressPage.isContract();
+      expect(isContract).toBe(true);
+    }
+  });
+
+  test("displays Uniswap V3 Router contract with details", async ({ page }) => {
+    const addressPage = new AddressPage(page);
+    const addr = ARBITRUM.addresses.uniswapV3Router;
 
     await addressPage.goto(addr.address, CHAIN_ID);
 
@@ -404,9 +514,9 @@ test.describe("Base Network - Address Page", () => {
     }
   });
 
-  test("displays SequencerFeeVault system contract", async ({ page }) => {
+  test("displays Uniswap Universal Router contract", async ({ page }) => {
     const addressPage = new AddressPage(page);
-    const addr = BASE.addresses.sequencerFeeVault;
+    const addr = ARBITRUM.addresses.uniswapUniversalRouter;
 
     await addressPage.goto(addr.address, CHAIN_ID);
 
@@ -417,9 +527,24 @@ test.describe("Base Network - Address Page", () => {
     }
   });
 
-  test("displays GasPriceOracle system contract", async ({ page }) => {
+  test("displays GMX Vault contract with details", async ({ page }) => {
     const addressPage = new AddressPage(page);
-    const addr = BASE.addresses.gasPriceOracle;
+    const addr = ARBITRUM.addresses.gmxVault;
+
+    await addressPage.goto(addr.address, CHAIN_ID);
+
+    const loaded = await waitForAddressContent(page);
+    if (loaded) {
+      const isContract = await addressPage.isContract();
+      expect(isContract).toBe(true);
+
+      await expect(page.locator("text=Contract Details")).toBeVisible();
+    }
+  });
+
+  test("displays GMX Position Router contract", async ({ page }) => {
+    const addressPage = new AddressPage(page);
+    const addr = ARBITRUM.addresses.gmxPositionRouter;
 
     await addressPage.goto(addr.address, CHAIN_ID);
 
@@ -430,35 +555,9 @@ test.describe("Base Network - Address Page", () => {
     }
   });
 
-  test("displays L1Block system contract", async ({ page }) => {
+  test("displays ArbSys system precompile", async ({ page }) => {
     const addressPage = new AddressPage(page);
-    const addr = BASE.addresses.l1Block;
-
-    await addressPage.goto(addr.address, CHAIN_ID);
-
-    const loaded = await waitForAddressContent(page);
-    if (loaded) {
-      const isContract = await addressPage.isContract();
-      expect(isContract).toBe(true);
-    }
-  });
-
-  test("displays L2StandardBridge contract", async ({ page }) => {
-    const addressPage = new AddressPage(page);
-    const addr = BASE.addresses.l2StandardBridge;
-
-    await addressPage.goto(addr.address, CHAIN_ID);
-
-    const loaded = await waitForAddressContent(page);
-    if (loaded) {
-      const isContract = await addressPage.isContract();
-      expect(isContract).toBe(true);
-    }
-  });
-
-  test("displays L2CrossDomainMessenger contract", async ({ page }) => {
-    const addressPage = new AddressPage(page);
-    const addr = BASE.addresses.l2CrossDomainMessenger;
+    const addr = ARBITRUM.addresses.arbSys;
 
     await addressPage.goto(addr.address, CHAIN_ID);
 
