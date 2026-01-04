@@ -586,7 +586,7 @@ test.describe("Optimism - Address Page", () => {
       const isContract = await addressPage.isContract();
       expect(isContract).toBe(true);
 
-      await expect(page.locator("text=Contract Details")).toBeVisible();
+      await expect(page.locator("text=Contract Details").first()).toBeVisible();
     }
   });
 

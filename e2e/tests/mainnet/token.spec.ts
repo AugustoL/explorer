@@ -271,6 +271,7 @@ test.describe("Token Details - Error Handling", () => {
         .locator("text=Error:")
         .or(page.locator("text=Something went wrong"))
         .or(page.locator(".container-wide"))
+        .first()
     ).toBeVisible({ timeout: DEFAULT_TIMEOUT * 3 });
   });
 });
