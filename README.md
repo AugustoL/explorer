@@ -1,15 +1,18 @@
 <p align="center">
-  <img src="https://openscan.github.io/explorer/openscan-logo.png" alt="OpenScan Logo" width="128" height="128">
+  <img src="https://openscan-explorer.github.io/explorer/openscan-logo.png" alt="OpenScan Logo" width="128" height="128">
 </p>
 
 # OpenScan
 
 ![Production IPFS Hash](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/openscan-explorer/explorer/meta/ipfs-hash.json)
 
-A trustless, open-source, standalone web-app, multi-chain blockchain explorer for Ethereum, Layer 2 networks, and local development chains, allowing the direct interaction with verified smart contracts.
+A trustless, open-source blockchain explorer for Ethereum and Layer 2 networks. OpenScan connects directly to blockchain nodes via RPC, giving you unfettered access to on-chain data without intermediaries or centralized services.
 
-**Official URL:** [https://openscan.eth.link/](https://openscan.eth.link/)  
-**GitHub Pages:** [https://openscan.github.io/explorer/](https://openscan.github.io/explorer/)
+> *We choose to build trustless systems even when it is harder.*
+> *We pay the cost of openness over the convenience of control.*
+
+**Official URL:** [https://openscan.eth.link/](https://openscan.eth.link/)
+**GitHub Pages:** [https://openscan-explorer.github.io/explorer/](https://openscan-explorer.github.io/explorer/)
 
 ## Features
 
@@ -60,7 +63,7 @@ A trustless, open-source, standalone web-app, multi-chain blockchain explorer fo
 
 ### Prerequisites
 
-- Node.js 16+
+- Node.js v24.12.0
 - npm or yarn
 
 ### Installation
@@ -79,11 +82,11 @@ npm install
 npm start
 ```
 
-The app will open at `http://localhost:3000`
+The app will open at `http://localhost:3030`
 
 ### Use with Anvil/Foundry
 
-After following the installation steps here https://getfoundry.sh/introduction/installation/ you can just run an anvil mainnet fork with `anvil --fork-url https://reth-ethereum.ithaca.xyz/rpc` or if you run any Anvil instance on the port 8545 it would be automatically detected by Openscan, if you run Anvil on a different port make sure to change the RPC on the app settings.
+After following the installation steps here <https://getfoundry.sh/introduction/installation/> you can just run an anvil mainnet fork with `anvil --fork-url https://reth-ethereum.ithaca.xyz/rpc` or if you run any Anvil instance on the port 8545 it would be automatically detected by Openscan, if you run Anvil on a different port make sure to change the RPC on the app settings.
 
 ### Use with Hardhat node
 
@@ -102,6 +105,7 @@ bash scripts/run-test-hardhat-env.sh
 ```
 
 This script will:
+
 1. Start a Hardhat or Anvil node on port 8545.
 2. Deploy test contracts and generate sample transactions
 3. Start OpenScan with only Ethereum Mainnet and Localhost networks enabled
@@ -110,8 +114,14 @@ This script will:
 ### Build for Production
 
 ```bash
-npm run build
+# Production build
+npm run build:production
+
+# Staging build
+npm run build:staging
 ```
+
+> **Note:** Build scripts require bash (Linux/macOS/WSL). Windows users should use WSL or run builds via CI.
 
 ### Type guards
 
@@ -122,10 +132,56 @@ npm run typecheck
 ### Lint and prettier
 
 ```bash
+npm run format:fix
+```
+
+```bash
 npm run lint:fix
 ```
 
+### End-to-End Tests
+
+The project uses Playwright for E2E testing against Ethereum mainnet data.
+
+```bash
+# Run all E2E tests
+npm run test:e2e
+
+# Run tests with UI mode (for debugging)
+npm run test:e2e:ui
+
+# Run tests in debug mode
+npm run test:e2e:debug
+```
+
+**Test Coverage:**
+
+- **Block Page** - Pre/post London blocks, hash fields, navigation
+- **Transaction Page** - Legacy and EIP-1559 transactions, from/to addresses, gas info
+- **Address Page** - EOA balances, ENS names, ERC20/ERC721/ERC1155 contracts
+- **Token Details** - NFT metadata, properties, token URI, collection info
+- **Contract Interaction** - Verified contract functions, events, verification status
+
+Tests run automatically on every PR via GitHub Actions.
+
 ## Configuration
+
+### Git pre-commit
+
+1. Create a new file under `.git/hooks/pre-commit`
+
+```bash
+#!/bin/sh
+set -eu
+
+npx @biomejs/biome check --staged --files-ignore-unknown=true --no-errors-on-unmatched
+```
+
+2. Make it executable
+
+```bash
+chmod +x pre-commit
+```
 
 ### Environment Variables
 
@@ -136,6 +192,8 @@ Controls which networks are displayed in the application. This is useful for lim
 **Format:** Comma-separated list of chain IDs
 
 **Default:** If not set, all supported networks are enabled.
+
+**Note:** The Localhost network (31337) is only visible in development mode. To enable it in production/staging, explicitly include it in `REACT_APP_OPENSCAN_NETWORKS`.
 
 **Examples:**
 
@@ -186,7 +244,7 @@ Default RPC endpoints:
 
 ### Tech Stack
 
-- **React 18** - UI framework
+- **React 19** - UI framework
 - **TypeScript** - Type safety
 - **React Router** - Client-side routing
 - **Custom RPC Service** - Direct JSON-RPC calls to blockchain nodes
@@ -231,15 +289,26 @@ src/
 - **Type Guards** - Runtime type checking for L2-specific fields
 - **RPC Storage** - Persistent storage for custom RPC configurations
 
-### Adding a New Network
+## Support OpenScan
 
-1. Add chain ID to `src/types/index.ts`
-2. Add default RPC endpoints to `src/utils/rpcStorage.ts`
-3. Create adapters and fetchers in `src/services/EVM/[Network]/`
-4. Update `DataService` conditional logic
-5. Add network card to Home page
-6. Add network logo to assets folder
+OpenScan is free for all users. The project is sustained by subscriptions from tokens, networks, apps, and organizations that recognize the value of open blockchain infrastructure.
+
+**Subscription tiers available for:**
+- Tokens – Verified contracts, metadata integration, token pages
+- Networks – Full RPC support, dedicated subdomain explorers
+- Crypto Apps – Verified branding for wallets, dApps, exchanges
+- Companies & Orgs – Recognition for infrastructure providers and supporters
+
+[View Subscription Options](https://openscan-explorer.github.io/explorer/#/subscriptions)
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are welcome! Please read our [Contributing Guide](CONTRIBUTING.md) before submitting a Pull Request.
+
+- Report bugs and request features via [GitHub Issues](https://github.com/openscan-explorer/explorer/issues)
+- All code is publicly auditable and open for review
+- Community bounties available for bug fixes and documentation improvements
+
+## License
+
+OpenScan is licensed under the [MIT License](LICENSE).

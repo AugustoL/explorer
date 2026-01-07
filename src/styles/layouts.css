@@ -1,4 +1,11 @@
-/* Layout Utilities */
+/* Layout Utilities
+   Note: Base flex utilities (.flex-center, .flex-between, .flex-column, etc.)
+   are defined in base.css. This file contains:
+   - Grid layouts
+   - Semantic spacing (small/medium/large)
+   - Container widths
+   - Responsive utilities
+*/
 
 /* Grid Layouts */
 .data-grid-2 {
@@ -13,6 +20,21 @@
 	grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
 	gap: 12px;
 	margin-bottom: 16px;
+}
+
+/* Centered grid variants - use flexbox to center incomplete rows */
+.data-grid-3-centered {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 12px;
+	margin-bottom: 16px;
+}
+
+.data-grid-3-centered > * {
+	flex: 0 1 calc(33.333% - 8px);
+	min-width: 250px;
+	max-width: 350px;
 }
 
 .unit-converter-grid {
@@ -37,7 +59,7 @@
 .unit-converter-label {
 	font-size: 0.85rem;
 	font-weight: 600;
-	color: #6b7280;
+	color: var(--text-secondary);
 	min-width: 110px;
 	flex-shrink: 0;
 }
@@ -61,28 +83,16 @@
 	width: 100%;
 }
 
-/* Flex Utilities */
-.flex-center {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-}
-
-.flex-between {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-}
+/* Additional Flex Utilities
+   Note: Base flex utilities (.flex, .flex-center, .flex-between, .flex-column,
+   .items-center, .justify-between, etc.) are defined in base.css.
+   These are additional semantic variants.
+*/
 
 .flex-start {
 	display: flex;
 	justify-content: flex-start;
 	align-items: center;
-}
-
-.flex-column {
-	display: flex;
-	flex-direction: column;
 }
 
 .flex-column-gap {
@@ -185,7 +195,7 @@
 .subtitle {
 	font-family: "Outfit", sans-serif;
 	font-size: 1.1rem;
-	color: #0da978ff;
+	color: var(--color-primary);
 	text-align: center;
 	margin-top: 0px;
 	margin-bottom: 16px;
@@ -201,5 +211,57 @@
 	.data-grid-3,
 	.data-grid-auto {
 		grid-template-columns: 1fr;
+	}
+
+	.data-grid-3-centered > * {
+		flex: 0 1 100%;
+		max-width: 100%;
+  }
+  
+	.container-wide {
+		padding: 0 16px;
+	}
+
+	.container-medium {
+		padding: 0 16px;
+	}
+
+	/* Stack form rows on mobile */
+	.form-row {
+		flex-direction: column;
+		gap: 12px;
+	}
+
+	/* Reduce spacing on mobile */
+	.mt-large {
+		margin-top: 16px;
+	}
+
+	.mb-large {
+		margin-bottom: 16px;
+	}
+
+	.p-large {
+		padding: 16px;
+	}
+}
+
+@media (max-width: 480px) {
+	.container-wide,
+	.container-medium {
+		padding: 0 12px;
+	}
+
+	/* Further reduce spacing on small screens */
+	.mt-medium {
+		margin-top: 12px;
+	}
+
+	.mb-medium {
+		margin-bottom: 12px;
+	}
+
+	.p-medium {
+		padding: 12px;
 	}
 }

@@ -12,13 +12,18 @@ OpenScan is a trustless, open-source, standalone web-app and multi-chain blockch
 
 ```bash
 npm start
-# Runs on http://localhost:3000
+# Runs on http://localhost:3030
 ```
 
 ### Build for Production
 
 ```bash
-npm run build
+# Production build
+npm run build:production
+
+# Staging build
+npm run build:staging
+
 # Output: dist/
 ```
 
@@ -28,10 +33,20 @@ npm run build
 npm run typecheck
 ```
 
-### Formatting
+### Formatting and Linting
 
 ```bash
+# Check formatting (dry run)
+npm run format
+
+# Fix formatting issues automatically
 npm run format:fix
+
+# Check linting issues (dry run)
+npm run lint
+
+# Fix linting issues automatically
+npm run lint:fix
 ```
 
 ### Test Environment with Local Node
@@ -79,11 +94,11 @@ OpenScan follows a layered architecture with clear separation between data fetch
    - Returns `DataWithMetadata<T>` when using parallel strategy, containing:
      - `data`: The primary result (from first successful provider)
      - `metadata`: Optional RPCMetadata with all provider responses, hashes, and inconsistency flags
-   - 30-second in-memory cache keyed by `chainId:type:identifier`
+   - 30-second in-memory cache keyed by `networkId:type:identifier`
    - Supports trace operations (debug_traceTransaction, etc.) for localhost networks only
 
 5. **Hook Layer** (`hooks/`) - React integration
-   - `useDataService(chainId)`: Creates DataService instance with strategy from settings
+   - `useDataService(networkId)`: Creates DataService instance with strategy from settings
    - `useProviderSelection`: Manages user's selected RPC provider in parallel mode
    - `useSelectedData`: Extracts data from specific provider based on user selection
 
@@ -166,8 +181,56 @@ OpenScan includes special support for localhost development:
 ## Code Style
 
 - **Biome** for formatting and linting (config: `biome.json`)
+  - Line width: 100 characters
+  - Indentation: 2 spaces
+  - Scope: `src/**/*.ts`, `src/**/*.tsx`, `src/**/*.json` (excludes CSS files)
+  - Enabled rules: All recommended Biome linting rules
+  - Use `npm run format:fix` to auto-format code before committing
+  - Use `npm run lint:fix` to auto-fix linting issues (max 1024 diagnostics shown)
 - **TypeScript** with strict mode (`noImplicitAny`, `noImplicitReturns`, `noUncheckedIndexedAccess`)
 - **React 19** with functional components and hooks
+- **CSS** All styles should be on `src/styles` folder, avoid using in line component styles.
+
+## Coding Standards and Workflow
+
+### Before Committing Code
+
+ALWAYS run these commands before committing to ensure code quality:
+
+```bash
+# 1. Fix formatting issues
+npm run format:fix
+
+# 2. Fix linting issues
+npm run lint:fix
+
+# 3. Verify type safety
+npm run typecheck
+
+# 4. Run tests (if applicable)
+npm run test:run
+```
+
+### Commits
+
+- Follow the convetional commit standard v1.0.0
+- Commit without claude attribution
+
+### Code Quality Requirements
+
+- All code must pass Biome formatting and linting checks
+- All TypeScript code must pass type checking with zero errors
+- Follow the 100-character line width limit
+- Use 2-space indentation consistently
+- Adhere to Biome's recommended linting rules
+- Keep documentation up to date.
+
+### When Claude Code Modifies Files
+
+- Run `npm run format:fix` and `npm run lint:fix` after making changes
+- Address any remaining linting warnings that cannot be auto-fixed
+- Ensure TypeScript compilation succeeds with `npm run typecheck`
+- Do not commit code with formatting, linting, or type errors
 
 ## Important Patterns
 
@@ -187,9 +250,9 @@ OpenScan includes special support for localhost development:
 
 ### When Working with Cache
 
-- Cache keys format: `${chainId}:${type}:${identifier}`
+- Cache keys format: `${networkId}:${type}:${identifier}`
 - Don't cache "latest" block queries
-- Clear cache when switching networks using `clearCacheForChain(chainId)`
+- Clear cache when switching networks using `clearCacheForChain(networkId)`
 - Default timeout: 30 seconds
 
 ### RPC Strategy Switching

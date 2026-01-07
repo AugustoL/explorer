@@ -8,6 +8,7 @@ const packageJson = require("./package.json");
 
 const isProd = process.env.NODE_ENV === "production";
 const isGhPages = process.env.GITHUB_PAGES === "true";
+const publicPath = isGhPages ? "/explorer/" : "/";
 
 // Get git commit hash
 let commitHash = "development";
@@ -22,7 +23,7 @@ module.exports = {
 	output: {
 		path: path.resolve(__dirname, "dist"),
 		filename: "bundle.js",
-		publicPath: isGhPages ? "/explorer/" : "/", // key for GH Pages
+		publicPath: publicPath, // key for GH Pages
 		clean: true,
 		charset: false,
 	},
@@ -33,8 +34,11 @@ module.exports = {
 			path.resolve(__dirname, "public"),
 			path.resolve(__dirname, "dist"),
 		],
-		historyApiFallback: true,
-		port: 3000,
+		historyApiFallback: {
+			// Allow dots in URLs (for ENS names like vitalik.eth)
+			disableDotRule: true,
+		},
+		port: 3030,
 		open: true,
 		hot: true,
 		liveReload: false,
@@ -96,6 +100,7 @@ module.exports = {
 		new HtmlWebpackPlugin({
 			template: path.resolve(__dirname, "public", "index.html"),
 			inject: "body", // ensure script is injected
+			publicPath: publicPath,
 		}),
 		new CopyWebpackPlugin({
 			patterns: [
