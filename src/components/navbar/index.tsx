@@ -8,7 +8,8 @@ import BuildWarningIcon from "./BuildWarningIcon";
 const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { searchTerm, setSearchTerm, isResolving, handleSearch, networkId } = useSearch();
+  const { searchTerm, setSearchTerm, isResolving, error, clearError, handleSearch, networkId } =
+    useSearch();
   const { isDarkMode, toggleTheme } = useTheme();
 
   // Check if we should show the search box (on blocks, block, txs, tx pages)
@@ -49,7 +50,10 @@ const Navbar = () => {
               <input
                 type="text"
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  clearError();
+                }}
                 placeholder="Search by Address / Tx Hash / Block / ENS"
                 className="search-input"
                 disabled={isResolving}
@@ -79,6 +83,7 @@ const Navbar = () => {
                 </svg>
               </button>
             </form>
+            {error && <div className="search-error">{error}</div>}
           </div>
         )}
 
