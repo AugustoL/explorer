@@ -89,12 +89,7 @@ export default function Txs() {
         );
 
         console.log("Fetched transactions:", fetchedTransactions);
-        // Wrap in DataWithMetadata structure if it's not already
-        if (Array.isArray(fetchedTransactions)) {
-          setTransactionsResult({ data: fetchedTransactions });
-        } else {
-          setTransactionsResult(fetchedTransactions);
-        }
+        setTransactionsResult(fetchedTransactions);
         // biome-ignore lint/suspicious/noExplicitAny: <TODO>
       } catch (err: any) {
         console.error("Error fetching transactions:", err);
