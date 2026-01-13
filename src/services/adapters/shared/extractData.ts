@@ -13,20 +13,24 @@ export function extractData<T>(strategyResultData: T | any): T {
     const firstItem = strategyResultData[0];
 
     // Check if it has the RPCProviderResponse structure
-    if (
-      firstItem &&
-      typeof firstItem === "object" &&
-      "url" in firstItem &&
-      "status" in firstItem &&
-      "data" in firstItem
-    ) {
+    // Note: error responses may not have 'data' field, so we check for url+status
+    if (firstItem && typeof firstItem === "object" && "url" in firstItem && "status" in firstItem) {
       // Find the first successful response
       const successfulResponse = strategyResultData.find(
         // biome-ignore lint/suspicious/noExplicitAny: Provider response type is dynamic
         (r: any) => r.status === "success" && r.data !== undefined,
       );
 
-      return successfulResponse ? successfulResponse.data : (strategyResultData[0]?.data as T);
+      if (successfulResponse) {
+        return successfulResponse.data;
+      }
+
+      // All providers failed - throw an error with details
+      const errors = strategyResultData
+        // biome-ignore lint/suspicious/noExplicitAny: Provider response type is dynamic
+        .map((r: any) => `${r.url}: ${r.error || "Unknown error"}`)
+        .join("; ");
+      throw new Error(`All RPC providers failed: ${errors}`);
     }
   }
 
