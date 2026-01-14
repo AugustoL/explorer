@@ -804,6 +804,160 @@
 }
 
 /* ==========================================================================
+   DATA TABLES - MOBILE RESPONSIVE
+   Horizontal scroll and improved display for tables on mobile
+   ========================================================================== */
+
+@media (max-width: 767px) {
+  /* Table wrapper with horizontal scroll */
+  .table-wrapper,
+  .address-table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 0 -12px;
+    padding: 0 12px;
+  }
+
+  /* Ensure table doesn't shrink below content */
+  .dash-table,
+  .recent-transactions-table,
+  .address-table {
+    min-width: 600px;
+  }
+
+  /* Reduce table cell padding on mobile */
+  .dash-table th,
+  .dash-table td,
+  .recent-transactions-table th,
+  .recent-transactions-table td {
+    padding: 10px 8px;
+    font-size: 0.8rem;
+  }
+
+  /* Reduce header font size */
+  .dash-table thead th,
+  .recent-transactions-table thead th {
+    font-size: 0.7rem;
+  }
+
+  /* Truncate hash cells */
+  .table-cell-hash {
+    max-width: 80px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Truncate address cells */
+  .table-cell-address {
+    max-width: 90px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Method badges - smaller on mobile */
+  .method-badge {
+    max-width: 70px;
+    font-size: 0.65rem;
+    padding: 2px 6px;
+  }
+
+  /* Status badges - smaller on mobile */
+  .table-status-badge {
+    font-size: 0.7rem;
+    padding: 3px 8px;
+  }
+
+  /* Pagination adjustments */
+  .pagination-container {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 12px 0;
+  }
+
+  .pagination-btn {
+    padding: 8px 12px;
+    font-size: 0.8rem;
+    min-height: var(--touch-target-min, 44px);
+  }
+
+  /* Block display card - reduce padding */
+  .block-display-card {
+    padding: 12px;
+    border-radius: 12px;
+  }
+
+  /* Page card - reduce padding */
+  .page-card {
+    padding: 16px;
+    border-radius: 14px;
+  }
+
+  /* Blocks header adjustments */
+  .blocks-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .blocks-header-main {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .block-label {
+    font-size: 1.1rem;
+  }
+
+  .blocks-header-info {
+    font-size: 0.8rem;
+  }
+
+  /* Hide divider on mobile */
+  .block-header-divider {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Even more compact tables on small screens */
+  .dash-table th,
+  .dash-table td,
+  .recent-transactions-table th,
+  .recent-transactions-table td {
+    padding: 8px 6px;
+    font-size: 0.75rem;
+  }
+
+  .dash-table thead th,
+  .recent-transactions-table thead th {
+    font-size: 0.65rem;
+  }
+
+  /* Smaller truncation for very small screens */
+  .table-cell-hash {
+    max-width: 60px;
+  }
+
+  .table-cell-address {
+    max-width: 70px;
+  }
+
+  /* Stack pagination buttons */
+  .pagination-container {
+    justify-content: center;
+  }
+
+  .pagination-btn {
+    flex: 1;
+    max-width: 120px;
+    text-align: center;
+  }
+}
+
+/* ==========================================================================
    GLOBAL MOBILE ADJUSTMENTS
    Base styles that apply across the app on mobile
    ========================================================================== */
