@@ -238,8 +238,8 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({
           return;
         }
 
-        searchToBlockRef.current = range.fromBlock;
         loadMoreFromBlockRef.current = undefined;
+        searchToBlockRef.current = undefined;
         isAutoSearchRef.current = true;
         setAutoSearchPending(false);
         setSearchLimit(5);
