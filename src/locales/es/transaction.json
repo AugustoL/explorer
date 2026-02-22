@@ -92,6 +92,36 @@
   "aiAnalysis": {
     "sectionTitle": "Análisis IA"
   },
+  "btcTxs": {
+    "title": "Transacciones Bitcoin",
+    "loading": "Cargando transacciones...",
+    "failedToFetch": "No se pudieron obtener las transacciones",
+    "notFound": "No se encontraron transacciones en este bloque",
+    "latest": "Mostrando transacciones {{from}}–{{to}} de {{total}} en el último bloque #{{block}}",
+    "range": "Mostrando transacciones {{from}}–{{to}} de {{total}} en el bloque #{{block}}",
+    "txId": "ID de Transacción",
+    "block": "Bloque",
+    "time": "Tiempo",
+    "inputs": "Entradas",
+    "outputs": "Salidas",
+    "value": "Valor",
+    "size": "Tamaño",
+    "coinbase": "Coinbase",
+    "pending": "Pendiente",
+    "pagination": {
+      "latest": "Últimas",
+      "latestTitle": "Ir a las últimas transacciones",
+      "newerBlock": "↑ Bloque Más Nuevo",
+      "newerBlockTitle": "Ver bloque más nuevo",
+      "olderBlock": "↓ Bloque Más Viejo",
+      "olderBlockTitle": "Ver bloque más viejo",
+      "prev": "← Anterior",
+      "prevTitle": "Ver transacciones anteriores",
+      "next": "Siguiente →",
+      "nextTitle": "Ver siguientes transacciones",
+      "pageInfo": "Página {{page}} de {{totalPages}}"
+    }
+  },
   "opcodeTrace": {
     "totalGasUsed": "Gas Total Usado",
     "failed": "Falló",

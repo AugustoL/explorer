@@ -2123,6 +2123,19 @@
 	padding: 0 8px;
 }
 
+.pagination-divider {
+	color: var(--text-tertiary);
+	font-size: 0.9rem;
+	user-select: none;
+}
+
+.pagination-page-info {
+	color: var(--text-secondary);
+	font-size: 0.85rem;
+	font-weight: 500;
+	white-space: nowrap;
+}
+
 /* ================================================
    Utility Classes - Moved from inline styles
    ================================================ */

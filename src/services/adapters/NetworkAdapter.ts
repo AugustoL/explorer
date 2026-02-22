@@ -320,6 +320,7 @@ export abstract class NetworkAdapter {
   abstract getTransactionsFromBlockRange(
     fromBlock: number,
     blockCount?: number,
+    maxTransactions?: number,
   ): Promise<DataWithMetadata<Array<Transaction & { blockNumber: string }>>>;
 
   /**
