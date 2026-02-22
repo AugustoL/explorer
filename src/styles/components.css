@@ -16,30 +16,69 @@
 	gap: 0;
 }
 
+/* EVM Transaction Details Two-Column Grid */
+.tx-details-grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 0 24px;
+}
+
+.tx-details-column {
+	display: flex;
+	flex-direction: column;
+	gap: 0;
+}
+
+.tx-details-column .tx-row {
+	padding: 8px 16px;
+	border-bottom: 1px solid var(--color-primary-alpha-15);
+}
+
+.tx-details-column .tx-row:last-child {
+	border-bottom: 1px solid var(--color-primary-alpha-15);
+}
+
+@media (max-width: 768px) {
+	.tx-details-grid {
+		grid-template-columns: 1fr;
+		gap: 0;
+	}
+}
+
 .tx-row {
 	display: flex;
 	padding: 12px 16px;
-	border-bottom: 1px solid var(--color-primary-alpha-10);
+	border-bottom: 1px solid var(--color-primary-alpha-15);
 	align-items: flex-start;
 	gap: 16px;
 }
 
-.tx-row:last-child {
+.tx-details > .tx-row:last-child,
+.tx-section > .tx-row:last-child {
 	border-bottom: none;
+}
+
+/* Preserve border when a two-column grid follows */
+.tx-details:has(+ .btc-tx-details-grid) > .tx-row:last-child {
+	border-bottom: 1px solid var(--color-primary-alpha-15);
 }
 
 .tx-label {
 	font-size: 0.9rem;
-	color: var(--text-secondary);
-	font-weight: 500;
+	color: #b0b5bd;
+	font-weight: 600;
 	font-family: "Outfit", sans-serif;
+}
+
+[data-theme="light"] .tx-label {
+	color: var(--text-secondary);
 }
 
 .tx-value {
 	flex: 1;
 	font-size: 0.9rem;
 	color: var(--text-primary);
-	font-weight: 500;
+	font-weight: 600;
 	font-family: "Outfit", sans-serif;
 	word-break: break-word;
 }
@@ -47,25 +86,28 @@
 .tx-mono {
 	font-family: "JetBrains Mono", "Fira Code", monospace;
 	font-size: 0.85rem;
+	color: var(--color-primary-hover);
 }
 
 .tx-value-highlight {
-	color: var(--color-primary-muted);
-	font-weight: 600;
+	color: var(--color-primary);
+	font-weight: 700;
 }
 
 .tx-confirmations {
 	margin-left: 12px;
 	padding: 2px 8px;
-	background: var(--color-primary-alpha-15);
+	background: var(--color-primary-alpha-20);
 	border-radius: 4px;
 	font-size: 0.8rem;
 	color: var(--color-primary);
+	font-weight: 600;
 }
 
 .tx-age {
-	font-weight: 600;
+	font-weight: 700;
 	margin-right: 6px;
+	color: var(--text-primary);
 }
 
 .tx-timestamp-full {
@@ -87,14 +129,16 @@
 
 .tx-attr {
 	padding: 4px 10px;
-	background: var(--color-primary-alpha-8);
+	background: var(--color-primary-alpha-15);
 	border-radius: 4px;
 	font-size: 0.85rem;
+	color: var(--text-primary);
+	font-weight: 500;
 }
 
 /* L2-specific row styles */
 .tx-row-arbitrum {
-	background: var(--color-info-alpha-4);
+	background: var(--color-info-alpha-10);
 	border-left: 3px solid var(--color-info);
 }
 
@@ -103,7 +147,7 @@
 }
 
 .tx-row-optimism {
-	background: var(--color-error-alpha-4);
+	background: var(--color-error-alpha-10);
 	border-left: 3px solid var(--color-error);
 }
 
@@ -112,7 +156,7 @@
 }
 
 .tx-row-base {
-	background: rgba(0, 82, 255, 0.04);
+	background: rgba(0, 82, 255, 0.1);
 	border-left: 3px solid #0052ff;
 }
 
@@ -306,7 +350,7 @@
 	flex-direction: column;
 	gap: 8px;
 	padding: 12px 16px;
-	border-bottom: 1px solid var(--color-primary-alpha-10);
+	border-bottom: 1px solid var(--color-primary-alpha-15);
 }
 
 .tx-row-vertical:last-child {
@@ -1420,6 +1464,17 @@
 	font-weight: 600;
 }
 
+/* Status text (non-badge) for transaction detail rows */
+.tx-status-text-success {
+	color: var(--badge-success-text, #065f46);
+	font-weight: 600;
+}
+
+.tx-status-text-failed {
+	color: var(--badge-error-text, #991b1b);
+	font-weight: 600;
+}
+
 /* Use CSS variables for badge colors for theming support */
 .status-badge-success {
 	background: var(--badge-success-bg, #d1fae5);
@@ -2126,6 +2181,19 @@
 	font-size: 0.9rem;
 	font-weight: 500;
 	padding: 0 8px;
+}
+
+.pagination-divider {
+	color: var(--text-tertiary);
+	font-size: 0.9rem;
+	user-select: none;
+}
+
+.pagination-page-info {
+	color: var(--text-secondary);
+	font-size: 0.85rem;
+	font-weight: 500;
+	white-space: nowrap;
 }
 
 /* ================================================
@@ -7274,8 +7342,7 @@
 .btc-tx-details-grid {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
-	gap: 24px;
-	margin-top: 16px;
+	gap: 0 24px;
 }
 
 .btc-tx-details-column {
@@ -7286,7 +7353,7 @@
 
 .btc-tx-details-column .tx-row {
 	padding: 8px 16px;
-	border-bottom: 1px solid var(--overlay-light-3);
+	border-bottom: 1px solid var(--color-primary-alpha-15);
 }
 
 .btc-tx-details-column .tx-row:last-child {

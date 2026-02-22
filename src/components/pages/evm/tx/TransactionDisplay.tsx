@@ -488,15 +488,13 @@ const TransactionDisplay: React.FC<TransactionDisplayProps> = React.memo(
       [timestampMs, formatTimeAgo],
     );
 
-    const getStatusBadge = useCallback(
+    const getStatusText = useCallback(
       (status?: string) => {
         if (!status) return null;
         const isSuccess = status === "0x1" || status === "1";
         return (
-          <span
-            className={`status-badge ${isSuccess ? "status-badge-success" : "status-badge-failed"}`}
-          >
-            {isSuccess ? t("success") : t("failed")}
+          <span className={isSuccess ? "tx-status-text-success" : "tx-status-text-failed"}>
+            {isSuccess ? `✓ ${t("success")}` : `✗ ${t("failed")}`}
           </span>
         );
       },
@@ -522,8 +520,9 @@ const TransactionDisplay: React.FC<TransactionDisplayProps> = React.memo(
             )}
           </div>
 
-          {/* Row-based layout like Etherscan */}
+          {/* Row-based layout */}
           <div className="tx-details">
+            {/* Full-width rows: long hex values */}
             {/* Transaction Hash */}
             <div className="tx-row">
               <span className="tx-label">{t("transactionHash")}</span>
@@ -531,46 +530,6 @@ const TransactionDisplay: React.FC<TransactionDisplayProps> = React.memo(
                 <LongString value={transaction.hash} start={20} end={16} />
               </span>
             </div>
-
-            {/* Status */}
-            <div className="tx-row">
-              <span className="tx-label">{t("status")}</span>
-              <span className="tx-value">{getStatusBadge(transaction.receipt?.status)}</span>
-            </div>
-
-            {/* Block */}
-            <div className="tx-row">
-              <span className="tx-label">{t("block")}</span>
-              <span className="tx-value">
-                {networkId ? (
-                  <Link
-                    to={`/${networkId}/block/${transaction.blockNumber}`}
-                    className="link-accent"
-                  >
-                    {Number(transaction.blockNumber).toLocaleString()}
-                  </Link>
-                ) : (
-                  Number(transaction.blockNumber).toLocaleString()
-                )}
-                {confirmations !== null && (
-                  <span className="tx-confirmations">
-                    {confirmations > 100 ? "+100" : confirmations.toLocaleString()}{" "}
-                    {t("blockConfirmations")}
-                  </span>
-                )}
-              </span>
-            </div>
-
-            {/* Timestamp */}
-            {formattedTimestamp && (
-              <div className="tx-row">
-                <span className="tx-label">{t("timestamp")}</span>
-                <span className="tx-value">
-                  {timestampAge && <span className="tx-age">{timestampAge}</span>}
-                  <span className="tx-timestamp-full">({formattedTimestamp})</span>
-                </span>
-              </div>
-            )}
 
             {/* From */}
             <div className="tx-row">
@@ -623,134 +582,196 @@ const TransactionDisplay: React.FC<TransactionDisplayProps> = React.memo(
               </div>
             )}
 
-            {/* Value */}
-            <div className="tx-row">
-              <span className="tx-label">{t("value")}</span>
-              <span className="tx-value tx-value-highlight">{formatValue(transaction.value)}</span>
-            </div>
-
-            {/* Transaction Fee */}
-            <div className="tx-row">
-              <span className="tx-label">{t("transactionFee")}</span>
-              <span className="tx-value">
-                {transaction.receipt
-                  ? formatValue(
-                      (
-                        BigInt(transaction.receipt.gasUsed) *
-                        BigInt(transaction.receipt.effectiveGasPrice)
-                      ).toString(),
-                    )
-                  : t("pending")}
-              </span>
-            </div>
-
-            {/* Gas Price */}
-            <div className="tx-row">
-              <span className="tx-label">{t("gasPrice")}</span>
-              <span className="tx-value">{formatGwei(transaction.gasPrice)}</span>
-            </div>
-
-            {/* Gas Limit & Usage */}
-            <div className="tx-row">
-              <span className="tx-label">{t("gasLimitUsage")}</span>
-              <span className="tx-value">
-                {Number(transaction.gas).toLocaleString()}
-                {transaction.receipt && (
-                  <>
-                    {" | "}
-                    {Number(transaction.receipt.gasUsed).toLocaleString()}
-                    <span className="tx-gas-pct">
-                      (
-                      {(
-                        (Number(transaction.receipt.gasUsed) / Number(transaction.gas)) *
-                        100
-                      ).toFixed(1)}
-                      %)
-                    </span>
-                  </>
-                )}
-              </span>
-            </div>
-
-            {/* Effective Gas Price (if different from gas price) */}
-            {transaction.receipt &&
-              transaction.receipt.effectiveGasPrice !== transaction.gasPrice && (
+            {/* Two-column grid for short detail fields */}
+            <div className="tx-details-grid">
+              {/* Left Column */}
+              <div className="tx-details-column">
+                {/* Status */}
                 <div className="tx-row">
-                  <span className="tx-label">{t("effectiveGasPrice")}</span>
+                  <span className="tx-label">{t("status")}</span>
+                  <span className="tx-value">{getStatusText(transaction.receipt?.status)}</span>
+                </div>
+
+                {/* Block */}
+                <div className="tx-row">
+                  <span className="tx-label">{t("block")}</span>
                   <span className="tx-value">
-                    {formatGwei(transaction.receipt.effectiveGasPrice)}
+                    {networkId ? (
+                      <Link
+                        to={`/${networkId}/block/${transaction.blockNumber}`}
+                        className="link-accent"
+                      >
+                        {Number(transaction.blockNumber).toLocaleString()}
+                      </Link>
+                    ) : (
+                      Number(transaction.blockNumber).toLocaleString()
+                    )}
+                    {confirmations !== null && (
+                      <span className="tx-confirmations">
+                        {confirmations > 100 ? "+100" : confirmations.toLocaleString()}{" "}
+                        {t("blockConfirmations")}
+                      </span>
+                    )}
                   </span>
                 </div>
-              )}
+
+                {/* Timestamp */}
+                {formattedTimestamp && (
+                  <div className="tx-row">
+                    <span className="tx-label">{t("timestamp")}</span>
+                    <span className="tx-value">
+                      {timestampAge && <span className="tx-age">{timestampAge}</span>}
+                      <span className="tx-timestamp-full">({formattedTimestamp})</span>
+                    </span>
+                  </div>
+                )}
+
+                {/* Value */}
+                <div className="tx-row">
+                  <span className="tx-label">{t("value")}</span>
+                  <span className="tx-value tx-value-highlight">
+                    {formatValue(transaction.value)}
+                  </span>
+                </div>
+
+                {/* Transaction Fee */}
+                <div className="tx-row">
+                  <span className="tx-label">{t("transactionFee")}</span>
+                  <span className="tx-value">
+                    {transaction.receipt
+                      ? formatValue(
+                          (
+                            BigInt(transaction.receipt.gasUsed) *
+                            BigInt(transaction.receipt.effectiveGasPrice)
+                          ).toString(),
+                        )
+                      : t("pending")}
+                  </span>
+                </div>
+              </div>
+
+              {/* Right Column */}
+              <div className="tx-details-column">
+                {/* Gas Price */}
+                <div className="tx-row">
+                  <span className="tx-label">{t("gasPrice")}</span>
+                  <span className="tx-value">{formatGwei(transaction.gasPrice)}</span>
+                </div>
+
+                {/* Gas Limit & Usage */}
+                <div className="tx-row">
+                  <span className="tx-label">{t("gasLimitUsage")}</span>
+                  <span className="tx-value">
+                    {Number(transaction.gas).toLocaleString()}
+                    {transaction.receipt && (
+                      <>
+                        {" | "}
+                        {Number(transaction.receipt.gasUsed).toLocaleString()}
+                        <span className="tx-gas-pct">
+                          (
+                          {(
+                            (Number(transaction.receipt.gasUsed) / Number(transaction.gas)) *
+                            100
+                          ).toFixed(1)}
+                          %)
+                        </span>
+                      </>
+                    )}
+                  </span>
+                </div>
+
+                {/* Effective Gas Price (if different from gas price) */}
+                {transaction.receipt &&
+                  transaction.receipt.effectiveGasPrice !== transaction.gasPrice && (
+                    <div className="tx-row">
+                      <span className="tx-label">{t("effectiveGasPrice")}</span>
+                      <span className="tx-value">
+                        {formatGwei(transaction.receipt.effectiveGasPrice)}
+                      </span>
+                    </div>
+                  )}
+
+                {/* Nonce */}
+                <div className="tx-row">
+                  <span className="tx-label">{t("nonce")}</span>
+                  <span className="tx-value">{transaction.nonce}</span>
+                </div>
+
+                {/* Position */}
+                <div className="tx-row">
+                  <span className="tx-label">{t("position")}</span>
+                  <span className="tx-value">{transaction.transactionIndex}</span>
+                </div>
+
+                {/* Type */}
+                <div className="tx-row">
+                  <span className="tx-label">{t("type")}</span>
+                  <span className="tx-value">{transaction.type}</span>
+                </div>
+              </div>
+            </div>
 
             {/* Arbitrum-specific fields */}
             {isArbitrumTx(transaction) &&
               transaction.receipt &&
               isArbitrumReceipt(transaction.receipt) && (
-                <>
-                  <div className="tx-row tx-row-arbitrum">
-                    <span className="tx-label">{t("l1BlockNumber")}</span>
-                    <span className="tx-value">
-                      {Number(transaction.receipt.l1BlockNumber).toLocaleString()}
-                    </span>
+                <div className="tx-details-grid">
+                  <div className="tx-details-column">
+                    <div className="tx-row tx-row-arbitrum">
+                      <span className="tx-label">{t("l1BlockNumber")}</span>
+                      <span className="tx-value">
+                        {Number(transaction.receipt.l1BlockNumber).toLocaleString()}
+                      </span>
+                    </div>
                   </div>
-                  <div className="tx-row tx-row-arbitrum">
-                    <span className="tx-label">{t("gasUsedForL1")}</span>
-                    <span className="tx-value">
-                      {Number(transaction.receipt.gasUsedForL1).toLocaleString()}
-                    </span>
+                  <div className="tx-details-column">
+                    <div className="tx-row tx-row-arbitrum">
+                      <span className="tx-label">{t("gasUsedForL1")}</span>
+                      <span className="tx-value">
+                        {Number(transaction.receipt.gasUsedForL1).toLocaleString()}
+                      </span>
+                    </div>
                   </div>
-                </>
+                </div>
               )}
 
             {/* OP Stack fields (Optimism, Base) */}
             {transaction.receipt && isOptimismReceipt(transaction.receipt) && (
-              <>
-                <div
-                  className={`tx-row ${networkId === "8453" ? "tx-row-base" : "tx-row-optimism"}`}
-                >
-                  <span className="tx-label">{t("l1Fee")}</span>
-                  <span className="tx-value">{formatValue(transaction.receipt.l1Fee)}</span>
+              <div className="tx-details-grid">
+                <div className="tx-details-column">
+                  <div
+                    className={`tx-row ${networkId === "8453" ? "tx-row-base" : "tx-row-optimism"}`}
+                  >
+                    <span className="tx-label">{t("l1Fee")}</span>
+                    <span className="tx-value">{formatValue(transaction.receipt.l1Fee)}</span>
+                  </div>
+                  <div
+                    className={`tx-row ${networkId === "8453" ? "tx-row-base" : "tx-row-optimism"}`}
+                  >
+                    <span className="tx-label">{t("l1GasPrice")}</span>
+                    <span className="tx-value">{formatGwei(transaction.receipt.l1GasPrice)}</span>
+                  </div>
                 </div>
-                <div
-                  className={`tx-row ${networkId === "8453" ? "tx-row-base" : "tx-row-optimism"}`}
-                >
-                  <span className="tx-label">{t("l1GasPrice")}</span>
-                  <span className="tx-value">{formatGwei(transaction.receipt.l1GasPrice)}</span>
+                <div className="tx-details-column">
+                  <div
+                    className={`tx-row ${networkId === "8453" ? "tx-row-base" : "tx-row-optimism"}`}
+                  >
+                    <span className="tx-label">{t("l1GasUsed")}</span>
+                    <span className="tx-value">
+                      {Number(transaction.receipt.l1GasUsed).toLocaleString()}
+                    </span>
+                  </div>
+                  <div
+                    className={`tx-row ${networkId === "8453" ? "tx-row-base" : "tx-row-optimism"}`}
+                  >
+                    <span className="tx-label">{t("l1FeeScalar")}</span>
+                    <span className="tx-value">{transaction.receipt.l1FeeScalar}</span>
+                  </div>
                 </div>
-                <div
-                  className={`tx-row ${networkId === "8453" ? "tx-row-base" : "tx-row-optimism"}`}
-                >
-                  <span className="tx-label">{t("l1GasUsed")}</span>
-                  <span className="tx-value">
-                    {Number(transaction.receipt.l1GasUsed).toLocaleString()}
-                  </span>
-                </div>
-                <div
-                  className={`tx-row ${networkId === "8453" ? "tx-row-base" : "tx-row-optimism"}`}
-                >
-                  <span className="tx-label">{t("l1FeeScalar")}</span>
-                  <span className="tx-value">{transaction.receipt.l1FeeScalar}</span>
-                </div>
-              </>
+              </div>
             )}
 
-            {/* Other Attributes (Nonce, Index, Type) */}
-            <div className="tx-row">
-              <span className="tx-label">{t("otherAttributes")}</span>
-              <span className="tx-value tx-attrs">
-                <span className="tx-attr">
-                  {t("nonce")} {transaction.nonce}
-                </span>
-                <span className="tx-attr">
-                  {t("position")} {transaction.transactionIndex}
-                </span>
-                <span className="tx-attr">
-                  {t("type")} {transaction.type}
-                </span>
-              </span>
-            </div>
-
+            {/* Full-width rows: long content */}
             {/* Input Data */}
             <div className="tx-row tx-row-vertical">
               <span className="tx-label">{t("inputData")}</span>
