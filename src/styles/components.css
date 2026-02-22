@@ -16,6 +16,35 @@
 	gap: 0;
 }
 
+/* EVM Transaction Details Two-Column Grid */
+.tx-details-grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 0 24px;
+}
+
+.tx-details-column {
+	display: flex;
+	flex-direction: column;
+	gap: 0;
+}
+
+.tx-details-column .tx-row {
+	padding: 8px 16px;
+	border-bottom: 1px solid var(--color-primary-alpha-10);
+}
+
+.tx-details-column .tx-row:last-child {
+	border-bottom: none;
+}
+
+@media (max-width: 768px) {
+	.tx-details-grid {
+		grid-template-columns: 1fr;
+		gap: 0;
+	}
+}
+
 .tx-row {
 	display: flex;
 	padding: 12px 16px;
