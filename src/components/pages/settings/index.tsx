@@ -49,12 +49,6 @@ const getAlchemyUrl = (chainId: number, apiKey: string): string | null => {
 const isInfuraUrl = (url: string): boolean => url.includes("infura.io");
 const isAlchemyUrl = (url: string): boolean => url.includes("alchemy.com");
 
-const getProviderBadge = (url: string): string | null => {
-  if (isInfuraUrl(url)) return "INFURA";
-  if (isAlchemyUrl(url)) return "ALCHEMY";
-  return null;
-};
-
 const Settings: React.FC = () => {
   const { t, i18n } = useTranslation("settings");
   const { rpcUrls, setRpcUrls } = useContext(AppContext);
@@ -228,6 +222,8 @@ const Settings: React.FC = () => {
    */
   const getRpcTagClass = useCallback(
     (url: string): string => {
+      // Personal API key URLs have tracking enabled
+      if (isInfuraUrl(url) || isAlchemyUrl(url)) return "rpc-tracking";
       const ep = metadataUrlMap.get(url);
       if (!ep) return "";
       if (ep.tracking !== "none") return "rpc-tracking";
@@ -239,14 +235,14 @@ const Settings: React.FC = () => {
 
   /**
    * Get display label for an RPC tag.
-   * Priority: metadata provider name → Infura/Alchemy badge → hostname from URL
+   * Priority: Infura/Alchemy personal → metadata provider name → hostname from URL
    */
   const getRpcTagLabel = useCallback(
     (url: string): string => {
+      if (isInfuraUrl(url)) return "Infura Personal";
+      if (isAlchemyUrl(url)) return "Alchemy Personal";
       const ep = metadataUrlMap.get(url);
       if (ep?.provider && ep.provider.toLowerCase() !== "unknown") return ep.provider;
-      const badge = getProviderBadge(url);
-      if (badge) return badge;
       try {
         return new URL(url).hostname;
       } catch {
