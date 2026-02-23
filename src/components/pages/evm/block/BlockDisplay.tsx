@@ -217,16 +217,6 @@ const BlockDisplay: React.FC<BlockDisplayProps> = React.memo(
                   </span>
                 </div>
 
-                {/* Extra Data */}
-                {block.extraData && block.extraData !== "0x" && (
-                  <div className="tx-row">
-                    <span className="tx-label">{t("extraData")}:</span>
-                    <span className="tx-value">
-                      <ExtraDataDisplay hexData={block.extraData} />
-                    </span>
-                  </div>
-                )}
-
                 {/* Difficulty */}
                 {Number(block.difficulty) > 0 && (
                   <div className="tx-row">
@@ -250,6 +240,16 @@ const BlockDisplay: React.FC<BlockDisplayProps> = React.memo(
                   <span className="tx-label">{t("size")}:</span>
                   <span className="tx-value">{Number(block.size).toLocaleString()} bytes</span>
                 </div>
+
+                {/* Extra Data */}
+                {block.extraData && block.extraData !== "0x" && (
+                  <div className="tx-row">
+                    <span className="tx-label">{t("extraData")}:</span>
+                    <span className="tx-value">
+                      <ExtraDataDisplay hexData={block.extraData} />
+                    </span>
+                  </div>
+                )}
               </div>
 
               {/* Right Column */}
