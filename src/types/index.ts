@@ -482,7 +482,7 @@ export interface UserSettings {
  * Default user settings
  */
 export const DEFAULT_SETTINGS: UserSettings = {
-  theme: "auto",
+  theme: "dark",
   showBackgroundBlocks: true,
   rpcStrategy: "fallback",
   maxParallelRequests: 3,
