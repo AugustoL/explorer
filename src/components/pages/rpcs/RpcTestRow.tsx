@@ -10,7 +10,6 @@ interface RpcTestRowProps {
   result: RpcTestResult | undefined;
   isActive: boolean;
   onRetest: (url: string) => void;
-  onAdd: (url: string) => void;
 }
 
 function getStatusDotClass(status: RpcTestStatus | undefined): string {
@@ -57,14 +56,7 @@ function getTruncatedUrl(url: string): string {
   }
 }
 
-const RpcTestRow: React.FC<RpcTestRowProps> = ({
-  url,
-  metadata,
-  result,
-  isActive,
-  onRetest,
-  onAdd,
-}) => {
+const RpcTestRow: React.FC<RpcTestRowProps> = ({ url, metadata, result, isActive, onRetest }) => {
   const { t } = useTranslation("rpcs");
   const status = result?.status;
   const provider = getProviderLabel(url, metadata);
@@ -116,6 +108,21 @@ const RpcTestRow: React.FC<RpcTestRowProps> = ({
         </span>
       </div>
 
+      {/* Block Number */}
+      <div className="rpcs-cell rpcs-cell-block">
+        {status === "pending" ? (
+          <span className="rpcs-block-pending">...</span>
+        ) : result?.blockNumber ? (
+          <span className="rpcs-block-value">
+            {result.blockNumber.startsWith("0x")
+              ? Number.parseInt(result.blockNumber, 16).toLocaleString()
+              : Number(result.blockNumber).toLocaleString()}
+          </span>
+        ) : (
+          <span className="rpcs-block-na">{t("latency.na")}</span>
+        )}
+      </div>
+
       {/* Tracking */}
       <div className="rpcs-cell rpcs-cell-tracking">
         {trackingClass && (
@@ -142,18 +149,6 @@ const RpcTestRow: React.FC<RpcTestRowProps> = ({
         >
           {t("actions.copyUrl")}
         </button>
-        {isActive ? (
-          <span className="rpcs-active-badge">{t("actions.added")}</span>
-        ) : (
-          <button
-            type="button"
-            className="rpcs-action-button rpcs-button-add"
-            onClick={() => onAdd(url)}
-            title={t("actions.add")}
-          >
-            {t("actions.add")}
-          </button>
-        )}
       </div>
 
       {/* Mobile labels */}
@@ -161,7 +156,6 @@ const RpcTestRow: React.FC<RpcTestRowProps> = ({
         <div className="rpcs-mobile-header">
           <span className={getStatusDotClass(status)} />
           <span className="rpcs-provider-name">{provider}</span>
-          {isActive && <span className="rpcs-active-badge">{t("actions.added")}</span>}
         </div>
         <span className="rpcs-provider-url" title={url}>
           {getTruncatedUrl(url)}
@@ -181,6 +175,14 @@ const RpcTestRow: React.FC<RpcTestRowProps> = ({
             </span>
           ) : (
             <span className="rpcs-latency-na">{t("latency.na")}</span>
+          )}
+          {result?.blockNumber && (
+            <span className="rpcs-block-value">
+              #
+              {result.blockNumber.startsWith("0x")
+                ? Number.parseInt(result.blockNumber, 16).toLocaleString()
+                : Number(result.blockNumber).toLocaleString()}
+            </span>
           )}
           {trackingClass && (
             <span className={`settings-rpc-tag ${trackingClass}`}>{getTrackingLabel()}</span>
@@ -202,15 +204,6 @@ const RpcTestRow: React.FC<RpcTestRowProps> = ({
           >
             {t("actions.copyUrl")}
           </button>
-          {!isActive && (
-            <button
-              type="button"
-              className="rpcs-action-button rpcs-button-add"
-              onClick={() => onAdd(url)}
-            >
-              {t("actions.add")}
-            </button>
-          )}
         </div>
       </div>
     </div>

@@ -184,7 +184,7 @@
 /* Header row */
 .rpcs-header {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr 1.5fr;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1.5fr;
   gap: 0.5rem;
   padding: 0.75rem 1rem;
   background: var(--overlay-light-1);
@@ -214,6 +214,14 @@ div.rpcs-header-cell {
   cursor: default;
 }
 
+.rpcs-header-cell.rpcs-header-latency,
+.rpcs-header-cell.rpcs-header-status,
+.rpcs-header-cell.rpcs-header-block,
+.rpcs-header-cell.rpcs-header-tracking,
+.rpcs-header-cell.rpcs-header-actions {
+  text-align: center;
+}
+
 /* Data rows */
 .rpcs-row {
   border-bottom: 1px solid var(--overlay-light-2);
@@ -235,7 +243,7 @@ div.rpcs-header-cell {
 @media (min-width: 769px) {
   .rpcs-row {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr 1.5fr;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1.5fr;
     gap: 0.5rem;
     padding: 0.625rem 1rem;
     align-items: center;
@@ -275,6 +283,15 @@ div.rpcs-header-cell {
   flex-direction: column;
   align-items: flex-start;
   gap: 0.125rem;
+}
+
+.rpcs-cell-latency,
+.rpcs-cell-status,
+.rpcs-cell-block,
+.rpcs-cell-tracking,
+.rpcs-cell-actions {
+  justify-content: center;
+  text-align: center;
 }
 
 .rpcs-provider-name {
@@ -317,6 +334,23 @@ div.rpcs-header-cell {
 }
 
 .rpcs-latency-na {
+  color: var(--text-tertiary);
+  font-size: 0.8rem;
+}
+
+/* Block number */
+.rpcs-block-value {
+  font-weight: 600;
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-secondary);
+}
+
+.rpcs-block-pending {
+  color: var(--text-tertiary);
+}
+
+.rpcs-block-na {
   color: var(--text-tertiary);
   font-size: 0.8rem;
 }

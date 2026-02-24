@@ -10,6 +10,7 @@
     "url": "URL",
     "latency": "Latencia",
     "status": "Estado",
+    "block": "Bloque",
     "tracking": "Privacidad",
     "actions": "Acciones"
   },

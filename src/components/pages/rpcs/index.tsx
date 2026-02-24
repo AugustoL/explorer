@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
 import { AppContext, useNetworks } from "../../../context/AppContext";
 import type { MetadataRpcEndpoint } from "../../../services/MetadataService";
-import type { NetworkConfig, RpcUrlsContextType } from "../../../types";
+import type { NetworkConfig } from "../../../types";
 import { getMetadataEndpointMap } from "../../../utils/rpcStorage";
 import { NetworkIcon } from "../../common/NetworkIcon";
 import RpcTestRow from "./RpcTestRow";
@@ -97,7 +97,7 @@ function getProviderName(url: string, metadata: MetadataRpcEndpoint | undefined)
 const RPCs: React.FC = () => {
   const { t } = useTranslation("rpcs");
   const [searchParams, setSearchParams] = useSearchParams();
-  const { rpcUrls, setRpcUrls } = useContext(AppContext);
+  const { rpcUrls } = useContext(AppContext);
   const { enabledNetworks } = useNetworks();
   const { results, isTesting, testAll, testSingle, clearResults } = useRpcLatencyTest();
 
@@ -240,20 +240,6 @@ const RPCs: React.FC = () => {
     }
   }, [selectedNetworkId]);
 
-  // Handle add endpoint
-  const handleAdd = useCallback(
-    (url: string) => {
-      const currentUrls = rpcUrls[selectedNetworkId] ?? [];
-      if (currentUrls.includes(url)) return;
-      const updated: RpcUrlsContextType = {
-        ...rpcUrls,
-        [selectedNetworkId]: [...currentUrls, url],
-      };
-      setRpcUrls(updated);
-    },
-    [rpcUrls, selectedNetworkId, setRpcUrls],
-  );
-
   // Handle test all
   const handleTestAll = useCallback(() => {
     const urls = endpoints.map((e) => e.url);
@@ -332,6 +318,7 @@ const RPCs: React.FC = () => {
                 {t("table.status")}
                 {getSortIndicator("status")}
               </button>
+              <div className="rpcs-header-cell rpcs-header-block">{t("table.block")}</div>
               <div className="rpcs-header-cell rpcs-header-tracking">{t("table.tracking")}</div>
               <div className="rpcs-header-cell rpcs-header-actions">{t("table.actions")}</div>
             </div>
@@ -345,7 +332,6 @@ const RPCs: React.FC = () => {
                 result={results.get(entry.url)}
                 isActive={activeUrls.has(entry.url)}
                 onRetest={(url) => testSingle(url, networkType)}
-                onAdd={handleAdd}
               />
             ))}
           </div>
