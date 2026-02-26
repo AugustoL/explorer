@@ -21,6 +21,7 @@ import { AI_PROVIDERS, AI_PROVIDER_ORDER } from "../../../config/aiProviders";
 import { clearAICache } from "../../common/AIAnalysis/aiCache";
 import { logger } from "../../../utils/logger";
 import { getChainIdFromNetwork } from "../../../utils/networkResolver";
+import { clearPersistentCache, getPersistentCacheSize } from "../../../utils/persistentCache";
 import { clearMetadataRpcCache, getMetadataEndpointMap } from "../../../utils/rpcStorage";
 import { type RpcTestResult, testRpcEndpoint } from "../rpcs/useRpcLatencyTest";
 
@@ -88,7 +89,7 @@ function sortRpcsByQuality(
 const Settings: React.FC = () => {
   const { t, i18n } = useTranslation("settings");
   const { rpcUrls, setRpcUrls } = useContext(AppContext);
-  const { settings, updateSettings } = useSettings();
+  const { settings, updateSettings, isSuperUser } = useSettings();
   const { enabledNetworks } = useNetworks();
   const { isMetaMaskAvailable, isSupported, setAsDefaultExplorer } = useMetaMaskExplorer();
   const [localRpc, setLocalRpc] = useState<Record<string, string | RPCUrls>>({
@@ -123,6 +124,7 @@ const Settings: React.FC = () => {
   const [metamaskStatus, setMetamaskStatus] = useState<
     Record<string, "idle" | "loading" | "success" | "error">
   >({});
+  const [persistentCacheBytes, setPersistentCacheBytes] = useState(() => getPersistentCacheSize());
   const [syncingChain, setSyncingChain] = useState<string | null>(null);
 
   // Sync localRpc when context rpcUrls changes (e.g., after save)
@@ -157,6 +159,9 @@ const Settings: React.FC = () => {
     localStorage.removeItem("openscan_cache");
     // Clear AI analysis cache
     clearAICache();
+    // Clear persistent cache (super user)
+    clearPersistentCache();
+    setPersistentCacheBytes(0);
     setCacheCleared(true);
     setTimeout(() => setCacheCleared(false), 3000);
   }, []);
@@ -914,6 +919,61 @@ const Settings: React.FC = () => {
                 </select>
               </div>
             </div>
+            {/* Super User Section - only visible in super user mode */}
+            {isSuperUser && (
+              <div className="settings-section no-margin">
+                <h2 className="settings-section-title">{t("superUser.title")}</h2>
+                <p className="settings-section-description">{t("superUser.description")}</p>
+
+                <div className="settings-item">
+                  <div>
+                    <div className="settings-item-label">
+                      {t("superUser.persistentCache.sizeLimit.label")}
+                    </div>
+                    <div className="settings-item-description">
+                      {t("superUser.persistentCache.sizeLimit.description")}
+                    </div>
+                  </div>
+                  <select
+                    value={settings.persistentCacheSizeMB ?? 10}
+                    onChange={(e) =>
+                      updateSettings({ persistentCacheSizeMB: Number(e.target.value) })
+                    }
+                    className="settings-select"
+                  >
+                    <option value={5}>5 MB</option>
+                    <option value={10}>10 MB</option>
+                    <option value={25}>25 MB</option>
+                    <option value={50}>50 MB</option>
+                    <option value={100}>100 MB</option>
+                  </select>
+                </div>
+
+                <div className="settings-item">
+                  <div>
+                    <div className="settings-item-label">
+                      {t("superUser.persistentCache.label")}
+                    </div>
+                    <div className="settings-item-description">
+                      {t("superUser.persistentCache.usage", {
+                        used: `${(persistentCacheBytes / (1024 * 1024)).toFixed(2)} MB`,
+                        limit: `${settings.persistentCacheSizeMB ?? 10} MB`,
+                      })}
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    className="settings-clear-cache-button"
+                    onClick={() => {
+                      clearPersistentCache();
+                      setPersistentCacheBytes(0);
+                    }}
+                  >
+                    {t("superUser.persistentCache.clear.button")}
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Save Button - positioned after general settings */}

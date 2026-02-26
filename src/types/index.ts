@@ -476,6 +476,7 @@ export interface UserSettings {
   apiKeys?: ApiKeys;
   isSuperUser?: boolean;
   promptVersion?: PromptVersion;
+  persistentCacheSizeMB?: number;
 }
 
 /**
@@ -489,6 +490,7 @@ export const DEFAULT_SETTINGS: UserSettings = {
   apiKeys: {},
   isSuperUser: false,
   promptVersion: "stable",
+  persistentCacheSizeMB: 10,
 };
 
 /**
