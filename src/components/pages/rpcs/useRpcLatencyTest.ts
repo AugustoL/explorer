@@ -15,6 +15,15 @@ export interface RpcTestResult {
 const TIMEOUT_MS = 10_000;
 const BATCH_SIZE = 6;
 
+function isHttpRpcUrl(url: string): boolean {
+  try {
+    const protocol = new URL(url).protocol.toLowerCase();
+    return protocol === "http:" || protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
 function buildRpcBody(networkType: NetworkType): string {
   if (networkType === "bitcoin") {
     return JSON.stringify({ jsonrpc: "2.0", id: 1, method: "getblockcount", params: [] });
@@ -27,6 +36,16 @@ export async function testRpcEndpoint(
   signal: AbortSignal,
   networkType: NetworkType,
 ): Promise<RpcTestResult> {
+  if (!isHttpRpcUrl(url)) {
+    return {
+      url,
+      status: "untested",
+      latency: null,
+      blockNumber: null,
+      error: "Unsupported RPC protocol for HTTP test",
+    };
+  }
+
   const start = performance.now();
   try {
     const res = await fetch(url, {
