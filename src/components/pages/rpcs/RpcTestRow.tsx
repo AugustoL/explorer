@@ -60,8 +60,7 @@ function redactSensitiveUrl(rawUrl: string): string {
     // Hide credential-like path segments (long, high-entropy tokens)
     const segments = parsed.pathname.split("/").map((segment) => {
       if (!segment) return segment;
-      const looksLikeToken =
-        segment.length >= 24 && /[A-Za-z]/.test(segment) && /\d/.test(segment);
+      const looksLikeToken = segment.length >= 24 && /[A-Za-z]/.test(segment) && /\d/.test(segment);
       return looksLikeToken ? "***" : segment;
     });
     parsed.pathname = segments.join("/");
