@@ -45,14 +45,42 @@ function getProviderLabel(url: string, metadata: MetadataRpcEndpoint | undefined
   }
 }
 
-function getTruncatedUrl(url: string): string {
+function redactSensitiveUrl(rawUrl: string): string {
   try {
-    const parsed = new URL(url);
-    const path = parsed.pathname === "/" ? "" : parsed.pathname;
-    const display = `${parsed.hostname}${path}`;
-    return display.length > 50 ? `${display.slice(0, 47)}...` : display;
+    const parsed = new URL(rawUrl);
+
+    // Hide common credential query params
+    const sensitiveParamRegex = /key|token|secret|auth|signature|apikey|api_key|access_token/i;
+    for (const [key] of parsed.searchParams.entries()) {
+      if (sensitiveParamRegex.test(key)) {
+        parsed.searchParams.set(key, "***");
+      }
+    }
+
+    // Hide credential-like path segments (long, high-entropy tokens)
+    const segments = parsed.pathname.split("/").map((segment) => {
+      if (!segment) return segment;
+      const looksLikeToken = segment.length >= 24 && /[A-Za-z]/.test(segment) && /\d/.test(segment);
+      return looksLikeToken ? "***" : segment;
+    });
+    parsed.pathname = segments.join("/");
+
+    return parsed.toString();
   } catch {
-    return url.length > 50 ? `${url.slice(0, 47)}...` : url;
+    return rawUrl;
+  }
+}
+
+function getTruncatedUrl(url: string): string {
+  const safeUrl = redactSensitiveUrl(url);
+  try {
+    const parsed = new URL(safeUrl);
+    const path = parsed.pathname === "/" ? "" : parsed.pathname;
+    const query = parsed.search ? parsed.search : "";
+    const display = `${parsed.hostname}${path}${query}`;
+    return display.length > 70 ? `${display.slice(0, 67)}...` : display;
+  } catch {
+    return safeUrl.length > 70 ? `${safeUrl.slice(0, 67)}...` : safeUrl;
   }
 }
 
@@ -62,9 +90,11 @@ const RpcTestRow: React.FC<RpcTestRowProps> = ({ url, metadata, result, isActive
   const provider = getProviderLabel(url, metadata);
   const trackingClass = getTrackingClass(metadata);
 
+  const safeUrl = redactSensitiveUrl(url);
+
   const handleCopy = useCallback(() => {
-    navigator.clipboard.writeText(url);
-  }, [url]);
+    navigator.clipboard.writeText(safeUrl);
+  }, [safeUrl]);
 
   const getTrackingLabel = (): string => {
     if (!metadata) return "";
@@ -78,7 +108,7 @@ const RpcTestRow: React.FC<RpcTestRowProps> = ({ url, metadata, result, isActive
       {/* Provider */}
       <div className="rpcs-cell rpcs-cell-provider">
         <span className="rpcs-provider-name">{provider}</span>
-        <span className="rpcs-provider-url" title={url}>
+        <span className="rpcs-provider-url" title={safeUrl}>
           {getTruncatedUrl(url)}
         </span>
       </div>
@@ -87,8 +117,8 @@ const RpcTestRow: React.FC<RpcTestRowProps> = ({ url, metadata, result, isActive
       <div className="rpcs-cell rpcs-cell-latency">
         {status === "pending" ? (
           <span className="rpcs-latency-pending">...</span>
-        ) : status === "offline" ? (
-          <span className="rpcs-latency-value rpcs-latency-slow">{t("latency.ms", { ms: 0 })}</span>
+        ) : status === "offline" || status === "timeout" || status === "untested" ? (
+          <span className="rpcs-latency-na">{t("latency.na")}</span>
         ) : result?.latency != null ? (
           <span
             className={`rpcs-latency-value ${result.latency < 300 ? "rpcs-latency-fast" : result.latency < 1000 ? "rpcs-latency-medium" : "rpcs-latency-slow"}`}
@@ -157,16 +187,14 @@ const RpcTestRow: React.FC<RpcTestRowProps> = ({ url, metadata, result, isActive
           <span className={getStatusDotClass(status)} />
           <span className="rpcs-provider-name">{provider}</span>
         </div>
-        <span className="rpcs-provider-url" title={url}>
+        <span className="rpcs-provider-url" title={safeUrl}>
           {getTruncatedUrl(url)}
         </span>
         <div className="rpcs-mobile-stats">
           {status === "pending" ? (
             <span className="rpcs-latency-pending">...</span>
-          ) : status === "offline" ? (
-            <span className="rpcs-latency-value rpcs-latency-slow">
-              {t("latency.ms", { ms: 0 })}
-            </span>
+          ) : status === "offline" || status === "timeout" || status === "untested" ? (
+            <span className="rpcs-latency-na">{t("latency.na")}</span>
           ) : result?.latency != null ? (
             <span
               className={`rpcs-latency-value ${result.latency < 300 ? "rpcs-latency-fast" : result.latency < 1000 ? "rpcs-latency-medium" : "rpcs-latency-slow"}`}
