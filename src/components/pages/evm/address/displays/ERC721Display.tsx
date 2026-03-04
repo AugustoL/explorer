@@ -8,6 +8,7 @@ import {
   getAssetUrl,
   type TokenMetadata,
 } from "../../../../../services/MetadataService";
+import type { KlerosTag } from "../../../../../services/KlerosService";
 import type { Address, ENSReverseResult, RPCMetadata } from "../../../../../types";
 import { decodeAbiString } from "../../../../../utils/hexUtils";
 import { logger } from "../../../../../utils/logger";
@@ -29,7 +30,7 @@ interface ERC721DisplayProps {
   ensName?: string | null;
   reverseResult?: ENSReverseResult | null;
   isMainnet?: boolean;
-  isKlerosVerified?: boolean;
+  klerosTag?: KlerosTag | null;
 }
 
 const ERC721Display: React.FC<ERC721DisplayProps> = ({
@@ -42,7 +43,7 @@ const ERC721Display: React.FC<ERC721DisplayProps> = ({
   ensName,
   reverseResult,
   isMainnet = true,
-  isKlerosVerified,
+  klerosTag,
 }) => {
   const { jsonFiles, rpcUrls } = useContext(AppContext);
   const [tokenMetadata, setTokenMetadata] = useState<TokenMetadata | null>(null);
@@ -218,7 +219,7 @@ const ERC721Display: React.FC<ERC721DisplayProps> = ({
           onProviderSelect={onProviderSelect}
           tokenSymbol={collectionSymbol}
           tokenName={collectionName}
-          isKlerosVerified={isKlerosVerified}
+          klerosTag={klerosTag}
         />
 
         <div className="address-section-content">

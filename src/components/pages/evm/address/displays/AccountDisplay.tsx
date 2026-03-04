@@ -1,6 +1,7 @@
 import type React from "react";
 import { useCallback, useMemo, useState } from "react";
 import { getNetworkById } from "../../../../../config/networks";
+import type { KlerosTag } from "../../../../../services/KlerosService";
 import type { Address, ENSReverseResult, RPCMetadata, Transaction } from "../../../../../types";
 import AIAnalysisPanel from "../../../../common/AIAnalysis/AIAnalysisPanel";
 import { AddressHeader, TransactionHistory } from "../shared";
@@ -18,7 +19,7 @@ interface AccountDisplayProps {
   ensName?: string | null;
   reverseResult?: ENSReverseResult | null;
   isMainnet?: boolean;
-  isKlerosVerified?: boolean;
+  klerosTag?: KlerosTag | null;
 }
 
 const AccountDisplay: React.FC<AccountDisplayProps> = ({
@@ -31,7 +32,7 @@ const AccountDisplay: React.FC<AccountDisplayProps> = ({
   ensName,
   reverseResult,
   isMainnet = true,
-  isKlerosVerified,
+  klerosTag,
 }) => {
   const network = getNetworkById(networkId);
   const networkName = network?.name ?? "Unknown Network";
@@ -84,7 +85,7 @@ const AccountDisplay: React.FC<AccountDisplayProps> = ({
           metadata={metadata}
           selectedProvider={selectedProvider}
           onProviderSelect={onProviderSelect}
-          isKlerosVerified={isKlerosVerified}
+          klerosTag={klerosTag}
         />
 
         <div className="address-section-content">

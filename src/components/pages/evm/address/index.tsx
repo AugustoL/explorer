@@ -4,10 +4,10 @@ import { useLocation, useParams } from "react-router-dom";
 import { AppContext } from "../../../../context";
 import { useDataService } from "../../../../hooks/useDataService";
 import { useENS } from "../../../../hooks/useENS";
+import { useKlerosTag } from "../../../../hooks/useKlerosTag";
 import { useProviderSelection } from "../../../../hooks/useProviderSelection";
 import { ENSService } from "../../../../services/ENS/ENSService";
 import type { Address as AddressData, AddressType, DataWithMetadata } from "../../../../types";
-import { fetchAddress } from "../../../../services/MetadataService";
 import { fetchAddressWithType } from "../../../../utils/addressTypeDetection";
 import Loader from "../../../common/Loader";
 import {
@@ -61,7 +61,7 @@ export default function Address() {
     `address_${numericNetworkId}_${address}`,
   );
 
-  const [isKlerosVerified, setIsKlerosVerified] = useState(false);
+  const klerosTag = useKlerosTag(address, numericNetworkId);
 
   // Resolve ENS name to address
   useEffect(() => {
@@ -111,15 +111,6 @@ export default function Address() {
     loading: ensLoading,
     isMainnet,
   } = useENS(address ?? undefined, numericNetworkId, initialEnsName);
-
-  // Fetch address metadata to detect Kleros verification
-  useEffect(() => {
-    if (!address) return;
-    setIsKlerosVerified(false);
-    fetchAddress(numericNetworkId, address).then((meta) => {
-      setIsKlerosVerified(meta?.source?.[0] === "kleros");
-    });
-  }, [address, numericNetworkId]);
 
   // Fetch address data and detect type in a single flow
   useEffect(() => {
@@ -262,7 +253,7 @@ export default function Address() {
     metadata: addressDataResult?.metadata,
     selectedProvider,
     onProviderSelect: setSelectedProvider,
-    isKlerosVerified,
+    klerosTag,
   };
 
   // Render appropriate display component based on detected type

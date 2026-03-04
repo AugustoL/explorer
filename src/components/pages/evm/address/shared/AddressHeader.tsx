@@ -1,5 +1,6 @@
 import type React from "react";
 import { useTranslation } from "react-i18next";
+import { getKlerosCurateItemUrl, type KlerosTag } from "../../../../../services/KlerosService";
 import type { AddressType, RPCMetadata } from "../../../../../types";
 import { getAddressTypeIcon, getAddressTypeLabel } from "../../../../../utils/addressTypeDetection";
 import { RPCIndicator } from "../../../../common/RPCIndicator";
@@ -13,7 +14,7 @@ interface AddressHeaderProps {
   onProviderSelect?: (provider: string) => void;
   tokenSymbol?: string;
   tokenName?: string;
-  isKlerosVerified?: boolean;
+  klerosTag?: KlerosTag | null;
 }
 
 // Truncate hash to show first and last N characters
@@ -33,7 +34,7 @@ const AddressHeader: React.FC<AddressHeaderProps> = ({
   onProviderSelect,
   tokenSymbol,
   tokenName,
-  isKlerosVerified,
+  klerosTag,
 }) => {
   const { t } = useTranslation("address");
   const truncatedHash = truncateHash(addressHash, 4);
@@ -45,10 +46,21 @@ const AddressHeader: React.FC<AddressHeaderProps> = ({
           <span className="address-type-icon">{getAddressTypeIcon(addressType)}</span>
           <span className="address-type-label">{getAddressTypeLabel(addressType)}</span>
           {tokenSymbol && <span className="address-token-symbol">{tokenSymbol}</span>}
-          {isKlerosVerified && (
-            <span className="kleros-verified-tag" title={t("klerosVerifiedTooltip")}>
-              {t("klerosVerified")}
-            </span>
+          {klerosTag && (
+            <a
+              href={getKlerosCurateItemUrl(klerosTag.itemID)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="kleros-verified-tag"
+              title={t("klerosVerifiedTooltip")}
+            >
+              <img
+                src={`${import.meta.env.BASE_URL}kleros-logo.png`}
+                alt="Kleros"
+                className="kleros-logo"
+              />
+              {klerosTag.publicNameTag} ↗
+            </a>
           )}
         </div>
         {(ensName || tokenName) && <span className="address-ens-name">{ensName || tokenName}</span>}

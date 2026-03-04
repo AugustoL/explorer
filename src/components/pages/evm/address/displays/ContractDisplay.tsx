@@ -3,6 +3,7 @@ import { useContext, useMemo } from "react";
 import { getNetworkById } from "../../../../../config/networks";
 import { AppContext } from "../../../../../context";
 import { useSourcify } from "../../../../../hooks/useSourcify";
+import type { KlerosTag } from "../../../../../services/KlerosService";
 import type { Address, ENSReverseResult, RPCMetadata } from "../../../../../types";
 import AIAnalysisPanel from "../../../../common/AIAnalysis/AIAnalysisPanel";
 import { AddressHeader } from "../shared";
@@ -23,7 +24,7 @@ interface ContractDisplayProps {
   ensName?: string | null;
   reverseResult?: ENSReverseResult | null;
   isMainnet?: boolean;
-  isKlerosVerified?: boolean;
+  klerosTag?: KlerosTag | null;
 }
 
 const ContractDisplay: React.FC<ContractDisplayProps> = ({
@@ -36,7 +37,7 @@ const ContractDisplay: React.FC<ContractDisplayProps> = ({
   ensName,
   reverseResult,
   isMainnet = true,
-  isKlerosVerified,
+  klerosTag,
 }) => {
   const { jsonFiles } = useContext(AppContext);
   const network = getNetworkById(networkId);
@@ -128,7 +129,7 @@ const ContractDisplay: React.FC<ContractDisplayProps> = ({
           metadata={metadata}
           selectedProvider={selectedProvider}
           onProviderSelect={onProviderSelect}
-          isKlerosVerified={isKlerosVerified}
+          klerosTag={klerosTag}
         />
 
         <div className="address-section-content">
