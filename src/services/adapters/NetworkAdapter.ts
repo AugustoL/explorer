@@ -51,7 +51,7 @@ export abstract class NetworkAdapter {
   isLocalHost: boolean;
   protected txSearch: AddressTransactionSearch | null = null;
 
-  constructor(networkId: SupportedChainId | 31337 | 11155111 | 97) {
+  constructor(networkId: SupportedChainId | 31337 | 11155111 | 97 | 43114) {
     this.networkId = networkId;
     this.isLocalHost = networkId === 31337;
   }

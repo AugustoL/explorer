@@ -1,4 +1,9 @@
-import { type SupportedChainId, ClientFactory, BitcoinClient } from "@openscan/network-connectors";
+import {
+  type SupportedChainId,
+  ClientFactory,
+  BitcoinClient,
+  EthereumClient,
+} from "@openscan/network-connectors";
 
 import { AdapterFactory } from "./adapters/adaptersFactory";
 import type { NetworkAdapter } from "./adapters/NetworkAdapter";
@@ -42,11 +47,19 @@ export class DataService {
     } else {
       // Create EVM client and adapter
       const chainId = getChainIdFromNetwork(network) as SupportedChainId;
-      const networkClient = ClientFactory.createTypedClient<typeof chainId>(chainId, {
-        rpcUrls,
-        type: strategy,
-      });
-      this.networkAdapter = AdapterFactory.createAdapter(chainId, networkClient);
+
+      // Chains not registered in ClientFactory need a direct EthereumClient
+      const unsupportedByFactory = [43114];
+      if (unsupportedByFactory.includes(chainId)) {
+        const networkClient = new EthereumClient({ rpcUrls, type: strategy });
+        this.networkAdapter = AdapterFactory.createAdapter(chainId, networkClient);
+      } else {
+        const networkClient = ClientFactory.createTypedClient<typeof chainId>(chainId, {
+          rpcUrls,
+          type: strategy,
+        });
+        this.networkAdapter = AdapterFactory.createAdapter(chainId, networkClient);
+      }
     }
   }
 

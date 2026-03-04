@@ -24,7 +24,7 @@ export class AdapterFactory {
    * Create an EVM network adapter
    */
   static createAdapter(
-    networkId: SupportedChainId | 11155111 | 97 | 31337,
+    networkId: SupportedChainId | 11155111 | 97 | 31337 | 43114,
     client:
       | EthereumClient
       | OptimismClient
@@ -38,6 +38,7 @@ export class AdapterFactory {
       case 1:
       case 11155111:
       case 31337:
+      case 43114:
         return new EVMAdapter(networkId, client as EthereumClient);
       case 10:
         return new OptimismAdapter(networkId, client as OptimismClient);
