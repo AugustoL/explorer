@@ -18,6 +18,7 @@ interface AccountDisplayProps {
   ensName?: string | null;
   reverseResult?: ENSReverseResult | null;
   isMainnet?: boolean;
+  isKlerosVerified?: boolean;
 }
 
 const AccountDisplay: React.FC<AccountDisplayProps> = ({
@@ -30,6 +31,7 @@ const AccountDisplay: React.FC<AccountDisplayProps> = ({
   ensName,
   reverseResult,
   isMainnet = true,
+  isKlerosVerified,
 }) => {
   const network = getNetworkById(networkId);
   const networkName = network?.name ?? "Unknown Network";
@@ -82,6 +84,7 @@ const AccountDisplay: React.FC<AccountDisplayProps> = ({
           metadata={metadata}
           selectedProvider={selectedProvider}
           onProviderSelect={onProviderSelect}
+          isKlerosVerified={isKlerosVerified}
         />
 
         <div className="address-section-content">

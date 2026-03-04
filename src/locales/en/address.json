@@ -1,4 +1,6 @@
 {
+  "klerosVerified": "Verified by Kleros",
+  "klerosVerifiedTooltip": "This address has been tagged by Kleros curated list",
   "balance": "Balance",
   "contractName": "Contract Name",
   "compiler": "Compiler",

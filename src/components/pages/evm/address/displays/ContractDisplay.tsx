@@ -23,6 +23,7 @@ interface ContractDisplayProps {
   ensName?: string | null;
   reverseResult?: ENSReverseResult | null;
   isMainnet?: boolean;
+  isKlerosVerified?: boolean;
 }
 
 const ContractDisplay: React.FC<ContractDisplayProps> = ({
@@ -35,6 +36,7 @@ const ContractDisplay: React.FC<ContractDisplayProps> = ({
   ensName,
   reverseResult,
   isMainnet = true,
+  isKlerosVerified,
 }) => {
   const { jsonFiles } = useContext(AppContext);
   const network = getNetworkById(networkId);
@@ -126,6 +128,7 @@ const ContractDisplay: React.FC<ContractDisplayProps> = ({
           metadata={metadata}
           selectedProvider={selectedProvider}
           onProviderSelect={onProviderSelect}
+          isKlerosVerified={isKlerosVerified}
         />
 
         <div className="address-section-content">

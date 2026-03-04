@@ -1,4 +1,5 @@
 import type React from "react";
+import { useTranslation } from "react-i18next";
 import type { AddressType, RPCMetadata } from "../../../../../types";
 import { getAddressTypeIcon, getAddressTypeLabel } from "../../../../../utils/addressTypeDetection";
 import { RPCIndicator } from "../../../../common/RPCIndicator";
@@ -12,6 +13,7 @@ interface AddressHeaderProps {
   onProviderSelect?: (provider: string) => void;
   tokenSymbol?: string;
   tokenName?: string;
+  isKlerosVerified?: boolean;
 }
 
 // Truncate hash to show first and last N characters
@@ -31,7 +33,9 @@ const AddressHeader: React.FC<AddressHeaderProps> = ({
   onProviderSelect,
   tokenSymbol,
   tokenName,
+  isKlerosVerified,
 }) => {
+  const { t } = useTranslation("address");
   const truncatedHash = truncateHash(addressHash, 4);
 
   return (
@@ -41,6 +45,11 @@ const AddressHeader: React.FC<AddressHeaderProps> = ({
           <span className="address-type-icon">{getAddressTypeIcon(addressType)}</span>
           <span className="address-type-label">{getAddressTypeLabel(addressType)}</span>
           {tokenSymbol && <span className="address-token-symbol">{tokenSymbol}</span>}
+          {isKlerosVerified && (
+            <span className="kleros-verified-tag" title={t("klerosVerifiedTooltip")}>
+              {t("klerosVerified")}
+            </span>
+          )}
         </div>
         {(ensName || tokenName) && <span className="address-ens-name">{ensName || tokenName}</span>}
         <span className="tx-mono header-subtitle hide-mobile">{addressHash}</span>

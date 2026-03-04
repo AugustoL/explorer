@@ -29,6 +29,7 @@ interface ERC20DisplayProps {
   ensName?: string | null;
   reverseResult?: ENSReverseResult | null;
   isMainnet?: boolean;
+  isKlerosVerified?: boolean;
 }
 
 const ERC20Display: React.FC<ERC20DisplayProps> = ({
@@ -41,6 +42,7 @@ const ERC20Display: React.FC<ERC20DisplayProps> = ({
   ensName,
   reverseResult,
   isMainnet = true,
+  isKlerosVerified,
 }) => {
   const { jsonFiles, rpcUrls } = useContext(AppContext);
   const [tokenMetadata, setTokenMetadata] = useState<TokenMetadata | null>(null);
@@ -247,6 +249,7 @@ const ERC20Display: React.FC<ERC20DisplayProps> = ({
           onProviderSelect={onProviderSelect}
           tokenSymbol={tokenSymbol}
           tokenName={tokenName}
+          isKlerosVerified={isKlerosVerified}
         />
 
         <div className="address-section-content">
