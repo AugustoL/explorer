@@ -142,18 +142,29 @@ export default function Address() {
             addressHash: address,
             chainId: numericNetworkId,
             rpcUrl,
+            // Pass already-fetched address data to skip the redundant eth_getCode call.
+            // This prevents contracts from being misclassified as EOA when the
+            // secondary RPC fetch fails (rate-limit, L2 quirks, etc.).
+            preloadedAddress: addressData,
           })
             .then((typeResult) => {
               setAddressType(typeResult.addressType);
             })
             .catch(() => {
-              // Fallback to account if type detection fails
-              setAddressType("account");
+              // Type detection failed — use the code we already have to distinguish
+              // contract from EOA rather than blindly defaulting to "account".
+              const hasCode =
+                addressData.code && addressData.code.toLowerCase().replace(/^0x0*/, "").length > 0;
+              setAddressType(hasCode ? "contract" : "account");
             })
             .finally(() => {
               setTypeLoading(false);
             });
         } else {
+          // No RPC URL configured for type detection — derive type from pre-fetched code.
+          const hasCode =
+            addressData.code && addressData.code.toLowerCase().replace(/^0x0*/, "").length > 0;
+          setAddressType(hasCode ? "contract" : "account");
           setTypeLoading(false);
         }
       })

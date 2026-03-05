@@ -1,5 +1,5 @@
-import { useContext, useEffect, useState } from "react";
-import { AppContext } from "../context";
+import { useEffect, useState } from "react";
+import { useDataService } from "./useDataService";
 import { type ProxyInfo, detectProxy } from "../utils/proxyDetection";
 
 export function useProxyInfo(
@@ -7,21 +7,17 @@ export function useProxyInfo(
   networkId: string,
   bytecode: string,
 ): ProxyInfo | null {
-  const { rpcUrls } = useContext(AppContext);
+  const dataService = useDataService(Number(networkId));
   const [proxyInfo, setProxyInfo] = useState<ProxyInfo | null>(null);
 
   useEffect(() => {
     if (!address || !networkId || !bytecode || bytecode === "0x") return;
+    if (!dataService?.networkAdapter) return;
 
-    const rpcNetworkId = `eip155:${networkId}`;
-    const urls = rpcUrls[rpcNetworkId];
-    const rpcUrl = Array.isArray(urls) && urls.length > 0 ? urls[0] : null;
-    if (!rpcUrl) return;
-
-    detectProxy(address, rpcUrl, bytecode)
+    detectProxy(address, dataService.networkAdapter, bytecode)
       .then(setProxyInfo)
       .catch(() => setProxyInfo(null));
-  }, [address, networkId, bytecode, rpcUrls]);
+  }, [address, networkId, bytecode, dataService]);
 
   return proxyInfo;
 }

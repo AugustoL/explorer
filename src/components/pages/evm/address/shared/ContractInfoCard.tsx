@@ -186,8 +186,10 @@ const ContractInfoCard: React.FC<ContractInfoCardProps> = ({
         </div>
       )}
 
-      {/* Contract Details Section - for verified contracts */}
-      {hasVerifiedContract && contractData && (
+      {/* Contract Details Section - shown when:
+          a) proxy contract itself has a verified ABI, OR
+          b) proxy is detected and its implementation has a verified ABI */}
+      {(hasVerifiedContract && contractData) || (proxyInfo && hasImplAbi) ? (
         <div className="contract-details-section">
           <button
             type="button"
@@ -295,7 +297,7 @@ const ContractInfoCard: React.FC<ContractInfoCardProps> = ({
             </div>
           )}
         </div>
-      )}
+      ) : null}
 
       {/* Bytecode for unverified contracts */}
       {!hasVerifiedContract && address.code && address.code !== "0x" && (
