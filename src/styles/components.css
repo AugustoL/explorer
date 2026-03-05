@@ -6627,6 +6627,39 @@ button.tx-section-header-toggle {
 	margin-left: 4px;
 }
 
+.verification-source-tag {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	font-size: 0.75rem;
+	font-weight: 600;
+	padding: 2px 8px;
+	border-radius: 4px;
+	border: 1px solid;
+	text-decoration: none;
+	margin-left: 4px;
+}
+
+.verification-source-tag--sourcify {
+	color: #2e8b57;
+	background: rgba(46, 139, 87, 0.1);
+	border-color: rgba(46, 139, 87, 0.3);
+}
+
+.verification-source-tag--sourcify:hover {
+	background: rgba(46, 139, 87, 0.2);
+}
+
+.verification-source-tag--etherscan {
+	color: #1a56db;
+	background: rgba(26, 86, 219, 0.1);
+	border-color: rgba(26, 86, 219, 0.3);
+}
+
+.verification-source-tag--etherscan:hover {
+	background: rgba(26, 86, 219, 0.2);
+}
+
 .contract-not-verified {
 	color: var(--text-secondary);
 }
@@ -6733,9 +6766,12 @@ button.tx-section-header-toggle {
    ========================================================================== */
 
 .contract-details-section {
-	margin-top: 12px;
 	padding-top: 12px;
 	border-top: 1px solid var(--color-primary-alpha-8);
+}
+
+.account-card-row + .contract-details-section {
+	border-top: none;
 }
 
 .contract-details-toggle {

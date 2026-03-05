@@ -4,8 +4,9 @@ import { Link } from "react-router-dom";
 import type { Address, ABI } from "../../../../../types";
 import { useTranslation } from "react-i18next";
 import ContractInteraction from "./ContractInteraction";
-import type { ProxyInfo } from "../../../../../utils/proxyDetection";
+import type { VerificationSource } from "../../../../../hooks/useContractVerification";
 import type { SourcifyContractDetails } from "../../../../../hooks/useSourcify";
+import type { ProxyInfo } from "../../../../../utils/proxyDetection";
 
 interface ContractData {
   name?: string;
@@ -25,6 +26,17 @@ interface ContractData {
   sources?: Record<string, { content: string }>;
 }
 
+const ETHERSCAN_EXPLORERS: Record<number, string> = {
+  1: "https://etherscan.io",
+  42161: "https://arbiscan.io",
+  10: "https://optimistic.etherscan.io",
+  8453: "https://basescan.org",
+  56: "https://bscscan.com",
+  137: "https://polygonscan.com",
+  11155111: "https://sepolia.etherscan.io",
+  97: "https://testnet.bscscan.com",
+};
+
 interface ContractInfoCardProps {
   address: Address;
   addressHash: string;
@@ -33,7 +45,7 @@ interface ContractInfoCardProps {
   hasVerifiedContract: boolean;
   sourcifyLoading: boolean;
   isLocalArtifact: boolean;
-  sourcifyUrl?: string;
+  verificationSource?: VerificationSource;
   proxyInfo?: ProxyInfo | null;
   implementationContractData?: SourcifyContractDetails | null;
 }
@@ -48,7 +60,7 @@ const ContractInfoCard: React.FC<ContractInfoCardProps> = ({
   hasVerifiedContract,
   sourcifyLoading,
   isLocalArtifact,
-  sourcifyUrl,
+  verificationSource,
   proxyInfo,
   implementationContractData,
 }) => {
@@ -59,14 +71,16 @@ const ContractInfoCard: React.FC<ContractInfoCardProps> = ({
   const [showRawAbi, setShowRawAbi] = useState(false);
   const [abiView, setAbiView] = useState<AbiView>("implementation");
 
-  const getMatchBadgeText = () => {
-    if (isLocalArtifact) return "Local JSON";
-    if (contractData?.match === "perfect") return "Perfect Match";
-    if (contractData?.match === "partial") return "Partial Match";
-    return null;
-  };
-
-  const matchBadgeText = getMatchBadgeText();
+  // Compute verification source URLs
+  const sourcifyMatchPath = contractData?.match === "partial" ? "partial_match" : "full_match";
+  const sourcifyTagUrl = verificationSource?.includes("sourcify")
+    ? `https://repo.sourcify.dev/contracts/${sourcifyMatchPath}/${networkId}/${addressHash}/`
+    : null;
+  const etherscanBase = ETHERSCAN_EXPLORERS[Number(networkId)];
+  const etherscanTagUrl =
+    verificationSource?.includes("etherscan") && etherscanBase
+      ? `${etherscanBase}/address/${addressHash}#code`
+      : null;
 
   // Determine the active ABI based on tab selection
   const hasImplAbi = !!(
@@ -109,7 +123,27 @@ const ContractInfoCard: React.FC<ContractInfoCardProps> = ({
             <span className="contract-verification-badge">
               <span className="contract-verified-icon">✓</span>
               <span className="contract-verified-text">{t("verified")}</span>
-              {matchBadgeText && <span className="contract-match-badge">{matchBadgeText}</span>}
+              {isLocalArtifact && <span className="contract-match-badge">Local JSON</span>}
+              {sourcifyTagUrl && (
+                <a
+                  href={sourcifyTagUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="verification-source-tag verification-source-tag--sourcify"
+                >
+                  Sourcify ↗
+                </a>
+              )}
+              {etherscanTagUrl && (
+                <a
+                  href={etherscanTagUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="verification-source-tag verification-source-tag--etherscan"
+                >
+                  Etherscan ↗
+                </a>
+              )}
             </span>
           ) : (
             <span className="contract-not-verified">{t("notVerified")}</span>
@@ -147,7 +181,9 @@ const ContractInfoCard: React.FC<ContractInfoCardProps> = ({
       {proxyInfo && !hasImplAbi && (
         <div className="account-card-row">
           <span className="account-card-label" />
-          <span className="account-card-value contract-not-verified">{t("implementationNotVerified")}</span>
+          <span className="account-card-value contract-not-verified">
+            {t("implementationNotVerified")}
+          </span>
         </div>
       )}
 
@@ -174,23 +210,6 @@ const ContractInfoCard: React.FC<ContractInfoCardProps> = ({
         <div className="account-card-row">
           <span className="account-card-label">{t("evmVersion")}:</span>
           <span className="account-card-value">{contractData.evmVersion}</span>
-        </div>
-      )}
-
-      {/* Sourcify Link */}
-      {sourcifyUrl && (
-        <div className="account-card-row">
-          <span className="account-card-label">Sourcify:</span>
-          <span className="account-card-value">
-            <a
-              href={sourcifyUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="account-card-link"
-            >
-              View on Sourcify ↗
-            </a>
-          </span>
         </div>
       )}
 

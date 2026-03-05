@@ -2,7 +2,7 @@ import type React from "react";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { getNetworkById } from "../../../../../config/networks";
 import { AppContext } from "../../../../../context";
-import { useSourcify } from "../../../../../hooks/useSourcify";
+import { useContractVerification } from "../../../../../hooks/useContractVerification";
 import { useProxyInfo } from "../../../../../hooks/useProxyInfo";
 import {
   fetchToken,
@@ -52,16 +52,17 @@ const ERC20Display: React.FC<ERC20DisplayProps> = ({
     totalSupply?: string;
   } | null>(null);
 
-  // Fetch Sourcify data
+  // Fetch verified contract data (Sourcify → Etherscan fallback)
   const {
     data: sourcifyData,
     loading: sourcifyLoading,
     isVerified,
-  } = useSourcify(Number(networkId), addressHash, true);
+    source: verificationSource,
+  } = useContractVerification(Number(networkId), addressHash, true);
 
   // Detect proxy pattern and fetch implementation contract data
   const proxyInfo = useProxyInfo(addressHash, networkId, address.code ?? "");
-  const { data: implSourcifyData, isVerified: implIsVerified } = useSourcify(
+  const { data: implSourcifyData, isVerified: implIsVerified } = useContractVerification(
     Number(networkId),
     proxyInfo?.implementationAddress,
     !!proxyInfo,
@@ -287,11 +288,7 @@ const ERC20Display: React.FC<ERC20DisplayProps> = ({
             hasVerifiedContract={hasVerifiedContract}
             sourcifyLoading={sourcifyLoading}
             isLocalArtifact={!!parsedLocalData && !isVerified}
-            sourcifyUrl={
-              sourcifyData
-                ? `https://repo.sourcify.dev/contracts/full_match/${networkId}/${addressHash}/`
-                : undefined
-            }
+            verificationSource={verificationSource}
             proxyInfo={proxyInfo}
             implementationContractData={implIsVerified ? implSourcifyData : null}
           />

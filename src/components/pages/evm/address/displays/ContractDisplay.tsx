@@ -2,7 +2,7 @@ import type React from "react";
 import { useContext, useMemo } from "react";
 import { getNetworkById } from "../../../../../config/networks";
 import { AppContext } from "../../../../../context";
-import { useSourcify } from "../../../../../hooks/useSourcify";
+import { useContractVerification } from "../../../../../hooks/useContractVerification";
 import { useProxyInfo } from "../../../../../hooks/useProxyInfo";
 import type { Address, ENSReverseResult, RPCMetadata } from "../../../../../types";
 import AIAnalysisPanel from "../../../../common/AIAnalysis/AIAnalysisPanel";
@@ -42,18 +42,19 @@ const ContractDisplay: React.FC<ContractDisplayProps> = ({
   const networkName = network?.name ?? "Unknown Network";
   const networkCurrency = network?.currency ?? "ETH";
 
-  // Fetch Sourcify data
+  // Fetch verified contract data (Sourcify → Etherscan fallback)
   const {
     data: sourcifyData,
     loading: sourcifyLoading,
     isVerified,
-  } = useSourcify(Number(networkId), addressHash, true);
+    source: verificationSource,
+  } = useContractVerification(Number(networkId), addressHash, true);
 
   // Detect proxy pattern
   const proxyInfo = useProxyInfo(addressHash, networkId, address.code ?? "");
 
-  // Fetch implementation contract data from Sourcify (only when proxy detected)
-  const { data: implSourcifyData, isVerified: implIsVerified } = useSourcify(
+  // Fetch implementation contract data (Sourcify → Etherscan fallback)
+  const { data: implSourcifyData, isVerified: implIsVerified } = useContractVerification(
     Number(networkId),
     proxyInfo?.implementationAddress,
     !!proxyInfo,
@@ -159,11 +160,7 @@ const ContractDisplay: React.FC<ContractDisplayProps> = ({
             hasVerifiedContract={hasVerifiedContract}
             sourcifyLoading={sourcifyLoading}
             isLocalArtifact={!!parsedLocalData && !isVerified}
-            sourcifyUrl={
-              sourcifyData
-                ? `https://repo.sourcify.dev/contracts/full_match/${networkId}/${addressHash}/`
-                : undefined
-            }
+            verificationSource={verificationSource}
             proxyInfo={proxyInfo}
             implementationContractData={implIsVerified ? implSourcifyData : null}
           />
