@@ -117,32 +117,6 @@ const ContractInfoCard: React.FC<ContractInfoCardProps> = ({
         </span>
       </div>
 
-      {/* Contract Name */}
-      {contractData?.name && (
-        <div className="account-card-row">
-          <span className="account-card-label">{t("contractName")}:</span>
-          <span className="account-card-value contract-name">{contractData.name}</span>
-        </div>
-      )}
-
-      {/* Compiler Version */}
-      {contractData?.compilerVersion && (
-        <div className="account-card-row">
-          <span className="account-card-label">{t("compiler")}:</span>
-          <span className="account-card-value account-card-mono">
-            {contractData.compilerVersion}
-          </span>
-        </div>
-      )}
-
-      {/* EVM Version */}
-      {contractData?.evmVersion && (
-        <div className="account-card-row">
-          <span className="account-card-label">{t("evmVersion")}:</span>
-          <span className="account-card-value">{contractData.evmVersion}</span>
-        </div>
-      )}
-
       {/* Proxy Type */}
       {proxyInfo && (
         <div className="account-card-row">
@@ -174,6 +148,32 @@ const ContractInfoCard: React.FC<ContractInfoCardProps> = ({
         <div className="account-card-row">
           <span className="account-card-label" />
           <span className="account-card-value contract-not-verified">{t("implementationNotVerified")}</span>
+        </div>
+      )}
+
+      {/* Contract Name */}
+      {contractData?.name && (
+        <div className="account-card-row">
+          <span className="account-card-label">{t("contractName")}:</span>
+          <span className="account-card-value contract-name">{contractData.name}</span>
+        </div>
+      )}
+
+      {/* Compiler Version */}
+      {contractData?.compilerVersion && (
+        <div className="account-card-row">
+          <span className="account-card-label">{t("compiler")}:</span>
+          <span className="account-card-value account-card-mono">
+            {contractData.compilerVersion}
+          </span>
+        </div>
+      )}
+
+      {/* EVM Version */}
+      {contractData?.evmVersion && (
+        <div className="account-card-row">
+          <span className="account-card-label">{t("evmVersion")}:</span>
+          <span className="account-card-value">{contractData.evmVersion}</span>
         </div>
       )}
 
