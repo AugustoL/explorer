@@ -6,7 +6,7 @@ import { usePersistentCache } from "../../../../hooks/usePersistentCache";
 import { useProviderSelection } from "../../../../hooks/useProviderSelection";
 import { useSelectedData } from "../../../../hooks/useSelectedData";
 import type { Block, DataWithMetadata } from "../../../../types";
-import Loader from "../../../common/Loader";
+import LoaderWithTimeout from "../../../common/LoaderWithTimeout";
 import BlockDisplay from "./BlockDisplay";
 
 export default function BlockPage() {
@@ -76,7 +76,7 @@ export default function BlockPage() {
             <span className="tx-mono header-subtitle">#{filter}</span>
           </div>
           <div className="card-content-loading">
-            <Loader text={t("loadingBlockData")} />
+            <LoaderWithTimeout text={t("loadingBlockData")} onRetry={() => window.location.reload()} />
           </div>
         </div>
       </div>

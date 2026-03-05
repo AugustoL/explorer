@@ -7,7 +7,7 @@ import type { BitcoinTransaction } from "../../../types";
 import { formatBTC, formatTimeAgo, truncateHash } from "../../../utils/bitcoinFormatters";
 import { calculateTotalOutput } from "../../../utils/bitcoinUtils";
 import { logger } from "../../../utils/logger";
-import Loader from "../../common/Loader";
+import LoaderWithTimeout from "../../common/LoaderWithTimeout";
 
 const TXS_PER_PAGE = 100;
 
@@ -136,7 +136,7 @@ export default function BitcoinTransactionsPage() {
             <span className="block-label">{t("btcTxs.title", { network: networkName })}</span>
           </div>
           <div className="card-content-loading">
-            <Loader text={t("btcTxs.loading")} />
+            <LoaderWithTimeout text={t("btcTxs.loading")} onRetry={() => window.location.reload()} />
           </div>
         </div>
       </div>

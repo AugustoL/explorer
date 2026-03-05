@@ -7,7 +7,7 @@ import { usePersistentCache } from "../../../hooks/usePersistentCache";
 import { getBTCPrice } from "../../../services/PriceService";
 import type { BitcoinTransaction, DataWithMetadata } from "../../../types";
 import { resolveNetwork } from "../../../utils/networkResolver";
-import Loader from "../../common/Loader";
+import LoaderWithTimeout from "../../common/LoaderWithTimeout";
 import BitcoinTransactionDisplay from "./BitcoinTransactionDisplay";
 
 export default function BitcoinTransactionPage() {
@@ -82,7 +82,7 @@ export default function BitcoinTransactionPage() {
             <span className="block-label">Bitcoin Transaction</span>
           </div>
           <div className="card-content-loading">
-            <Loader text="Loading transaction..." />
+            <LoaderWithTimeout text="Loading transaction..." onRetry={() => window.location.reload()} />
           </div>
         </div>
       </div>

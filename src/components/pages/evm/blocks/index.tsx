@@ -7,7 +7,7 @@ import { useDataService } from "../../../../hooks/useDataService";
 import { useProviderSelection } from "../../../../hooks/useProviderSelection";
 import type { Block, DataWithMetadata } from "../../../../types";
 import { logger } from "../../../../utils/logger";
-import Loader from "../../../common/Loader";
+import LoaderWithTimeout from "../../../common/LoaderWithTimeout";
 
 const BLOCKS_PER_PAGE = 10;
 
@@ -168,7 +168,7 @@ export default function Blocks() {
             <span className="block-label">{t("latestBlocks", { network: networkName })}</span>
           </div>
           <div className="card-content-loading">
-            <Loader text={t("loadingBlocks")} />
+            <LoaderWithTimeout text={t("loadingBlocks")} onRetry={() => window.location.reload()} />
           </div>
         </div>
       </div>

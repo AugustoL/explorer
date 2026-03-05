@@ -7483,6 +7483,30 @@ button.tx-section-header-toggle {
 }
 
 /* Copy Button */
+/* Loader with Timeout */
+.loader-timeout-container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 40px 20px;
+	text-align: center;
+}
+
+.loader-timeout-text {
+	color: var(--text-muted, #888);
+	font-size: 0.95rem;
+	margin: 0 0 16px;
+}
+
+.loader-timeout-actions {
+	display: flex;
+	gap: 12px;
+	flex-wrap: wrap;
+	justify-content: center;
+}
+
+/* Copy Button */
 .copy-button {
 	display: inline-flex;
 	align-items: center;

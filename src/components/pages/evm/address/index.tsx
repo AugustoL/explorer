@@ -8,7 +8,7 @@ import { useProviderSelection } from "../../../../hooks/useProviderSelection";
 import { ENSService } from "../../../../services/ENS/ENSService";
 import type { Address as AddressData, AddressType, DataWithMetadata } from "../../../../types";
 import { fetchAddressWithType } from "../../../../utils/addressTypeDetection";
-import Loader from "../../../common/Loader";
+import LoaderWithTimeout from "../../../common/LoaderWithTimeout";
 import {
   AccountDisplay,
   ContractDisplay,
@@ -170,7 +170,7 @@ export default function Address() {
       <div className="container-wide">
         <div className="block-display-card">
           <div className="card-content-loading">
-            <Loader text={t("resolvingEns", { name: addressParam })} />
+            <LoaderWithTimeout text={t("resolvingEns", { name: addressParam })} onRetry={() => window.location.reload()} />
           </div>
         </div>
       </div>
@@ -197,7 +197,7 @@ export default function Address() {
       <div className="container-wide">
         <div className="block-display-card">
           <div className="card-content-loading">
-            <Loader text={loading ? t("loadingAddressData") : t("detectingAddressType")} />
+            <LoaderWithTimeout text={loading ? t("loadingAddressData") : t("detectingAddressType")} onRetry={() => window.location.reload()} />
           </div>
         </div>
       </div>

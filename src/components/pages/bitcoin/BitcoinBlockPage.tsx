@@ -5,7 +5,7 @@ import { useDataService } from "../../../hooks/useDataService";
 import { usePersistentCache } from "../../../hooks/usePersistentCache";
 import type { BitcoinBlock, DataWithMetadata } from "../../../types";
 import { resolveNetwork } from "../../../utils/networkResolver";
-import Loader from "../../common/Loader";
+import LoaderWithTimeout from "../../common/LoaderWithTimeout";
 import BitcoinBlockDisplay from "./BitcoinBlockDisplay";
 
 export default function BitcoinBlockPage() {
@@ -76,7 +76,7 @@ export default function BitcoinBlockPage() {
             <span className="tx-mono header-subtitle">{filter}</span>
           </div>
           <div className="card-content-loading">
-            <Loader text="Loading block data..." />
+            <LoaderWithTimeout text="Loading block data..." onRetry={() => window.location.reload()} />
           </div>
         </div>
       </div>

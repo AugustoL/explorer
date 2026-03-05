@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import { useDataService } from "../../../hooks/useDataService";
 import type { BitcoinAddress, DataWithMetadata } from "../../../types";
-import Loader from "../../common/Loader";
+import LoaderWithTimeout from "../../common/LoaderWithTimeout";
 import BitcoinAddressDisplay from "./BitcoinAddressDisplay";
 
 export default function BitcoinAddressPage() {
@@ -43,7 +43,7 @@ export default function BitcoinAddressPage() {
             <span className="block-label">Bitcoin Address</span>
           </div>
           <div className="card-content-loading">
-            <Loader text="Loading address data..." />
+            <LoaderWithTimeout text="Loading address data..." onRetry={() => window.location.reload()} />
           </div>
         </div>
       </div>

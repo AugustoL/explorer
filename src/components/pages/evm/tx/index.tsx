@@ -7,7 +7,7 @@ import { useProviderSelection } from "../../../../hooks/useProviderSelection";
 import { useSelectedData } from "../../../../hooks/useSelectedData";
 import type { DataWithMetadata, Transaction } from "../../../../types";
 import { logger } from "../../../../utils/logger";
-import Loader from "../../../common/Loader";
+import LoaderWithTimeout from "../../../common/LoaderWithTimeout";
 import TransactionDisplay from "./TransactionDisplay";
 
 export default function Tx() {
@@ -92,7 +92,7 @@ export default function Tx() {
             <span className="tx-mono header-subtitle">{txHash}</span>
           </div>
           <div className="card-content-loading">
-            <Loader text={t("loadingTransaction")} />
+            <LoaderWithTimeout text={t("loadingTransaction")} onRetry={() => window.location.reload()} />
           </div>
         </div>
       </div>

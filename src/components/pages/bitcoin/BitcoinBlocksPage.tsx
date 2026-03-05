@@ -11,7 +11,7 @@ import {
   truncateBlockHash,
 } from "../../../utils/bitcoinFormatters";
 import { logger } from "../../../utils/logger";
-import Loader from "../../common/Loader";
+import LoaderWithTimeout from "../../common/LoaderWithTimeout";
 
 export default function BitcoinBlocksPage() {
   const location = useLocation();
@@ -122,7 +122,7 @@ export default function BitcoinBlocksPage() {
             <span className="block-label">{t("latestBlocks", { network: networkName })}</span>
           </div>
           <div className="card-content-loading">
-            <Loader text="Loading blocks..." />
+            <LoaderWithTimeout text="Loading blocks..." onRetry={() => window.location.reload()} />
           </div>
         </div>
       </div>
