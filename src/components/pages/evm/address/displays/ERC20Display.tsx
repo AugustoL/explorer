@@ -3,6 +3,7 @@ import { useContext, useEffect, useMemo, useState } from "react";
 import { getNetworkById } from "../../../../../config/networks";
 import { AppContext } from "../../../../../context";
 import { useSourcify } from "../../../../../hooks/useSourcify";
+import { useProxyInfo } from "../../../../../hooks/useProxyInfo";
 import {
   fetchToken,
   getAssetUrl,
@@ -57,6 +58,14 @@ const ERC20Display: React.FC<ERC20DisplayProps> = ({
     loading: sourcifyLoading,
     isVerified,
   } = useSourcify(Number(networkId), addressHash, true);
+
+  // Detect proxy pattern and fetch implementation contract data
+  const proxyInfo = useProxyInfo(addressHash, networkId, address.code ?? "");
+  const { data: implSourcifyData, isVerified: implIsVerified } = useSourcify(
+    Number(networkId),
+    proxyInfo?.implementationAddress,
+    !!proxyInfo,
+  );
 
   // Fetch token metadata from explorer-metadata
   useEffect(() => {
@@ -283,6 +292,8 @@ const ERC20Display: React.FC<ERC20DisplayProps> = ({
                 ? `https://repo.sourcify.dev/contracts/full_match/${networkId}/${addressHash}/`
                 : undefined
             }
+            proxyInfo={proxyInfo}
+            implementationContractData={implIsVerified ? implSourcifyData : null}
           />
         </div>
       </div>
