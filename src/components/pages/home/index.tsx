@@ -88,7 +88,7 @@ export default function Home() {
           )}
         </div>
 
-        {testnetNetworks.length > 0 && (
+        {isSuperUser && testnetNetworks.length > 0 && (
           <>
             {showTestnets && (
               <div className="network-grid testnet-grid">
