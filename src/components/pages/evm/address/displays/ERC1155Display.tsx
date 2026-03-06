@@ -9,6 +9,7 @@ import {
   getAssetUrl,
   type TokenMetadata,
 } from "../../../../../services/MetadataService";
+import type { KlerosTag } from "../../../../../services/KlerosService";
 import type { Address, ENSReverseResult, RPCMetadata } from "../../../../../types";
 import { decodeAbiString } from "../../../../../utils/hexUtils";
 import { logger } from "../../../../../utils/logger";
@@ -30,6 +31,7 @@ interface ERC1155DisplayProps {
   ensName?: string | null;
   reverseResult?: ENSReverseResult | null;
   isMainnet?: boolean;
+  klerosTag?: KlerosTag | null;
 }
 
 const ERC1155Display: React.FC<ERC1155DisplayProps> = ({
@@ -42,6 +44,7 @@ const ERC1155Display: React.FC<ERC1155DisplayProps> = ({
   ensName,
   reverseResult,
   isMainnet = true,
+  klerosTag,
 }) => {
   const { jsonFiles, rpcUrls } = useContext(AppContext);
   const [tokenMetadata, setTokenMetadata] = useState<TokenMetadata | null>(null);
@@ -244,6 +247,7 @@ const ERC1155Display: React.FC<ERC1155DisplayProps> = ({
           onProviderSelect={onProviderSelect}
           tokenSymbol={collectionSymbol}
           tokenName={collectionName}
+          klerosTag={klerosTag}
         />
 
         <div className="address-section-content">
