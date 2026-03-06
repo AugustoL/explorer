@@ -7,7 +7,6 @@ import { useDataService } from "../../../../hooks/useDataService";
 import { useProviderSelection } from "../../../../hooks/useProviderSelection";
 import type { Block, DataWithMetadata, Transaction } from "../../../../types";
 import { logger } from "../../../../utils/logger";
-import { SkeletonTable } from "../../../common/SkeletonLoader";
 
 export default function Txs() {
   const { networkId } = useParams<{ networkId?: string }>();
@@ -134,8 +133,34 @@ export default function Txs() {
           <div className="blocks-header">
             <span className="block-label">{t("txs.latests", { network: networkName })}</span>
           </div>
-          <div className="card-content-loading">
-            <SkeletonTable rows={10} columns={7} />
+          <div className="table-wrapper">
+            <table className="dash-table">
+              <thead>
+                <tr>
+                  <th>Tx Hash</th>
+                  <th>{t("txs.block")}</th>
+                  <th>{t("txs.from")}</th>
+                  <th>{t("txs.to")}</th>
+                  <th>{t("txs.value")}</th>
+                  <th className="hide-mobile">{t("txs.gasPrice")}</th>
+                  <th className="hide-mobile">{t("txs.gas")}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {Array.from({ length: 10 }).map((_, i) => (
+                  // biome-ignore lint/suspicious/noArrayIndexKey: skeleton placeholder
+                  <tr key={i}>
+                    <td><span className="skeleton-pulse" style={{ width: "120px", height: 14 }} /></td>
+                    <td><span className="skeleton-pulse" style={{ width: "70px", height: 14 }} /></td>
+                    <td><span className="skeleton-pulse" style={{ width: "120px", height: 14 }} /></td>
+                    <td><span className="skeleton-pulse" style={{ width: "120px", height: 14 }} /></td>
+                    <td><span className="skeleton-pulse" style={{ width: "80px", height: 14 }} /></td>
+                    <td className="hide-mobile"><span className="skeleton-pulse" style={{ width: "70px", height: 14 }} /></td>
+                    <td className="hide-mobile"><span className="skeleton-pulse" style={{ width: "60px", height: 14 }} /></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
