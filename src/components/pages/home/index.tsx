@@ -11,9 +11,10 @@ import HomeSearchBar from "./HomeSearchBar";
 
 interface NetworkCardProps {
   network: NetworkConfig;
+  showChainId?: boolean;
 }
 
-const NetworkCard: React.FC<NetworkCardProps> = ({ network }) => {
+const NetworkCard: React.FC<NetworkCardProps> = ({ network, showChainId = false }) => {
   const chainId = getChainIdFromNetwork(network);
   const { t } = useTranslation("home");
   return (
@@ -34,7 +35,7 @@ const NetworkCard: React.FC<NetworkCardProps> = ({ network }) => {
                 <TierBadge subscription={network.subscription} size="small" />
               )}
             </div>
-            {chainId !== undefined && (
+            {showChainId && chainId !== undefined && (
               <div className="network-card-chain-id">
                 {t("chainID")}: {chainId}
               </div>
@@ -46,27 +47,11 @@ const NetworkCard: React.FC<NetworkCardProps> = ({ network }) => {
   );
 };
 
-const SuperUserNetworkCard: React.FC<NetworkCardProps> = ({ network }) => {
-  const chainId = getChainIdFromNetwork(network);
-  return (
-    <Link
-      to={`/${chainId ?? network.slug}`}
-      className="network-card-link network-card-link-compact"
-      style={{ "--network-color": network.color } as React.CSSProperties}
-    >
-      <div className="network-card network-card-compact">
-        <span className="network-card-id">{chainId ?? network.slug}</span>
-      </div>
-    </Link>
-  );
-};
-
 export default function Home() {
   const { t } = useTranslation("home");
   const { enabledNetworks, isLoading } = useNetworks();
   const { isSuperUser } = useSettings();
   const [showTestnets, setShowTestnets] = useState(false);
-  const Card = isSuperUser ? SuperUserNetworkCard : NetworkCard;
 
   const { productionNetworks, testnetNetworks } = useMemo(() => {
     const isDevelopment = process.env.REACT_APP_ENVIRONMENT === "development";
@@ -98,7 +83,7 @@ export default function Home() {
             <p className="loading-text">{t("loading")}</p>
           ) : (
             productionNetworks.map((network) => (
-              <Card key={network.networkId} network={network} />
+              <NetworkCard key={network.networkId} network={network} showChainId={isSuperUser} />
             ))
           )}
         </div>
@@ -108,7 +93,7 @@ export default function Home() {
             {showTestnets && (
               <div className="network-grid testnet-grid">
                 {testnetNetworks.map((network) => (
-                  <Card key={network.networkId} network={network} />
+                  <NetworkCard key={network.networkId} network={network} showChainId={isSuperUser} />
                 ))}
               </div>
             )}
