@@ -107,7 +107,24 @@ const LatestBlocksTable: React.FC<LatestBlocksTableProps> = ({
       </div>
 
       {loading && blocks.length === 0 ? (
-        <div className="dashboard-table-loading">{t("loadingBlocks")}</div>
+        <div className="dashboard-table-compact">
+          {Array.from({ length: 5 }).map((_, i) => (
+            // biome-ignore lint/suspicious/noArrayIndexKey: skeleton placeholder
+            <div key={i} className="dashboard-table-row">
+              <div className="dashboard-block-info">
+                <span className="skeleton-pulse" style={{ width: "70px", height: 14 }} />
+                <span className="skeleton-pulse" style={{ width: "40px", height: 12, marginTop: 4 }} />
+              </div>
+              <div className="dashboard-block-details">
+                <span className="skeleton-pulse" style={{ width: "50px", height: 12 }} />
+                <span className="skeleton-pulse" style={{ width: "40px", height: 12 }} />
+              </div>
+              <div className="dashboard-block-meta">
+                <span className="skeleton-pulse" style={{ width: "80px", height: 12 }} />
+              </div>
+            </div>
+          ))}
+        </div>
       ) : blocks.length === 0 ? (
         <div className="dashboard-table-empty">{t("noBlocksFound")}</div>
       ) : (

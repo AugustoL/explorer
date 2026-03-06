@@ -42,8 +42,8 @@ const DashboardStats: React.FC<DashboardStatsProps> = ({
     <div className="dashboard-stats-row">
       <div className="dashboard-stat-card">
         <div className="dashboard-stat-label">{t("currencyPrice", { currency })}</div>
-        <div className={`dashboard-stat-value ${loading ? "dashboard-stat-loading" : ""}`}>
-          {formatPrice(price)}
+        <div className="dashboard-stat-value">
+          {loading ? <span className="skeleton-pulse" style={{ width: "80px", height: 20, display: "inline-block" }} /> : formatPrice(price)}
         </div>
       </div>
 
@@ -52,18 +52,18 @@ const DashboardStats: React.FC<DashboardStatsProps> = ({
           <Link to={`/${networkId}/gastracker`} className="dashboard-stat-label-link">
             {t("gasPriceLink")}
           </Link>
-          <div className={`dashboard-gas-tiers ${loading ? "dashboard-stat-loading" : ""}`}>
+          <div className="dashboard-gas-tiers">
             <div className="gas-tier gas-tier-low">
               <span className="gas-tier-label">{t("low")}</span>
-              <span className="gas-tier-value">{formatGasPriceWithUnit(gasPrices.low)}</span>
+              <span className="gas-tier-value">{loading ? <span className="skeleton-pulse" style={{ width: "50px", height: 14, display: "inline-block" }} /> : formatGasPriceWithUnit(gasPrices.low)}</span>
             </div>
             <div className="gas-tier gas-tier-avg">
               <span className="gas-tier-label">{t("avg")}</span>
-              <span className="gas-tier-value">{formatGasPriceWithUnit(gasPrices.average)}</span>
+              <span className="gas-tier-value">{loading ? <span className="skeleton-pulse" style={{ width: "50px", height: 14, display: "inline-block" }} /> : formatGasPriceWithUnit(gasPrices.average)}</span>
             </div>
             <div className="gas-tier gas-tier-high">
               <span className="gas-tier-label">{t("high")}</span>
-              <span className="gas-tier-value">{formatGasPriceWithUnit(gasPrices.high)}</span>
+              <span className="gas-tier-value">{loading ? <span className="skeleton-pulse" style={{ width: "50px", height: 14, display: "inline-block" }} /> : formatGasPriceWithUnit(gasPrices.high)}</span>
             </div>
           </div>
         </div>
@@ -72,16 +72,16 @@ const DashboardStats: React.FC<DashboardStatsProps> = ({
           <Link to={`/${networkId}/gastracker`} className="dashboard-stat-label-link">
             {t("gasPriceLink")}
           </Link>
-          <div className={`dashboard-stat-value ${loading ? "dashboard-stat-loading" : ""}`}>
-            {formatGasPriceWithUnit(gasPrice)}
+          <div className="dashboard-stat-value">
+            {loading ? <span className="skeleton-pulse" style={{ width: "80px", height: 20, display: "inline-block" }} /> : formatGasPriceWithUnit(gasPrice)}
           </div>
         </div>
       )}
 
       <div className="dashboard-stat-card">
         <div className="dashboard-stat-label">{t("latestBlock")}</div>
-        <div className={`dashboard-stat-value ${loading ? "dashboard-stat-loading" : ""}`}>
-          {formatBlockNumber(blockNumber)}
+        <div className="dashboard-stat-value">
+          {loading ? <span className="skeleton-pulse" style={{ width: "100px", height: 20, display: "inline-block" }} /> : formatBlockNumber(blockNumber)}
         </div>
       </div>
     </div>
