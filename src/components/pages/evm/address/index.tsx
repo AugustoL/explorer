@@ -28,7 +28,7 @@ export default function Address() {
   const numericNetworkId = Number(networkId) || 1;
   const { rpcUrls } = useContext(AppContext);
   const [addressData, setAddressData] = useState<AddressData | null>(null);
-  const [addressType, setAddressType] = useState<AddressType>("account");
+  const [addressType, setAddressType] = useState<AddressType | null>(null);
   const [loading, setLoading] = useState(true);
   const [typeLoading, setTypeLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -122,6 +122,7 @@ export default function Address() {
 
     setLoading(true);
     setTypeLoading(true);
+    setAddressType(null);
     setError(null);
 
     // Use DataService to fetch address data with metadata support
@@ -206,7 +207,11 @@ export default function Address() {
     );
   }
 
-  if ((loading || typeLoading) && !addressData) {
+  // Show loader only until both the address data *and* the type are determined for
+  // the first time. Background re-fetches (e.g. dataService reference change) must
+  // not unmount the display component — that would reset all child hook state
+  // (proxy detection, Sourcify data, etc.) and cause visible flicker.
+  if (!addressData || addressType === null) {
     return (
       <div className="container-wide">
         <div className="block-display-card">
