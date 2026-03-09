@@ -1,8 +1,9 @@
 import type React from "react";
-import { useContext, useMemo } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { getNetworkById } from "../../../../../config/networks";
 import { AppContext } from "../../../../../context";
 import { useContractVerification } from "../../../../../hooks/useContractVerification";
+import { useDataService } from "../../../../../hooks/useDataService";
 import { useProxyInfo } from "../../../../../hooks/useProxyInfo";
 import type { KlerosTag } from "../../../../../services/KlerosService";
 import type { Address, ENSReverseResult, RPCMetadata } from "../../../../../types";
@@ -96,6 +97,22 @@ const ContractDisplay: React.FC<ContractDisplayProps> = ({
     proxyInfo?.implementationAddress,
     !!proxyInfo,
   );
+
+  // Fetch implementation bytecode via RPC — needed when Sourcify data doesn't include runtimeBytecode
+  // (e.g. Etherscan-only verified contracts)
+  const dataService = useDataService(Number(networkId));
+  const [implCode, setImplCode] = useState<string | undefined>(undefined);
+  useEffect(() => {
+    const implAddr = proxyInfo?.implementationAddress;
+    if (!implAddr || !dataService?.networkAdapter) {
+      setImplCode(undefined);
+      return;
+    }
+    dataService.networkAdapter
+      .getCode(implAddr)
+      .then((code) => setImplCode(code && code !== "0x" ? code : undefined))
+      .catch(() => setImplCode(undefined));
+  }, [proxyInfo?.implementationAddress, dataService]);
 
   // Check if we have local artifact data for this address
   const localArtifact = jsonFiles[addressHash.toLowerCase()];
@@ -204,6 +221,7 @@ const ContractDisplay: React.FC<ContractDisplayProps> = ({
             implementationContractData={implSourcifyData}
             implIsVerified={implIsVerified}
             sourcifyImplName={sourcifyImplName}
+            implCode={implCode}
           />
         </div>
       </div>

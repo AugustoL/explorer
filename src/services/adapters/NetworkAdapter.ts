@@ -223,6 +223,14 @@ export abstract class NetworkAdapter {
   }
 
   /**
+   * Fetch the deployed bytecode (eth_getCode) for any address.
+   */
+  async getCode(address: string): Promise<string> {
+    const result = await this.getClient().getCode(address, "latest");
+    return result.data ?? "0x";
+  }
+
+  /**
    * Execute a low-level eth_call.
    * Used for beacon proxy implementation() calls during proxy detection.
    */

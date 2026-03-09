@@ -39,6 +39,7 @@ export interface SourcifyContractDetails extends SourcifyMatch {
   // biome-ignore lint/suspicious/noExplicitAny: <TODO>
   abi?: any[];
   proxyResolution?: SourcifyProxyResolution;
+  runtimeBytecode?: { onchainBytecode?: string };
 }
 
 /** Raw shape returned by Sourcify V2 API (?fields=all). */
@@ -50,6 +51,7 @@ interface SourcifyV2Raw {
   address?: string;
   verifiedAt?: string;
   sources?: Record<string, { content: string }>;
+  runtimeBytecode?: { onchainBytecode?: string };
   // biome-ignore lint/suspicious/noExplicitAny: ABI items can be any shape
   abi?: any[];
   compilation?: {
@@ -108,6 +110,7 @@ function mapV2Response(raw: SourcifyV2Raw): SourcifyContractDetails {
     address: raw.address ?? "",
     verifiedAt: raw.verifiedAt,
     proxyResolution: raw.proxyResolution,
+    runtimeBytecode: raw.runtimeBytecode,
   };
 }
 

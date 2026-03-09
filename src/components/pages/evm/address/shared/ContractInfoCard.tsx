@@ -27,6 +27,7 @@ interface ContractData {
   runtime_match?: string | null;
   files?: Array<{ name: string; path: string; content: string }>;
   sources?: Record<string, { content: string }>;
+  runtimeBytecode?: { onchainBytecode?: string };
 }
 
 const ETHERSCAN_EXPLORERS: Record<number, string> = {
@@ -54,6 +55,8 @@ interface ContractInfoCardProps {
   implIsVerified?: boolean;
   /** Implementation contract name from Sourcify's proxyResolution — available immediately without a second fetch. */
   sourcifyImplName?: string;
+  /** Implementation bytecode fetched via RPC — fallback when Sourcify data lacks runtimeBytecode. */
+  implCode?: string;
 }
 
 type AbiView = "implementation" | "proxy";
@@ -71,6 +74,7 @@ const ContractInfoCard: React.FC<ContractInfoCardProps> = ({
   implementationContractData,
   implIsVerified = false,
   sourcifyImplName,
+  implCode,
 }) => {
   const { t } = useTranslation("address");
   const [showBytecode, setShowBytecode] = useState(false);
@@ -107,17 +111,35 @@ const ContractInfoCard: React.FC<ContractInfoCardProps> = ({
       ? (implementationContractData?.abi as ABI[] | undefined)
       : contractData?.abi;
 
-  // Prepare source files array
+  // Derive source files from the same data source as the active ABI:
+  // - tab switcher active + impl tab → implementation source files
+  // - tab switcher active + proxy tab → proxy source files
+  // - no tab switcher, proxy with verified impl → implementation source files
+  // - otherwise → proxy (contractData) source files
+  const activeSourceData =
+    showAbiTabSwitcher
+      ? abiView === "implementation"
+        ? implementationContractData
+        : contractData
+      : proxyInfo && hasImplAbi
+        ? implementationContractData
+        : contractData;
+
   const sourceFiles =
-    contractData?.files && contractData.files.length > 0
-      ? contractData.files
-      : contractData?.sources
-        ? Object.entries(contractData.sources).map(([path, source]) => ({
+    activeSourceData?.files && activeSourceData.files.length > 0
+      ? activeSourceData.files
+      : activeSourceData?.sources
+        ? Object.entries(activeSourceData.sources).map(([path, source]) => ({
             name: path,
             path: path,
             content: source.content || "",
           }))
         : [];
+
+  // Bytecode: prefer Sourcify's runtimeBytecode; fall back to RPC-fetched bytecode per tab
+  const activeBytecode =
+    activeSourceData?.runtimeBytecode?.onchainBytecode ??
+    (activeSourceData === contractData ? address.code : implCode);
 
   return (
     <div className="contract-info-card">
@@ -283,8 +305,8 @@ const ContractInfoCard: React.FC<ContractInfoCardProps> = ({
                 </div>
               )}
 
-              {/* Contract Bytecode */}
-              {address.code && address.code !== "0x" && (
+              {/* Contract Bytecode — switches with the active tab (impl vs proxy) */}
+              {activeBytecode && activeBytecode !== "0x" && (
                 <div className="contract-collapsible-item">
                   <button
                     type="button"
@@ -296,7 +318,7 @@ const ContractInfoCard: React.FC<ContractInfoCardProps> = ({
                   </button>
                   {showBytecode && (
                     <div className="contract-code-content">
-                      <code>{address.code}</code>
+                      <code>{activeBytecode}</code>
                     </div>
                   )}
                 </div>
@@ -360,8 +382,8 @@ const ContractInfoCard: React.FC<ContractInfoCardProps> = ({
         </div>
       ) : null}
 
-      {/* Bytecode for unverified contracts */}
-      {!hasVerifiedContract && address.code && address.code !== "0x" && (
+      {/* Bytecode for unverified contracts — hidden when contract-details-section already shows it */}
+      {!hasVerifiedContract && !(proxyInfo && hasImplAbi) && address.code && address.code !== "0x" && (
         <div className="contract-bytecode-section">
           <button
             type="button"
