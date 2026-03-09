@@ -15,6 +15,7 @@ export function useRpcAutoSync(): void {
   const syncedRef = useRef(false);
   const timerRef = useRef<number | null>(null);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: location.key is intentional — resets the debounce timer on every navigation event
   useEffect(() => {
     if (networksLoading) return;
     if (settings.rpcsSynced) return;
