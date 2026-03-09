@@ -33,6 +33,7 @@ export function useRpcAutoSync(): void {
         .then((sorted) => {
           saveRpcUrlsToStorage(sorted);
           updateSettings({ rpcsSynced: true });
+          logger.info("Auto-sync RPCs completed, sorted order saved for next load");
         })
         .catch(() => {
           logger.warn("Auto-sync RPCs failed");
