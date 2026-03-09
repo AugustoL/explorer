@@ -45,5 +45,5 @@ export function useRpcAutoSync(): void {
         window.clearTimeout(timerRef.current);
       }
     };
-  }, [location.pathname, networksLoading, settings.rpcsSynced, rpcUrls, networks, updateSettings]);
+  }, [location.key, networksLoading, settings.rpcsSynced, rpcUrls, networks, updateSettings]);
 }
