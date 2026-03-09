@@ -23,7 +23,6 @@ function mapSourcifyProxyType(sourcifyType: string | undefined): ProxyType {
       return "EIP-1167";
     case "ZeppelinOSProxy":
       return "Transparent (Legacy)";
-    case "EIP1967Proxy":
     default:
       // RPC detection will refine Transparent vs UUPS; this is the safe default
       return "EIP-1967 Transparent";

@@ -35,7 +35,6 @@ export default function Address() {
   const [addressData, setAddressData] = useState<AddressData | null>(null);
   const [addressType, setAddressType] = useState<AddressType | null>(null);
   const [loading, setLoading] = useState(true);
-  const [typeLoading, setTypeLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   // ENS resolution state
@@ -126,7 +125,6 @@ export default function Address() {
   useEffect(() => {
     if (!address || !dataService) {
       setLoading(false);
-      setTypeLoading(false);
       return;
     }
 
@@ -140,7 +138,6 @@ export default function Address() {
     }
 
     setLoading(true);
-    setTypeLoading(true);
     setError(null);
 
     // Use DataService to fetch address data with metadata support
@@ -177,18 +174,13 @@ export default function Address() {
               // contract from EOA rather than blindly defaulting to "account".
               setAddressType(hasContractCode(addressData.code) ? "contract" : "account");
             })
-            .finally(() => {
-              setTypeLoading(false);
-            });
         } else {
           // No RPC URL configured for type detection — derive type from pre-fetched code.
           setAddressType(hasContractCode(addressData.code) ? "contract" : "account");
-          setTypeLoading(false);
         }
       })
       .catch((err) => {
         setError(err.message || t("failedToFetchAddressData"));
-        setTypeLoading(false);
       })
       .finally(() => setLoading(false));
   }, [address, dataService, numericNetworkId, rpcUrls, t]);
