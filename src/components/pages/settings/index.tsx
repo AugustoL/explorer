@@ -1125,7 +1125,7 @@ const Settings: React.FC = () => {
                       </div>
                     )}
 
-                    <div className="settings-item">
+                    <div className="settings-item settings-prompt-version-item">
                       <div>
                         <div className="settings-item-label">
                           {t("apiKeys.promptVersion.label")}
