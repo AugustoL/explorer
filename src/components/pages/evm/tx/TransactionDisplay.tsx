@@ -949,20 +949,22 @@ const TransactionDisplay: React.FC<TransactionDisplayProps> = React.memo(
             )}
 
             {/* Full-width rows: long content */}
-            {/* Input Data */}
-            <div className="tx-row tx-row-vertical">
-              <span className="tx-label">{t("inputData")}</span>
-              {transaction.data && transaction.data !== "0x" ? (
-                <div className="tx-input-data">
-                  <code>{transaction.data}</code>
-                </div>
-              ) : (
-                <span className="tx-empty">0x</span>
-              )}
-            </div>
+            {/* Input Data - Hidden in super user mode (moved to TX Analyser) */}
+            {!isSuperUser && (
+              <div className="tx-row tx-row-vertical">
+                <span className="tx-label">{t("inputData")}</span>
+                {transaction.data && transaction.data !== "0x" ? (
+                  <div className="tx-input-data">
+                    <code>{transaction.data}</code>
+                  </div>
+                ) : (
+                  <span className="tx-empty">0x</span>
+                )}
+              </div>
+            )}
 
-            {/* Decoded Input Data */}
-            {decodedInput && (
+            {/* Decoded Input Data - Hidden in super user mode (moved to TX Analyser) */}
+            {!isSuperUser && decodedInput && (
               <div className="tx-row tx-row-vertical">
                 <span className="tx-label">{t("decodedInput")}</span>
                 <div className="tx-decoded-input">
@@ -1020,6 +1022,8 @@ const TransactionDisplay: React.FC<TransactionDisplayProps> = React.memo(
                     logs={transaction.receipt?.logs}
                     txToAddress={transaction.to}
                     contractAbi={contractData?.abi}
+                    inputData={transaction.data}
+                    decodedInputData={decodedInput}
                   />
                 </div>
               )}

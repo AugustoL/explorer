@@ -160,6 +160,8 @@
     "gasBreakdownTitle": "Desglose",
     "gasBreakdownHint": "Haz clic en cualquier barra para ampliar y ver su desglose",
     "gasResetView": "Restablecer zoom",
-    "events": "Eventos"
+    "events": "Eventos",
+    "inputDataTab": "Datos de Entrada",
+    "rawInputData": "Datos de Entrada sin Procesar"
   }
 }

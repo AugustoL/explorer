@@ -160,6 +160,8 @@
     "gasBreakdownTitle": "Breakdown",
     "gasBreakdownHint": "Click any bar to zoom in and see its breakdown",
     "gasResetView": "Reset zoom",
-    "events": "Events"
+    "events": "Events",
+    "inputDataTab": "Input Data",
+    "rawInputData": "Raw Input Data"
   }
 }

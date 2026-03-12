@@ -36,9 +36,11 @@ interface TxAnalyserProps {
   txToAddress?: string;
   // biome-ignore lint/suspicious/noExplicitAny: ABI types are dynamic
   contractAbi?: any[];
+  inputData?: string;
+  decodedInputData?: DecodedInput | null;
 }
 
-type AnalyserTab = "callTree" | "gasProfiler" | "stateChanges" | "events";
+type AnalyserTab = "callTree" | "gasProfiler" | "stateChanges" | "events" | "inputData";
 
 // ─── Call type color mapping ───────────────────────────────────────────────
 
@@ -620,6 +622,74 @@ const GasProfilerTab: React.FC<{
   );
 };
 
+// ─── Input Data Tab ──────────────────────────────────────────────────────
+
+const InputDataTab: React.FC<{
+  inputData: string;
+  decodedInput: DecodedInput | null;
+  networkId: string;
+  contracts: Record<string, ContractInfo>;
+  txToAddress?: string;
+}> = ({ inputData, decodedInput, networkId, contracts, txToAddress }) => {
+  const { t } = useTranslation("transaction");
+
+  // Try enriched ABI decode if no decoded input from sourcify/local
+  const resolved =
+    decodedInput ??
+    (() => {
+      if (!txToAddress || !inputData || inputData === "0x") return null;
+      const enriched = contracts[txToAddress.toLowerCase()];
+      if (!enriched?.abi) return null;
+      return decodeFunctionCall(inputData, enriched.abi);
+    })();
+
+  return (
+    <div className="analyser-tab-content">
+      {resolved && (
+        <div className="analyser-input-decoded">
+          <div className="analyser-summary">
+            <span>{t("decodedInput")}</span>
+          </div>
+          <div className="tx-decoded-input">
+            <div className="tx-decoded-function">
+              <span className="tx-function-badge">{resolved.functionName}</span>
+              <span className="tx-function-signature">{resolved.signature}</span>
+            </div>
+            {resolved.params.length > 0 && (
+              <div className="tx-decoded-params">
+                {resolved.params.map((param, i) => (
+                  // biome-ignore lint/suspicious/noArrayIndexKey: params have stable order
+                  <div key={i} className="tx-decoded-param">
+                    <span className="tx-param-name">{param.name}</span>
+                    <span className="tx-param-type">({param.type})</span>
+                    <span className={`tx-param-value ${param.type === "address" ? "tx-mono" : ""}`}>
+                      {param.type === "address" ? (
+                        <Link to={`/${networkId}/address/${param.value}`} className="link-accent">
+                          {param.value}
+                        </Link>
+                      ) : (
+                        formatDecodedValue(param.value, param.type)
+                      )}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+      <div className="analyser-input-raw">
+        <div className="analyser-summary">
+          <span>{t("analyser.rawInputData")}</span>
+        </div>
+        <div className="tx-input-data">
+          <code>{inputData}</code>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // ─── Event Logs Tab ──────────────────────────────────────────────────────
 
 const EventLogsTab: React.FC<{
@@ -800,6 +870,8 @@ const TxAnalyser: React.FC<TxAnalyserProps> = ({
   logs,
   txToAddress,
   contractAbi,
+  inputData,
+  decodedInputData,
 }) => {
   const { t } = useTranslation("transaction");
   const [activeTab, setActiveTab] = useState<AnalyserTab>("callTree");
@@ -908,6 +980,15 @@ const TxAnalyser: React.FC<TxAnalyserProps> = ({
             {t("analyser.events")} ({logs.length})
           </button>
         )}
+        {inputData && inputData !== "0x" && (
+          <button
+            type="button"
+            className={`tx-analyser-tab${activeTab === "inputData" ? " tx-analyser-tab--active" : ""}`}
+            onClick={() => setActiveTab("inputData")}
+          >
+            {t("analyser.inputDataTab")}
+          </button>
+        )}
       </div>
 
       {/* Tab content */}
@@ -993,6 +1074,16 @@ const TxAnalyser: React.FC<TxAnalyserProps> = ({
             txToAddress={txToAddress}
             contractAbi={contractAbi}
             contracts={contracts}
+          />
+        )}
+
+        {activeTab === "inputData" && inputData && inputData !== "0x" && (
+          <InputDataTab
+            inputData={inputData}
+            decodedInput={decodedInputData ?? null}
+            networkId={networkId}
+            contracts={contracts}
+            txToAddress={txToAddress}
           />
         )}
       </div>
