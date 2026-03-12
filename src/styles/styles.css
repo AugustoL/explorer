@@ -4756,17 +4756,18 @@ code {
 .settings-providers-save-row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  grid-template-areas: ". save status";
   align-items: center;
   margin-bottom: 12px;
 }
 
 .settings-providers-save-row .settings-save-button {
-  grid-column: 2;
+  grid-area: save;
   justify-self: center;
 }
 
 .settings-providers-save-row .settings-autosave-pill {
-  grid-column: 3;
+  grid-area: status;
   justify-self: end;
 }
 
