@@ -72,7 +72,6 @@ const TransactionDisplay: React.FC<TransactionDisplayProps> = React.memo(
 
     const [_showRawData, _setShowRawData] = useState(false);
     const [_showLogs, _setShowLogs] = useState(false);
-    const [showAnalyser, setShowAnalyser] = useState(false);
     const [callTargetToken, setCallTargetToken] = useState<TokenMetadata | null>(null);
     const [callTargetTokenListMatch, setCallTargetTokenListMatch] = useState<TokenListItem | null>(
       null,
@@ -1004,30 +1003,17 @@ const TransactionDisplay: React.FC<TransactionDisplayProps> = React.memo(
 
           {/* TX Analyser (Super User Mode) */}
           {isSuperUser && dataService && networkId && (
-            <div className="collapsible-container">
-              {/** biome-ignore lint/a11y/useButtonType: <TODO> */}
-              <button
-                className="collapsible-button-purple"
-                onClick={() => setShowAnalyser(!showAnalyser)}
-              >
-                {`${t("analyser.title")} ${showAnalyser ? "▲" : "▼"}`}
-              </button>
-              {showAnalyser && (
-                <div className="collapsible-content">
-                  <TxAnalyser
-                    txHash={transaction.hash}
-                    networkId={networkId}
-                    networkCurrency={networkCurrency}
-                    dataService={dataService}
-                    logs={transaction.receipt?.logs}
-                    txToAddress={transaction.to}
-                    contractAbi={contractData?.abi}
-                    inputData={transaction.data}
-                    decodedInputData={decodedInput}
-                  />
-                </div>
-              )}
-            </div>
+            <TxAnalyser
+              txHash={transaction.hash}
+              networkId={networkId}
+              networkCurrency={networkCurrency}
+              dataService={dataService}
+              logs={transaction.receipt?.logs}
+              txToAddress={transaction.to}
+              contractAbi={contractData?.abi}
+              inputData={transaction.data}
+              decodedInputData={decodedInput}
+            />
           )}
 
           {/* Debug Trace Section (Localhost Only) */}
