@@ -3,17 +3,17 @@ import type { Env } from "../types";
 
 /**
  * Check if an origin is allowed.
- * Entries starting with "*." are suffix patterns — e.g. "*.openscan.netlify.app"
- * matches "https://pr-123--openscan.netlify.app".
- * All other entries are exact matches.
+ * Entries starting with "*" are suffix patterns on the hostname — e.g.
+ * "*--openscan.netlify.app" matches "https://pr-306--openscan.netlify.app".
+ * All other entries are exact origin matches.
  */
 function isOriginAllowed(origin: string, allowed: string[]): boolean {
   for (const entry of allowed) {
-    if (entry.startsWith("*.")) {
-      const suffix = entry.slice(1); // e.g. ".openscan.netlify.app"
+    if (entry.startsWith("*")) {
+      const suffix = entry.slice(1); // e.g. "--openscan.netlify.app"
       try {
         const { hostname } = new URL(origin);
-        if (hostname.endsWith(suffix) || hostname === suffix.slice(1)) {
+        if (hostname.endsWith(suffix)) {
           return true;
         }
       } catch {
