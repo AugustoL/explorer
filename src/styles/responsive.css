@@ -1411,17 +1411,20 @@
 
   .settings-providers-save-row {
     grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "status"
+      "save";
     gap: 10px;
   }
 
   .settings-providers-save-row .settings-save-button {
-    grid-column: 1;
+    grid-area: save;
     width: auto;
     justify-self: center;
   }
 
   .settings-providers-save-row .settings-autosave-pill {
-    grid-column: 1;
+    grid-area: status;
     justify-self: end;
   }
 }
