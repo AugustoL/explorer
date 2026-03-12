@@ -386,39 +386,125 @@ const StateChangesTab: React.FC<{
   );
 };
 
-// ─── Gas Profiler Tab ─────────────────────────────────────────────────────
+// ─── Gas Profiler Tab (Flame / Icicle Chart) ─────────────────────────────
 
-interface GasProfileEntry {
-  type: string;
-  from: string;
-  to?: string;
-  gasUsed: number;
-  percentage: number;
-  input?: string;
-  error?: string;
-  depth: number;
+function getFlameColor(node: CallNode): string {
+  if (node.error) return "#ef4444";
+  const typeColor = CALL_TYPE_COLORS[node.type];
+  if (typeColor) return typeColor;
+  // hash-based fallback
+  const addr = node.to ?? node.from;
+  let h = 0;
+  for (let i = 0; i < addr.length; i++) h = (h * 31 + addr.charCodeAt(i)) & 0xffffff;
+  return `hsl(${h % 360}, 55%, 50%)`;
 }
 
-function flattenGasEntries(node: CallNode, depth = 0): GasProfileEntry[] {
-  const entries: GasProfileEntry[] = [];
-  const gasUsed = hexToGas(node.gasUsed) ?? 0;
-  entries.push({
-    type: node.type,
-    from: node.from,
-    to: node.to,
-    gasUsed,
-    percentage: 0, // computed after
-    input: node.input,
-    error: node.error,
-    depth,
-  });
-  if (node.calls) {
-    for (const child of node.calls) {
-      entries.push(...flattenGasEntries(child, depth + 1));
-    }
+function getFlameLabel(node: CallNode, contracts: Record<string, ContractInfo>): string {
+  const contractInfo = node.to ? contracts[node.to.toLowerCase()] : undefined;
+  const target = contractInfo?.name ?? (node.to ? `${node.to.slice(0, 10)}…` : node.type);
+
+  // Try full ABI decode first
+  if (node.input && node.input.length >= 10 && node.input !== "0x" && contractInfo?.abi) {
+    const decoded = decodeFunctionCall(node.input, contractInfo.abi);
+    if (decoded) return `${target}.${decoded.functionName}()`;
   }
-  return entries;
+
+  // Fallback: show 4-byte selector if present
+  if (node.input && node.input.length >= 10 && node.input !== "0x") {
+    return `${target}.${node.input.slice(0, 10)}()`;
+  }
+
+  // No input data (plain ETH transfer or CREATE)
+  if (node.type === "CREATE" || node.type === "CREATE2") return `${target} [${node.type}]`;
+  return `${target} [${node.type}]`;
 }
+
+interface BreakdownEntry {
+  label: string;
+  gas: number;
+  pct: number;
+  color: string;
+  type: string;
+  to?: string;
+}
+
+function getChildBreakdown(
+  node: CallNode,
+  parentGas: number,
+  contracts: Record<string, ContractInfo>,
+): BreakdownEntry[] {
+  if (!node.calls?.length) return [];
+  const entries: BreakdownEntry[] = node.calls.map((child) => {
+    const gas = hexToGas(child.gasUsed) ?? 0;
+    return {
+      label: getFlameLabel(child, contracts),
+      gas,
+      pct: parentGas > 0 ? (gas / parentGas) * 100 : 0,
+      color: getFlameColor(child),
+      type: child.type,
+      to: child.to,
+    };
+  });
+  const childSum = entries.reduce((s, e) => s + e.gas, 0);
+  const selfGas = parentGas - childSum;
+  if (selfGas > 0) {
+    entries.unshift({
+      label: "self",
+      gas: selfGas,
+      pct: (selfGas / parentGas) * 100,
+      color: "var(--text-tertiary)",
+      type: "self",
+    });
+  }
+  return entries.sort((a, b) => b.gas - a.gas);
+}
+
+const FlameRow: React.FC<{
+  node: CallNode;
+  totalGas: number;
+  contracts: Record<string, ContractInfo>;
+  networkId: string;
+  selected: CallNode | null;
+  onSelect: (node: CallNode) => void;
+}> = ({ node, totalGas, contracts, networkId, selected, onSelect }) => {
+  const gas = hexToGas(node.gasUsed) ?? 0;
+  const widthPct = totalGas > 0 ? (gas / totalGas) * 100 : 0;
+  if (widthPct < 0.3) return null;
+
+  const color = getFlameColor(node);
+  const label = getFlameLabel(node, contracts);
+  const isSelected = selected === node;
+
+  return (
+    <div className="flame-row" style={{ width: `${widthPct}%` }}>
+      <button
+        type="button"
+        className={`flame-bar${node.error ? " flame-bar--error" : ""}${isSelected ? " flame-bar--selected" : ""}`}
+        style={{ backgroundColor: color }}
+        onClick={() => onSelect(node)}
+        title={`${label} — ${gas.toLocaleString()} gas (${widthPct.toFixed(1)}%)`}
+      >
+        <span className="flame-bar-label">{label}</span>
+        <span className="flame-bar-gas">{gas.toLocaleString()}</span>
+      </button>
+      {node.calls && node.calls.length > 0 && (
+        <div className="flame-children">
+          {node.calls.map((child, i) => (
+            <FlameRow
+              key={`${i}-${child.type}-${child.to ?? child.from}`}
+              node={child}
+              totalGas={totalGas}
+              contracts={contracts}
+              networkId={networkId}
+              selected={selected}
+              onSelect={onSelect}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
 
 const GasProfilerTab: React.FC<{
   root: CallNode;
@@ -426,87 +512,95 @@ const GasProfilerTab: React.FC<{
   contracts: Record<string, ContractInfo>;
 }> = ({ root, networkId, contracts }) => {
   const { t } = useTranslation("transaction");
-  const totalGas = hexToGas(root.gasUsed) ?? 1;
+  const [zoomNode, setZoomNode] = useState<CallNode>(root);
+  const [selected, setSelected] = useState<CallNode | null>(null);
 
-  const entries = flattenGasEntries(root)
-    .map((e) => ({ ...e, percentage: (e.gasUsed / totalGas) * 100 }))
-    .sort((a, b) => b.gasUsed - a.gasUsed);
+  const zoomGas = hexToGas(zoomNode.gasUsed) ?? 1;
+  const totalGas = hexToGas(root.gasUsed) ?? 1;
+  const isZoomed = zoomNode !== root;
+
+  const handleSelect = useCallback((node: CallNode) => {
+    setSelected(node);
+    setZoomNode(node);
+  }, []);
+
+  const resetZoom = useCallback(() => {
+    setZoomNode(root);
+    setSelected(null);
+  }, [root]);
+
+  const breakdown = selected
+    ? getChildBreakdown(selected, hexToGas(selected.gasUsed) ?? 1, contracts)
+    : [];
 
   return (
     <div className="analyser-tab-content">
       <div className="analyser-summary">
         <span>{t("analyser.summaryGas", { gas: totalGas.toLocaleString() })}</span>
-        <span>{t("analyser.gasProfilerEntries", { count: entries.length })}</span>
+        {isZoomed && (
+          <button type="button" className="gas-profiler-reset" onClick={resetZoom}>
+            {t("analyser.gasResetView")}
+          </button>
+        )}
       </div>
-      <div className="gas-profiler">
-        {/* Header */}
-        <div className="gas-profiler-header">
-          <span className="gas-profiler-col-type">{t("analyser.gasColType")}</span>
-          <span className="gas-profiler-col-target">{t("analyser.gasColTarget")}</span>
-          <span className="gas-profiler-col-function">{t("analyser.gasColFunction")}</span>
-          <span className="gas-profiler-col-gas">{t("analyser.gasColGas")}</span>
-          <span className="gas-profiler-col-bar" />
-        </div>
-        {/* Rows */}
-        {entries.map((entry, i) => {
-          const contractInfo = entry.to ? contracts[entry.to.toLowerCase()] : undefined;
-          const decoded =
-            entry.input && entry.input !== "0x" && contractInfo?.abi
-              ? decodeFunctionCall(entry.input, contractInfo.abi)
-              : null;
-          const color = getCallTypeColor(entry.type);
-
-          return (
-            <div
-              key={`${i}-${entry.type}-${entry.to ?? ""}`}
-              className={`gas-profiler-row${entry.error ? " gas-profiler-row--error" : ""}`}
-            >
-              <span className="gas-profiler-col-type">
+      {/* Flame chart */}
+      <div className="gas-profiler-flame">
+        <FlameRow
+          node={zoomNode}
+          totalGas={zoomGas}
+          contracts={contracts}
+          networkId={networkId}
+          selected={selected}
+          onSelect={handleSelect}
+        />
+      </div>
+      {/* Breakdown panel */}
+      {selected && breakdown.length > 0 && (
+        <div className="gas-profiler-breakdown">
+          <div className="gas-profiler-breakdown-header">
+            <span className="gas-profiler-breakdown-title">
+              {t("analyser.gasBreakdownTitle")}:{" "}
+              <strong>{getFlameLabel(selected, contracts)}</strong>
+            </span>
+            <span className="gas-profiler-breakdown-gas">
+              {(hexToGas(selected.gasUsed) ?? 0).toLocaleString()} gas
+            </span>
+          </div>
+          <div className="gas-profiler-breakdown-list">
+            {breakdown.map((entry, i) => (
+              <div key={`${i}-${entry.label}`} className="gas-profiler-breakdown-row">
                 <span
-                  className="call-tree-type-badge"
-                  style={{ background: `${color}22`, color, borderColor: `${color}66` }}
-                >
-                  {entry.type}
-                </span>
-              </span>
-              <span className="gas-profiler-col-target">
-                {entry.to ? (
-                  <Link
-                    to={`/address/${entry.to}?network=${networkId}`}
-                    className="call-tree-address"
-                  >
-                    {contractInfo?.name ?? <LongString value={entry.to} start={6} end={4} />}
-                  </Link>
-                ) : (
-                  "—"
-                )}
-              </span>
-              <span className="gas-profiler-col-function">
-                {decoded ? (
-                  <span className="call-tree-decoded">{decoded.functionName}</span>
-                ) : entry.input && entry.input !== "0x" ? (
-                  <span className="gas-profiler-selector">{entry.input.slice(0, 10)}</span>
-                ) : (
-                  "—"
-                )}
-              </span>
-              <span className="gas-profiler-col-gas">
-                <span className="gas-profiler-gas-value">{entry.gasUsed.toLocaleString()}</span>
-                <span className="gas-profiler-gas-pct">{entry.percentage.toFixed(1)}%</span>
-              </span>
-              <span className="gas-profiler-col-bar">
-                <span
-                  className="gas-profiler-bar"
-                  style={{
-                    width: `${Math.max(entry.percentage, 0.5)}%`,
-                    backgroundColor: color,
-                  }}
+                  className="gas-profiler-breakdown-swatch"
+                  style={{ backgroundColor: entry.color }}
                 />
-              </span>
-            </div>
-          );
-        })}
-      </div>
+                <span className="gas-profiler-breakdown-label">
+                  {entry.to ? (
+                    <Link
+                      to={`/address/${entry.to}?network=${networkId}`}
+                      className="call-tree-address"
+                    >
+                      {entry.label}
+                    </Link>
+                  ) : (
+                    entry.label
+                  )}
+                </span>
+                <span className="gas-profiler-breakdown-pct">{entry.pct.toFixed(1)}%</span>
+                <span className="gas-profiler-breakdown-value">
+                  {entry.gas.toLocaleString()} gas
+                </span>
+                <span className="gas-profiler-breakdown-bar-bg">
+                  <span
+                    className="gas-profiler-breakdown-bar-fill"
+                    style={{ width: `${entry.pct}%`, backgroundColor: entry.color }}
+                  />
+                </span>
+              </div>
+            ))}
+          </div>
+          <div className="gas-profiler-breakdown-hint">{t("analyser.gasBreakdownHint")}</div>
+        </div>
+      )}
     </div>
   );
 };
@@ -623,7 +717,11 @@ const TxAnalyser: React.FC<TxAnalyserProps> = ({
       <div className="tx-analyser-body">
         {activeTab === "callTree" && (
           <>
-            {loadingCallTree && <div className="analyser-loading">{t("analyser.loading")}</div>}
+            {(loadingCallTree || enrichmentLoading) && (
+              <div className="analyser-loading">
+                {loadingCallTree ? t("analyser.loading") : t("analyser.enriching")}
+              </div>
+            )}
             {callTreeError && (
               <div className="analyser-error">
                 <div>{callTreeError}</div>
@@ -632,13 +730,13 @@ const TxAnalyser: React.FC<TxAnalyserProps> = ({
                 )}
               </div>
             )}
-            {callTree && (
+            {callTree && !enrichmentLoading && (
               <CallTreeTab
                 root={callTree}
                 networkId={networkId}
                 networkCurrency={networkCurrency}
                 contracts={contracts}
-                enrichmentLoading={enrichmentLoading}
+                enrichmentLoading={false}
               />
             )}
           </>
@@ -646,7 +744,11 @@ const TxAnalyser: React.FC<TxAnalyserProps> = ({
 
         {activeTab === "gasProfiler" && (
           <>
-            {loadingCallTree && <div className="analyser-loading">{t("analyser.loading")}</div>}
+            {(loadingCallTree || enrichmentLoading) && (
+              <div className="analyser-loading">
+                {loadingCallTree ? t("analyser.loading") : t("analyser.enriching")}
+              </div>
+            )}
             {callTreeError && (
               <div className="analyser-error">
                 <div>{callTreeError}</div>
@@ -655,7 +757,7 @@ const TxAnalyser: React.FC<TxAnalyserProps> = ({
                 )}
               </div>
             )}
-            {callTree && (
+            {callTree && !enrichmentLoading && (
               <GasProfilerTab root={callTree} networkId={networkId} contracts={contracts} />
             )}
           </>
@@ -663,7 +765,11 @@ const TxAnalyser: React.FC<TxAnalyserProps> = ({
 
         {activeTab === "stateChanges" && (
           <>
-            {loadingPrestate && <div className="analyser-loading">{t("analyser.loading")}</div>}
+            {(loadingPrestate || enrichmentLoading) && (
+              <div className="analyser-loading">
+                {loadingPrestate ? t("analyser.loading") : t("analyser.enriching")}
+              </div>
+            )}
             {prestateError && (
               <div className="analyser-error">
                 <div>{prestateError}</div>
@@ -672,7 +778,7 @@ const TxAnalyser: React.FC<TxAnalyserProps> = ({
                 )}
               </div>
             )}
-            {prestateTrace && (
+            {prestateTrace && !enrichmentLoading && (
               <StateChangesTab
                 trace={prestateTrace}
                 networkId={networkId}

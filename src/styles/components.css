@@ -2143,105 +2143,194 @@ button.tx-section-header-toggle {
 }
 
 /* Gas Profiler */
-.gas-profiler {
+/* Gas Profiler — Flame / Icicle Chart */
+.gas-profiler-flame {
+	border: 1px solid var(--border-primary);
+	border-radius: 8px;
+	padding: 8px;
+	overflow-x: auto;
+}
+
+.flame-row {
+	min-width: 0;
+}
+
+.flame-bar {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	width: 100%;
+	padding: 4px 8px;
+	margin-bottom: 1px;
+	border: none;
+	border-radius: 3px;
+	color: #fff;
+	font-size: 0.78rem;
+	cursor: pointer;
+	text-align: left;
+	transition: filter 0.15s;
+	min-height: 26px;
+	overflow: hidden;
+	white-space: nowrap;
+	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.flame-bar:hover {
+	filter: brightness(1.15);
+}
+
+.flame-bar--error {
+	outline: 2px solid #ef4444;
+	outline-offset: -2px;
+}
+
+.flame-bar--selected {
+	outline: 2px solid var(--text-primary);
+	outline-offset: -2px;
+}
+
+.flame-bar-label {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	flex: 1;
+	min-width: 0;
+	font-family: monospace;
+}
+
+.flame-bar-gas {
+	flex-shrink: 0;
+	margin-left: 8px;
+	font-family: monospace;
+	font-size: 0.72rem;
+	opacity: 0.85;
+}
+
+.flame-children {
+	display: flex;
+	flex-direction: row;
+	gap: 1px;
+	margin-top: 1px;
+}
+
+/* Reset zoom button */
+.gas-profiler-reset {
+	background: var(--bg-tertiary);
+	border: 1px solid var(--border-primary);
+	border-radius: 4px;
+	padding: 2px 10px;
+	font-size: 0.78rem;
+	color: var(--text-secondary);
+	cursor: pointer;
+}
+
+.gas-profiler-reset:hover {
+	background: var(--overlay-light-10);
+}
+
+/* Breakdown panel */
+.gas-profiler-breakdown {
+	margin-top: 12px;
 	border: 1px solid var(--border-primary);
 	border-radius: 8px;
 	overflow: hidden;
 }
 
-.gas-profiler-header {
-	display: grid;
-	grid-template-columns: 120px 1fr 1fr 140px 120px;
-	gap: 8px;
-	padding: 8px 12px;
+.gas-profiler-breakdown-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 10px 14px;
 	background: var(--bg-tertiary);
 	border-bottom: 1px solid var(--border-primary);
-	font-size: 0.75rem;
-	font-weight: 600;
-	color: var(--text-tertiary);
-	text-transform: uppercase;
-	letter-spacing: 0.03em;
-}
-
-.gas-profiler-row {
-	display: grid;
-	grid-template-columns: 120px 1fr 1fr 140px 120px;
-	gap: 8px;
-	padding: 6px 12px;
-	align-items: center;
 	font-size: 0.82rem;
-	border-bottom: 1px solid var(--border-secondary);
 }
 
-.gas-profiler-row:last-child {
-	border-bottom: none;
+.gas-profiler-breakdown-title {
+	color: var(--text-secondary);
 }
 
-.gas-profiler-row:hover {
-	background: var(--overlay-light-5);
-}
-
-.gas-profiler-row--error {
-	background: rgba(239, 68, 68, 0.05);
-}
-
-.gas-profiler-col-gas {
-	display: flex;
-	flex-direction: column;
-	align-items: flex-end;
-	gap: 1px;
-}
-
-.gas-profiler-gas-value {
-	font-family: monospace;
-	font-weight: 500;
+.gas-profiler-breakdown-title strong {
 	color: var(--text-primary);
 }
 
-.gas-profiler-gas-pct {
-	font-size: 0.72rem;
-	color: var(--text-tertiary);
-}
-
-.gas-profiler-col-bar {
-	position: relative;
-	height: 16px;
-	background: var(--overlay-light-5);
-	border-radius: 3px;
-	overflow: hidden;
-}
-
-.gas-profiler-bar {
-	position: absolute;
-	left: 0;
-	top: 0;
-	height: 100%;
-	border-radius: 3px;
-	opacity: 0.7;
-	min-width: 1px;
-}
-
-.gas-profiler-col-function .call-tree-decoded {
-	font-family: monospace;
-	font-size: 0.8rem;
-}
-
-.gas-profiler-selector {
+.gas-profiler-breakdown-gas {
 	font-family: monospace;
 	font-size: 0.78rem;
 	color: var(--text-tertiary);
 }
 
-.gas-profiler-col-target {
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
+.gas-profiler-breakdown-list {
+	padding: 4px 0;
 }
 
-.gas-profiler-col-function {
+.gas-profiler-breakdown-row {
+	display: grid;
+	grid-template-columns: 14px 1fr 60px 120px 100px;
+	gap: 8px;
+	padding: 5px 14px;
+	align-items: center;
+	font-size: 0.8rem;
+}
+
+.gas-profiler-breakdown-row:hover {
+	background: var(--overlay-light-5);
+}
+
+.gas-profiler-breakdown-swatch {
+	width: 10px;
+	height: 10px;
+	border-radius: 2px;
+	flex-shrink: 0;
+}
+
+.gas-profiler-breakdown-label {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
+	font-family: monospace;
+}
+
+.gas-profiler-breakdown-pct {
+	text-align: right;
+	font-weight: 600;
+	color: var(--text-primary);
+}
+
+.gas-profiler-breakdown-value {
+	text-align: right;
+	font-family: monospace;
+	font-size: 0.75rem;
+	color: var(--text-tertiary);
+}
+
+.gas-profiler-breakdown-bar-bg {
+	height: 8px;
+	background: var(--overlay-light-5);
+	border-radius: 4px;
+	overflow: hidden;
+}
+
+.gas-profiler-breakdown-bar-fill {
+	height: 100%;
+	border-radius: 4px;
+	min-width: 1px;
+}
+
+.gas-profiler-breakdown-hint {
+	padding: 6px 14px 10px;
+	font-size: 0.72rem;
+	color: var(--text-tertiary);
+	font-style: italic;
+}
+
+@media (max-width: 640px) {
+	.gas-profiler-breakdown-row {
+		grid-template-columns: 14px 1fr 50px 80px;
+	}
+
+	.gas-profiler-breakdown-bar-bg {
+		display: none;
+	}
 }
 
 /* Input Data Display */

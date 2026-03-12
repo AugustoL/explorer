@@ -157,10 +157,8 @@
     "codeDeployed": "コード",
     "enriching": "コントラクト情報を読み込み中...",
     "gasProfiler": "ガスプロファイラー",
-    "gasProfilerEntries": "{{count}} 操作",
-    "gasColType": "タイプ",
-    "gasColTarget": "コントラクト",
-    "gasColFunction": "関数",
-    "gasColGas": "使用ガス"
+    "gasBreakdownTitle": "内訳",
+    "gasBreakdownHint": "任意のバーをクリックしてズームインし、内訳を表示します",
+    "gasResetView": "ズームをリセット"
   }
 }

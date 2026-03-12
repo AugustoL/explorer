@@ -157,10 +157,8 @@
     "codeDeployed": "代码",
     "enriching": "正在加载合约信息...",
     "gasProfiler": "Gas 分析",
-    "gasProfilerEntries": "{{count}} 个操作",
-    "gasColType": "类型",
-    "gasColTarget": "合约",
-    "gasColFunction": "函数",
-    "gasColGas": "Gas 消耗"
+    "gasBreakdownTitle": "分项明细",
+    "gasBreakdownHint": "点击任意条形以放大并查看其明细",
+    "gasResetView": "重置缩放"
   }
 }

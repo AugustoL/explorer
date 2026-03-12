@@ -157,10 +157,8 @@
     "codeDeployed": "Code",
     "enriching": "Loading contract info...",
     "gasProfiler": "Gas Profiler",
-    "gasProfilerEntries": "{{count}} operations",
-    "gasColType": "Type",
-    "gasColTarget": "Contract",
-    "gasColFunction": "Function",
-    "gasColGas": "Gas Used"
+    "gasBreakdownTitle": "Breakdown",
+    "gasBreakdownHint": "Click any bar to zoom in and see its breakdown",
+    "gasResetView": "Reset zoom"
   }
 }
