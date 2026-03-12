@@ -23,16 +23,18 @@ export async function fetchContractInfo(
   const cacheKey = `${chainId}:${address.toLowerCase()}`;
   if (cache.has(cacheKey)) return cache.get(cacheKey) ?? null;
 
-  // ── Sourcify ─────────────────────────────────────────────────────────────
+  // ── Sourcify V2 ──────────────────────────────────────────────────────────
   try {
     const res = await fetch(
-      `https://sourcify.dev/server/v2/contract/${chainId}/${address}?fields=abi,name`,
+      `https://sourcify.dev/server/v2/contract/${chainId}/${address}?fields=abi,compilation`,
       { signal },
     );
     if (res.ok) {
       const data = await res.json();
-      if (data?.abi || data?.name) {
-        const info: ContractInfo = { name: data.name, abi: data.abi };
+      const name = data?.compilation?.name;
+      const abi = data?.abi;
+      if (abi || name) {
+        const info: ContractInfo = { name, abi };
         cache.set(cacheKey, info);
         return info;
       }
