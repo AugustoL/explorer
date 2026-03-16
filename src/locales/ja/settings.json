@@ -27,6 +27,20 @@
       "description": "設定、RPC設定、APIキーを含むすべてのデータをクリアします。",
       "button": "サイトデータをクリア",
       "confirmMessage": "これにより、すべての設定、RPC設定、APIキー、キャッシュデータがクリアされます。ページが再読み込みされます。続行しますか？"
+    },
+    "exportConfig": {
+      "label": "設定をエクスポート",
+      "description": "すべての設定、RPC設定、APIキーをJSONファイルとしてダウンロードします。",
+      "button": "エクスポート",
+      "sensitiveWarning": "エクスポートされたファイルには機密データ（APIキー）が含まれています。安全に保管してください。続行しますか？"
+    },
+    "importConfig": {
+      "label": "設定をインポート",
+      "description": "以前エクスポートしたJSONファイルから設定を復元します。",
+      "button": "インポート",
+      "confirmMessage": "現在のすべての設定、RPC設定、APIキーが上書きされます。続行しますか？",
+      "invalidFile": "無効な設定ファイルです。有効なOpenScan設定JSONを選択してください。",
+      "success": "設定が正常にインポートされました！"
     }
   },
   "rpcStrategy": {
@@ -112,6 +126,28 @@
   "toasts": {
     "settingsSaved": "設定が正常に保存されました！",
     "cacheCleared": "キャッシュをクリアしました！"
+  },
+  "superUser": {
+    "title": "スーパーユーザー",
+    "description": "スーパーユーザーモードの詳細設定。",
+    "enabled": {
+      "label": "スーパーユーザーモード",
+      "description": "TXアナライザー、コールツリー、ガスプロファイラー、状態変更などの高度な機能を有効にします。"
+    },
+    "persistentCache": {
+      "label": "永続キャッシュ",
+      "description": "セッション間のアクセスを高速化するために、ブロックチェーンデータをローカルストレージにキャッシュします。",
+      "sizeLimit": {
+        "label": "キャッシュサイズ制限",
+        "description": "永続キャッシュの最大ストレージ容量。"
+      },
+      "usage": "{{used}} / {{limit}} 使用中",
+      "clear": {
+        "label": "永続キャッシュをクリア",
+        "description": "ローカルストレージからキャッシュされたブロックチェーンデータをすべて削除します。",
+        "button": "キャッシュをクリア"
+      }
+    }
   },
   "rpcEndpoints": {
     "title": "RPCエンドポイント",

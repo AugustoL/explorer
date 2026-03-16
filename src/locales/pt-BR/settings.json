@@ -27,6 +27,20 @@
       "description": "Limpar todos os dados incluindo configurações, configurações RPC e chaves de API.",
       "button": "Limpar Dados do Site",
       "confirmMessage": "Isso vai limpar todas as configurações, configurações RPC, chaves de API e dados em cache. A página será recarregada. Continuar?"
+    },
+    "exportConfig": {
+      "label": "Exportar Configuração",
+      "description": "Baixar todas as configurações, configurações RPC e chaves de API como arquivo JSON.",
+      "button": "Exportar",
+      "sensitiveWarning": "O arquivo exportado contém dados sensíveis (chaves de API). Armazene-o com segurança. Continuar?"
+    },
+    "importConfig": {
+      "label": "Importar Configuração",
+      "description": "Restaurar configurações de um arquivo JSON exportado anteriormente.",
+      "button": "Importar",
+      "confirmMessage": "Isso vai sobrescrever todas as configurações atuais, configurações RPC e chaves de API. Continuar?",
+      "invalidFile": "Arquivo de configuração inválido. Selecione um JSON de configuração OpenScan válido.",
+      "success": "Configuração importada com sucesso!"
     }
   },
   "rpcStrategy": {
@@ -112,6 +126,28 @@
   "toasts": {
     "settingsSaved": "Configurações salvas com sucesso!",
     "cacheCleared": "Cache limpo!"
+  },
+  "superUser": {
+    "title": "Super Usuário",
+    "description": "Configurações avançadas para o modo super usuário.",
+    "enabled": {
+      "label": "Modo Super Usuário",
+      "description": "Habilitar recursos avançados como Analisador de TX, árvore de chamadas, perfilador de gas e mudanças de estado."
+    },
+    "persistentCache": {
+      "label": "Cache Persistente",
+      "description": "Armazenar dados de blockchain no armazenamento local para acesso mais rápido entre sessões.",
+      "sizeLimit": {
+        "label": "Limite de Tamanho do Cache",
+        "description": "Espaço máximo de armazenamento para o cache persistente."
+      },
+      "usage": "Usando {{used}} de {{limit}}",
+      "clear": {
+        "label": "Limpar Cache Persistente",
+        "description": "Remover todos os dados de blockchain armazenados do armazenamento local.",
+        "button": "Limpar Cache"
+      }
+    }
   },
   "rpcEndpoints": {
     "title": "Endpoints RPC",

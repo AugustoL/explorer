@@ -27,6 +27,20 @@
       "description": "清除所有数据，包括设置、RPC 配置和 API 密钥。",
       "button": "清除站点数据",
       "confirmMessage": "这将清除所有设置、RPC 配置、API 密钥和缓存数据。页面将重新加载。继续？"
+    },
+    "exportConfig": {
+      "label": "导出配置",
+      "description": "将所有设置、RPC 配置和 API 密钥下载为 JSON 文件。",
+      "button": "导出",
+      "sensitiveWarning": "导出的文件包含敏感数据（API 密钥）。请安全存储。继续？"
+    },
+    "importConfig": {
+      "label": "导入配置",
+      "description": "从之前导出的 JSON 文件恢复设置。",
+      "button": "导入",
+      "confirmMessage": "这将覆盖所有当前设置、RPC 配置和 API 密钥。继续？",
+      "invalidFile": "无效的配置文件。请选择有效的 OpenScan 配置 JSON。",
+      "success": "配置导入成功！"
     }
   },
   "rpcStrategy": {
@@ -112,6 +126,28 @@
   "toasts": {
     "settingsSaved": "配置保存成功！",
     "cacheCleared": "缓存已清除！"
+  },
+  "superUser": {
+    "title": "超级用户",
+    "description": "超级用户模式的高级设置。",
+    "enabled": {
+      "label": "超级用户模式",
+      "description": "启用高级功能，如交易分析器、调用树、Gas分析器和状态变更。"
+    },
+    "persistentCache": {
+      "label": "持久缓存",
+      "description": "将区块链数据缓存到本地存储中，以加快跨会话访问速度。",
+      "sizeLimit": {
+        "label": "缓存大小限制",
+        "description": "持久缓存的最大存储空间。"
+      },
+      "usage": "已使用 {{used}} / {{limit}}",
+      "clear": {
+        "label": "清除持久缓存",
+        "description": "从本地存储中删除所有缓存的区块链数据。",
+        "button": "清除缓存"
+      }
+    }
   },
   "rpcEndpoints": {
     "title": "RPC 端点",
