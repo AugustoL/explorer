@@ -19,6 +19,7 @@ import type {
 } from "../../../types";
 import { AI_PROVIDERS, AI_PROVIDER_ORDER } from "../../../config/aiProviders";
 import { clearAICache } from "../../common/AIAnalysis/aiCache";
+import { downloadConfigFile, exportConfig, importConfig } from "../../../utils/configExportImport";
 import { logger } from "../../../utils/logger";
 import { getChainIdFromNetwork } from "../../../utils/networkResolver";
 import { clearPersistentCache, getPersistentCacheSize } from "../../../utils/persistentCache";
@@ -97,6 +98,8 @@ const Settings: React.FC = () => {
     ...rpcUrls,
   });
   const [cacheCleared, setCacheCleared] = useState(false);
+  const [importSuccess, setImportSuccess] = useState(false);
+  const [importError, setImportError] = useState(false);
   const [draggedItem, setDraggedItem] = useState<{
     networkId: string;
     index: number;
@@ -525,6 +528,42 @@ const Settings: React.FC = () => {
     window.location.reload();
   }, [t]);
 
+  const handleExportConfig = useCallback(() => {
+    if (!window.confirm(t("cacheData.exportConfig.sensitiveWarning"))) return;
+    const config = exportConfig();
+    downloadConfigFile(config);
+  }, [t]);
+
+  const handleImportConfig = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      // Reset input so the same file can be re-selected
+      e.target.value = "";
+
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        try {
+          const data = JSON.parse(ev.target?.result as string);
+          if (!window.confirm(t("cacheData.importConfig.confirmMessage"))) return;
+          const result = importConfig(data);
+          if (result.success) {
+            setImportSuccess(true);
+            setTimeout(() => window.location.reload(), 1500);
+          } else {
+            setImportError(true);
+            setTimeout(() => setImportError(false), 3000);
+          }
+        } catch {
+          setImportError(true);
+          setTimeout(() => setImportError(false), 3000);
+        }
+      };
+      reader.readAsText(file);
+    },
+    [t],
+  );
+
   // Helper to get URLs as array from localRpc
   const getLocalRpcArray = useCallback(
     (networkId: string): string[] => {
@@ -749,9 +788,23 @@ const Settings: React.FC = () => {
 
   return (
     <>
-      {cacheCleared && (
+      {(cacheCleared || importSuccess || importError) && (
         <div className="settings-toast-container">
-          <div className="settings-toast settings-toast-success">✓ {t("toasts.cacheCleared")}</div>
+          {cacheCleared && (
+            <div className="settings-toast settings-toast-success">
+              ✓ {t("toasts.cacheCleared")}
+            </div>
+          )}
+          {importSuccess && (
+            <div className="settings-toast settings-toast-success">
+              ✓ {t("cacheData.importConfig.success")}
+            </div>
+          )}
+          {importError && (
+            <div className="settings-toast settings-toast-error">
+              ✗ {t("cacheData.importConfig.invalidFile")}
+            </div>
+          )}
         </div>
       )}
 
@@ -1451,6 +1504,48 @@ const Settings: React.FC = () => {
                       >
                         ⚠️ {t("cacheData.clearSiteData.button")}
                       </button>
+                    </div>
+
+                    <br />
+
+                    <div className="settings-item">
+                      <div>
+                        <div className="settings-item-label">
+                          {t("cacheData.exportConfig.label")}
+                        </div>
+                        <div className="settings-item-description">
+                          {t("cacheData.exportConfig.description")}
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        className="settings-clear-cache-button"
+                        onClick={handleExportConfig}
+                      >
+                        📦 {t("cacheData.exportConfig.button")}
+                      </button>
+                    </div>
+
+                    <br />
+
+                    <div className="settings-item">
+                      <div>
+                        <div className="settings-item-label">
+                          {t("cacheData.importConfig.label")}
+                        </div>
+                        <div className="settings-item-description">
+                          {t("cacheData.importConfig.description")}
+                        </div>
+                      </div>
+                      <label className="settings-clear-cache-button" style={{ cursor: "pointer" }}>
+                        📥 {t("cacheData.importConfig.button")}
+                        <input
+                          type="file"
+                          accept=".json"
+                          onChange={handleImportConfig}
+                          style={{ display: "none" }}
+                        />
+                      </label>
                     </div>
                   </div>
 
