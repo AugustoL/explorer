@@ -90,7 +90,7 @@ const Settings: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { rpcUrls, setRpcUrls } = useContext(AppContext);
-  const { settings, updateSettings, isSuperUser } = useSettings();
+  const { settings, updateSettings } = useSettings();
   const { enabledNetworks } = useNetworks();
   const { isMetaMaskAvailable, isSupported, setAsDefaultExplorer } = useMetaMaskExplorer();
   const [activeTab, setActiveTab] = useState<SettingsTab>("network");
@@ -300,9 +300,15 @@ const Settings: React.FC = () => {
     });
   }, [settings.apiKeys]);
 
-  // Hydrate active tab from URL query or previous session.
-  // We intentionally use a single source of truth (query param) to avoid duplicate `#...#...` URLs.
+  // Hydrate active tab from URL query or previous session (mount only).
+  // handleTabChange owns all subsequent URL updates — the guard prevents re-running.
+  const tabHydratedRef = useRef(false);
   useEffect(() => {
+    if (tabHydratedRef.current) {
+      return;
+    }
+    tabHydratedRef.current = true;
+
     const params = new URLSearchParams(location.search);
     const tabFromQuery = params.get("tab");
 
@@ -321,15 +327,10 @@ const Settings: React.FC = () => {
       return;
     }
 
-    if (nextTab !== activeTab) {
-      setActiveTab(nextTab);
-    }
-
+    setActiveTab(nextTab);
     localStorage.setItem(SETTINGS_ACTIVE_TAB_KEY, nextTab);
 
-    const hasHashFragment = Boolean(location.hash);
-
-    if (tabFromQuery !== nextTab || hasHashFragment) {
+    if (tabFromQuery !== nextTab || Boolean(location.hash)) {
       const updatedParams = new URLSearchParams(location.search);
       updatedParams.set("tab", nextTab);
       navigate(
@@ -341,7 +342,7 @@ const Settings: React.FC = () => {
         { replace: true },
       );
     }
-  }, [activeTab, location.hash, location.pathname, location.search, navigate]);
+  }, [location.hash, location.pathname, location.search, navigate]);
 
   const currentDraft = useMemo(
     () => serializeDraft(localRpc, localApiKeys),
@@ -1549,60 +1550,60 @@ const Settings: React.FC = () => {
                     </div>
                   </div>
 
-                  {isSuperUser && (
-                    <div className="settings-section no-margin">
-                      <h2 className="settings-section-title">{t("superUser.title")}</h2>
-                      <p className="settings-section-description">{t("superUser.description")}</p>
+                  <div className="settings-section no-margin">
+                    <h2 className="settings-section-title">{t("superUser.title")}</h2>
+                    <p className="settings-section-description">{t("superUser.description")}</p>
 
-                      <div className="settings-item">
-                        <div>
-                          <div className="settings-item-label">
-                            {t("superUser.persistentCache.sizeLimit.label")}
-                          </div>
-                          <div className="settings-item-description">
-                            {t("superUser.persistentCache.sizeLimit.description")}
-                          </div>
+                    <div className="settings-item">
+                      <div>
+                        <div className="settings-item-label">
+                          {t("superUser.persistentCache.sizeLimit.label")}
                         </div>
-                        <select
-                          value={settings.persistentCacheSizeMB ?? 10}
-                          onChange={(e) =>
-                            updateSettings({ persistentCacheSizeMB: Number(e.target.value) })
-                          }
-                          className="settings-select"
-                        >
-                          <option value={5}>5 MB</option>
-                          <option value={10}>10 MB</option>
-                          <option value={25}>25 MB</option>
-                          <option value={50}>50 MB</option>
-                          <option value={100}>100 MB</option>
-                        </select>
-                      </div>
-
-                      <div className="settings-item">
-                        <div>
-                          <div className="settings-item-label">
-                            {t("superUser.persistentCache.label")}
-                          </div>
-                          <div className="settings-item-description">
-                            {t("superUser.persistentCache.usage", {
-                              used: `${(persistentCacheBytes / (1024 * 1024)).toFixed(2)} MB`,
-                              limit: `${settings.persistentCacheSizeMB ?? 10} MB`,
-                            })}
-                          </div>
+                        <div className="settings-item-description">
+                          {t("superUser.persistentCache.sizeLimit.description")}
                         </div>
-                        <button
-                          type="button"
-                          className="settings-clear-cache-button"
-                          onClick={() => {
-                            clearPersistentCache();
-                            setPersistentCacheBytes(0);
-                          }}
-                        >
-                          {t("superUser.persistentCache.clear.button")}
-                        </button>
                       </div>
+                      <select
+                        value={settings.persistentCacheSizeMB ?? 10}
+                        onChange={(e) =>
+                          updateSettings({ persistentCacheSizeMB: Number(e.target.value) })
+                        }
+                        className="settings-select"
+                      >
+                        <option value={5}>5 MB</option>
+                        <option value={10}>10 MB</option>
+                        <option value={25}>25 MB</option>
+                        <option value={50}>50 MB</option>
+                        <option value={100}>100 MB</option>
+                      </select>
                     </div>
-                  )}
+
+                    <br />
+
+                    <div className="settings-item">
+                      <div>
+                        <div className="settings-item-label">
+                          {t("superUser.persistentCache.label")}
+                        </div>
+                        <div className="settings-item-description">
+                          {t("superUser.persistentCache.usage", {
+                            used: `${(persistentCacheBytes / (1024 * 1024)).toFixed(2)} MB`,
+                            limit: `${settings.persistentCacheSizeMB ?? 10} MB`,
+                          })}
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        className="settings-clear-cache-button"
+                        onClick={() => {
+                          clearPersistentCache();
+                          setPersistentCacheBytes(0);
+                        }}
+                      >
+                        {t("superUser.persistentCache.clear.button")}
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
