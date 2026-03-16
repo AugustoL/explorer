@@ -10,10 +10,10 @@ export type NetworkType = "evm" | "bitcoin";
 
 /**
  * All EVM chain IDs supported by the app.
- * Extends the connector library's SupportedChainId with additional chains.
- * When adding a new EVM network, add its chain ID here.
+ * Maps directly to the connector library's SupportedChainId.
+ * When adding a new EVM network, add its chain ID to network-connectors first.
  */
-export type AppChainId = SupportedChainId | 43114;
+export type AppChainId = SupportedChainId;
 
 // ==================== CORE DOMAIN TYPES ====================
 

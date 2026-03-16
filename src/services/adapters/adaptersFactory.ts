@@ -8,6 +8,7 @@ import { ArbitrumAdapter } from "./ArbitrumAdapter/ArbitrumAdapter";
 import { BitcoinAdapter } from "./BitcoinAdapter/BitcoinAdapter";
 import type {
   ArbitrumClient,
+  AvalancheClient,
   AztecClient,
   BaseClient,
   BitcoinClient,
@@ -15,8 +16,8 @@ import type {
   EthereumClient,
   OptimismClient,
   PolygonClient,
+  SupportedChainId,
 } from "@openscan/network-connectors";
-import type { AppChainId } from "../../types";
 
 // biome-ignore lint/complexity/noStaticOnlyClass: <TODO>
 export class AdapterFactory {
@@ -24,7 +25,7 @@ export class AdapterFactory {
    * Create an EVM network adapter
    */
   static createAdapter(
-    networkId: AppChainId,
+    networkId: SupportedChainId,
     client:
       | EthereumClient
       | OptimismClient
@@ -32,6 +33,7 @@ export class AdapterFactory {
       | PolygonClient
       | BaseClient
       | ArbitrumClient
+      | AvalancheClient
       | AztecClient,
   ): NetworkAdapter {
     switch (networkId) {
@@ -39,7 +41,7 @@ export class AdapterFactory {
       case 11155111:
       case 31337:
       case 43114:
-        return new EVMAdapter(networkId, client as EthereumClient);
+        return new EVMAdapter(networkId, client as unknown as EthereumClient);
       case 10:
         return new OptimismAdapter(networkId, client as OptimismClient);
       case 56:
