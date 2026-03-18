@@ -5,6 +5,7 @@ import type { CallNode, PrestateTrace } from "../../../../services/adapters/Netw
 import { useCallTreeEnrichment } from "../../../../hooks/useCallTreeEnrichment";
 import { type ContractInfo, fetchContractInfoBatch } from "../../../../utils/contractLookup";
 import { useSettings } from "../../../../context/SettingsContext";
+import HelperTooltip from "../../../common/HelperTooltip";
 import { logger } from "../../../../utils/logger";
 import type { AnalyserTab, TxAnalyserProps } from "./analyser/types";
 import CallTreeTab from "./analyser/CallTreeTab";
@@ -26,6 +27,7 @@ const TxAnalyser: React.FC<TxAnalyserProps> = ({
   isSuperUser,
 }) => {
   const { t } = useTranslation("transaction");
+  const { t: tTooltips } = useTranslation("tooltips");
   const hasEvents = logs && logs.length > 0;
   const hasInputData = inputData && inputData !== "0x";
   const defaultTab: AnalyserTab = hasEvents ? "events" : hasInputData ? "inputData" : "callTree";
@@ -203,6 +205,9 @@ const TxAnalyser: React.FC<TxAnalyserProps> = ({
             onClick={() => handleTabClick("inputData")}
           >
             {t("analyser.inputDataTab")}
+            {settings.showHelperTooltips !== false && settings.knowledgeLevel === "beginner" && (
+              <HelperTooltip content={tTooltips("transaction.decodedInput")} />
+            )}
           </button>
         )}
         {isSuperUser && (

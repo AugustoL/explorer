@@ -1,0 +1,128 @@
+/* ===== Helper Tooltip ===== */
+
+.helper-tooltip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Trigger button */
+.helper-tooltip-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin-left: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-tertiary);
+  opacity: 0.6;
+  transition: opacity 0.15s ease, color 0.15s ease;
+  vertical-align: middle;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.helper-tooltip-trigger:hover,
+.helper-tooltip-trigger:focus-visible {
+  opacity: 1;
+  color: var(--color-info);
+  outline: none;
+}
+
+.helper-tooltip-trigger:focus-visible {
+  outline: 2px solid var(--color-info);
+  outline-offset: 2px;
+  border-radius: 50%;
+}
+
+/* Tooltip bubble */
+.helper-tooltip-bubble {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: 260px;
+  min-width: 140px;
+  padding: 8px 12px;
+  background: var(--bg-tooltip);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 400;
+  line-height: 1.45;
+  border-radius: 6px;
+  box-shadow: var(--shadow-md);
+  z-index: 1000;
+  pointer-events: auto;
+  white-space: normal;
+  word-wrap: break-word;
+}
+
+/* Top placement (default) */
+.helper-tooltip-top {
+  bottom: calc(100% + 6px);
+}
+
+.helper-tooltip-top::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 5px;
+  border-style: solid;
+  border-color: var(--bg-tooltip) transparent transparent transparent;
+}
+
+/* Bottom placement */
+.helper-tooltip-bottom {
+  top: calc(100% + 6px);
+}
+
+.helper-tooltip-bottom::after {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent var(--bg-tooltip) transparent;
+}
+
+/* Light theme text: keep tooltip text white since bg-tooltip is dark in both themes */
+.light-theme .helper-tooltip-bubble {
+  color: #fff;
+}
+
+/* ===== Navbar Tooltip Level Button ===== */
+
+.navbar-toggle-btn.navbar-tooltip-level-beginner {
+  border-color: var(--color-primary-muted);
+}
+
+.navbar-toggle-btn.navbar-tooltip-level-intermediate {
+  border-color: var(--color-info);
+}
+
+.navbar-toggle-btn.navbar-tooltip-level-advanced {
+  border-color: var(--color-accent);
+}
+
+/* Mobile adjustments */
+@media (max-width: 767px) {
+  .helper-tooltip-bubble {
+    max-width: 220px;
+    font-size: 0.78rem;
+    left: auto;
+    right: -8px;
+    transform: none;
+  }
+
+  .helper-tooltip-top::after,
+  .helper-tooltip-bottom::after {
+    left: auto;
+    right: 12px;
+    transform: none;
+  }
+}
