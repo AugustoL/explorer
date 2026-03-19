@@ -235,6 +235,7 @@ export interface BitcoinTransaction {
   vin: BitcoinTransactionInput[];
   vout: BitcoinTransactionOutput[];
   blockhash?: string;
+  blockheight?: number;
   confirmations?: number;
   blocktime?: number;
   time?: number;
@@ -491,6 +492,11 @@ export type AIAnalysisType =
 export type PromptVersion = "stable" | "latest";
 
 /**
+ * Knowledge level for helper tooltip visibility
+ */
+export type KnowledgeLevel = "beginner" | "intermediate" | "advanced";
+
+/**
  * User settings for the application
  */
 export interface UserSettings {
@@ -502,6 +508,8 @@ export interface UserSettings {
   isSuperUser?: boolean;
   promptVersion?: PromptVersion;
   persistentCacheSizeMB?: number;
+  knowledgeLevel?: KnowledgeLevel;
+  showHelperTooltips?: boolean;
 }
 
 /**
@@ -516,6 +524,8 @@ export const DEFAULT_SETTINGS: UserSettings = {
   isSuperUser: false,
   promptVersion: "stable",
   persistentCacheSizeMB: 10,
+  knowledgeLevel: "beginner",
+  showHelperTooltips: true,
 };
 
 /**

@@ -9,6 +9,7 @@ import type {
 import { useCallTreeEnrichment } from "../../../../hooks/useCallTreeEnrichment";
 import { type ContractInfo, fetchContractInfoBatch } from "../../../../utils/contractLookup";
 import { useSettings } from "../../../../context/SettingsContext";
+import HelperTooltip from "../../../common/HelperTooltip";
 import { logger } from "../../../../utils/logger";
 import type { AnalyserTab, TxAnalyserProps } from "./analyser/types";
 import CallTreeTab from "./analyser/CallTreeTab";
@@ -31,6 +32,7 @@ const TxAnalyser: React.FC<TxAnalyserProps> = ({
   isSuperUser,
 }) => {
   const { t } = useTranslation("transaction");
+  const { t: tTooltips } = useTranslation("tooltips");
   const hasEvents = logs && logs.length > 0;
   const hasInputData = inputData && inputData !== "0x";
   const defaultTab: AnalyserTab = hasEvents ? "events" : hasInputData ? "inputData" : "callTree";
@@ -249,6 +251,9 @@ const TxAnalyser: React.FC<TxAnalyserProps> = ({
             onClick={() => handleTabClick("inputData")}
           >
             {t("analyser.inputDataTab")}
+            {settings.showHelperTooltips !== false && (
+              <HelperTooltip content={tTooltips("transaction.decodedInput")} />
+            )}
           </button>
         )}
         {isSuperUser && (
@@ -259,6 +264,9 @@ const TxAnalyser: React.FC<TxAnalyserProps> = ({
               onClick={() => handleTabClick("callTree")}
             >
               {t("analyser.callTree")}
+              {settings.showHelperTooltips !== false && (
+                <HelperTooltip content={tTooltips("transaction.callTree")} />
+              )}
             </button>
             <button
               type="button"
@@ -266,6 +274,9 @@ const TxAnalyser: React.FC<TxAnalyserProps> = ({
               onClick={() => handleTabClick("gasProfiler")}
             >
               {t("analyser.gasProfiler")}
+              {settings.showHelperTooltips !== false && (
+                <HelperTooltip content={tTooltips("transaction.gasProfiler")} />
+              )}
             </button>
             <button
               type="button"
@@ -273,6 +284,9 @@ const TxAnalyser: React.FC<TxAnalyserProps> = ({
               onClick={() => handleTabClick("stateChanges")}
             >
               {t("analyser.stateChanges")}
+              {settings.showHelperTooltips !== false && (
+                <HelperTooltip content={tTooltips("transaction.stateChanges")} />
+              )}
             </button>
             <button
               type="button"
