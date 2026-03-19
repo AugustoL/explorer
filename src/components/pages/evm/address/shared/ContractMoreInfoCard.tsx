@@ -32,7 +32,7 @@ const ContractMoreInfoCard: React.FC<ContractMoreInfoCardProps> = ({
           <FieldLabel
             label="ENS Name:"
             tooltipKey="address.ensName"
-            visibleFor={["beginner"]}
+            visibleFor={["beginner", "intermediate", "advanced"]}
             className="account-card-label"
           />
           <span className="account-card-value">
@@ -60,7 +60,7 @@ const ContractMoreInfoCard: React.FC<ContractMoreInfoCardProps> = ({
           <FieldLabel
             label="ENS App:"
             tooltipKey="address.ensApp"
-            visibleFor={["intermediate"]}
+            visibleFor={["beginner", "intermediate", "advanced"]}
             className="account-card-label"
           />
           <span className="account-card-value">

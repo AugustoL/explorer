@@ -205,7 +205,7 @@ const TxAnalyser: React.FC<TxAnalyserProps> = ({
             onClick={() => handleTabClick("inputData")}
           >
             {t("analyser.inputDataTab")}
-            {settings.showHelperTooltips !== false && settings.knowledgeLevel === "beginner" && (
+            {settings.showHelperTooltips !== false && (
               <HelperTooltip content={tTooltips("transaction.decodedInput")} />
             )}
           </button>
@@ -218,6 +218,9 @@ const TxAnalyser: React.FC<TxAnalyserProps> = ({
               onClick={() => handleTabClick("callTree")}
             >
               {t("analyser.callTree")}
+              {settings.showHelperTooltips !== false && (
+                <HelperTooltip content={tTooltips("transaction.callTree")} />
+              )}
             </button>
             <button
               type="button"
@@ -225,6 +228,9 @@ const TxAnalyser: React.FC<TxAnalyserProps> = ({
               onClick={() => handleTabClick("gasProfiler")}
             >
               {t("analyser.gasProfiler")}
+              {settings.showHelperTooltips !== false && (
+                <HelperTooltip content={tTooltips("transaction.gasProfiler")} />
+              )}
             </button>
             <button
               type="button"
@@ -232,6 +238,9 @@ const TxAnalyser: React.FC<TxAnalyserProps> = ({
               onClick={() => handleTabClick("stateChanges")}
             >
               {t("analyser.stateChanges")}
+              {settings.showHelperTooltips !== false && (
+                <HelperTooltip content={tTooltips("transaction.stateChanges")} />
+              )}
             </button>
           </>
         )}

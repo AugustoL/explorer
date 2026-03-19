@@ -158,7 +158,7 @@
     },
     "knowledgeLevel": {
       "label": "Nível de Conhecimento",
-      "description": "Controla quantas dicas de ajuda são exibidas. Iniciante mostra mais, Avançado mostra menos.",
+      "description": "Controla quantas dicas de ajuda são exibidas. Iniciante mostra todas. Intermediário oculta campos básicos. Avançado mostra apenas dicas complexas e específicas da cadeia.",
       "beginner": "Iniciante",
       "intermediate": "Intermediário",
       "advanced": "Avançado"

@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 interface HelperTooltipProps {
   content: string;
@@ -11,6 +12,7 @@ const HOVER_DELAY_MS = 350;
 const HelperTooltip: React.FC<HelperTooltipProps> = ({ content, placement = "top", className }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [actualPlacement, setActualPlacement] = useState(placement);
+  const [triggerRect, setTriggerRect] = useState<DOMRect | null>(null);
   const tooltipId = useId();
   const triggerRef = useRef<HTMLButtonElement>(null);
   const bubbleRef = useRef<HTMLDivElement>(null);
@@ -21,6 +23,7 @@ const HelperTooltip: React.FC<HelperTooltipProps> = ({ content, placement = "top
     if (triggerRef.current) {
       const rect = triggerRef.current.getBoundingClientRect();
       setActualPlacement(rect.top < 80 ? "bottom" : placement);
+      setTriggerRect(rect);
     }
     setIsVisible(true);
   }, [placement]);
@@ -45,7 +48,6 @@ const HelperTooltip: React.FC<HelperTooltipProps> = ({ content, placement = "top
   const handlePointerLeave = useCallback(() => {
     isPointerInsideRef.current = false;
     clearHoverTimeout();
-    // Small delay to allow moving from trigger to bubble
     hoverTimeoutRef.current = setTimeout(() => {
       if (!isPointerInsideRef.current) {
         hide();
@@ -70,7 +72,6 @@ const HelperTooltip: React.FC<HelperTooltipProps> = ({ content, placement = "top
     [hide],
   );
 
-  // Touch: tap to toggle
   const handleClick = useCallback(() => {
     if (isVisible) {
       hide();
@@ -79,7 +80,7 @@ const HelperTooltip: React.FC<HelperTooltipProps> = ({ content, placement = "top
     }
   }, [isVisible, show, hide]);
 
-  // Close on outside click (touch devices)
+  // Close on outside click
   useEffect(() => {
     if (!isVisible) return;
 
@@ -111,6 +112,58 @@ const HelperTooltip: React.FC<HelperTooltipProps> = ({ content, placement = "top
       }
     };
   }, []);
+
+  // Clamp bubble within viewport after render
+  useLayoutEffect(() => {
+    if (!isVisible || !bubbleRef.current) return;
+    const bubble = bubbleRef.current;
+    const rect = bubble.getBoundingClientRect();
+    const margin = 8;
+
+    if (rect.right > window.innerWidth - margin) {
+      bubble.style.left = `${window.innerWidth - margin - rect.width}px`;
+      bubble.style.transform = "none";
+    }
+    if (rect.left < margin) {
+      bubble.style.left = `${margin}px`;
+      bubble.style.transform = "none";
+    }
+  }, [isVisible, triggerRect]);
+
+  const getBubbleStyle = (): React.CSSProperties => {
+    if (!triggerRect) return {};
+    const gap = 6;
+    const centerX = triggerRect.left + triggerRect.width / 2;
+
+    if (actualPlacement === "bottom") {
+      return {
+        position: "fixed",
+        top: triggerRect.bottom + gap,
+        left: centerX,
+        transform: "translateX(-50%)",
+      };
+    }
+    return {
+      position: "fixed",
+      top: triggerRect.top - gap,
+      left: centerX,
+      transform: "translate(-50%, -100%)",
+    };
+  };
+
+  const bubble = isVisible ? (
+    <div
+      ref={bubbleRef}
+      id={tooltipId}
+      role="tooltip"
+      className="helper-tooltip-bubble"
+      style={getBubbleStyle()}
+      onMouseEnter={handlePointerEnter}
+      onMouseLeave={handlePointerLeave}
+    >
+      {content}
+    </div>
+  ) : null;
 
   return (
     <span className={`helper-tooltip ${className ?? ""}`}>
@@ -149,18 +202,7 @@ const HelperTooltip: React.FC<HelperTooltipProps> = ({ content, placement = "top
           </text>
         </svg>
       </button>
-      {isVisible && (
-        <div
-          ref={bubbleRef}
-          id={tooltipId}
-          role="tooltip"
-          className={`helper-tooltip-bubble helper-tooltip-${actualPlacement}`}
-          onMouseEnter={handlePointerEnter}
-          onMouseLeave={handlePointerLeave}
-        >
-          {content}
-        </div>
-      )}
+      {bubble && createPortal(bubble, document.body)}
     </span>
   );
 };

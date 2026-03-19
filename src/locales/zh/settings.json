@@ -158,7 +158,7 @@
     },
     "knowledgeLevel": {
       "label": "知识水平",
-      "description": "控制显示多少帮助提示。初学者显示最多，高级显示最少。",
+      "description": "控制显示多少帮助提示。初学者显示所有提示。中级隐藏基本字段。高级仅显示复杂和链特定的提示。",
       "beginner": "初学者",
       "intermediate": "中级",
       "advanced": "高级"

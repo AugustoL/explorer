@@ -559,7 +559,7 @@ const TransactionDisplay: React.FC<TransactionDisplayProps> = React.memo(
               <FieldLabel
                 label={transaction.to ? t("to") : t("interactedWith")}
                 tooltipKey="transaction.interactedWith"
-                visibleFor={["beginner", "intermediate"]}
+                visibleFor={["beginner"]}
               />
               <span className="tx-value tx-mono">
                 {transaction.to ? (
@@ -612,7 +612,7 @@ const TransactionDisplay: React.FC<TransactionDisplayProps> = React.memo(
                   <FieldLabel
                     label={t("status")}
                     tooltipKey="transaction.status"
-                    visibleFor={["beginner", "intermediate"]}
+                    visibleFor={["beginner"]}
                   />
                   <span className="tx-value">{getStatusText(transaction.receipt?.status)}</span>
                 </div>
@@ -622,7 +622,7 @@ const TransactionDisplay: React.FC<TransactionDisplayProps> = React.memo(
                   <FieldLabel
                     label={t("block")}
                     tooltipKey="transaction.confirmations"
-                    visibleFor={["beginner", "intermediate"]}
+                    visibleFor={["beginner"]}
                   />
                   <span className="tx-value">
                     {networkId ? (
@@ -732,7 +732,7 @@ const TransactionDisplay: React.FC<TransactionDisplayProps> = React.memo(
                       <FieldLabel
                         label={t("effectiveGasPrice")}
                         tooltipKey="transaction.effectiveGasPrice"
-                        visibleFor={["intermediate", "advanced"]}
+                        visibleFor={["beginner", "intermediate"]}
                       />
                       <span className="tx-value">
                         {formatGwei(transaction.receipt.effectiveGasPrice)}
@@ -745,7 +745,7 @@ const TransactionDisplay: React.FC<TransactionDisplayProps> = React.memo(
                   <FieldLabel
                     label={t("nonce")}
                     tooltipKey="transaction.nonce"
-                    visibleFor={["beginner"]}
+                    visibleFor={["beginner", "intermediate"]}
                   />
                   <span className="tx-value">{transaction.nonce}</span>
                 </div>
@@ -755,7 +755,7 @@ const TransactionDisplay: React.FC<TransactionDisplayProps> = React.memo(
                   <FieldLabel
                     label={t("position")}
                     tooltipKey="transaction.position"
-                    visibleFor={["beginner", "intermediate", "advanced"]}
+                    visibleFor={["beginner", "intermediate"]}
                   />
                   <span className="tx-value">{transaction.transactionIndex}</span>
                 </div>
@@ -782,7 +782,7 @@ const TransactionDisplay: React.FC<TransactionDisplayProps> = React.memo(
                       <FieldLabel
                         label={t("l1BlockNumber")}
                         tooltipKey="transaction.l1BlockNumber"
-                        visibleFor={["intermediate", "advanced"]}
+                        visibleFor={["beginner", "intermediate", "advanced"]}
                       />
                       <span className="tx-value">
                         {Number(transaction.receipt.l1BlockNumber).toLocaleString()}
@@ -794,7 +794,7 @@ const TransactionDisplay: React.FC<TransactionDisplayProps> = React.memo(
                       <FieldLabel
                         label={t("gasUsedForL1")}
                         tooltipKey="transaction.gasUsedForL1"
-                        visibleFor={["intermediate", "advanced"]}
+                        visibleFor={["beginner", "intermediate", "advanced"]}
                       />
                       <span className="tx-value">
                         {Number(transaction.receipt.gasUsedForL1).toLocaleString()}
@@ -814,7 +814,7 @@ const TransactionDisplay: React.FC<TransactionDisplayProps> = React.memo(
                     <FieldLabel
                       label={t("l1Fee")}
                       tooltipKey="transaction.l1Fee"
-                      visibleFor={["intermediate", "advanced"]}
+                      visibleFor={["beginner", "intermediate", "advanced"]}
                     />
                     <span className="tx-value">{formatValue(transaction.receipt.l1Fee)}</span>
                   </div>
@@ -824,7 +824,7 @@ const TransactionDisplay: React.FC<TransactionDisplayProps> = React.memo(
                     <FieldLabel
                       label={t("l1GasPrice")}
                       tooltipKey="transaction.l1GasPrice"
-                      visibleFor={["advanced"]}
+                      visibleFor={["beginner", "intermediate", "advanced"]}
                     />
                     <span className="tx-value">{formatGwei(transaction.receipt.l1GasPrice)}</span>
                   </div>
@@ -836,7 +836,7 @@ const TransactionDisplay: React.FC<TransactionDisplayProps> = React.memo(
                     <FieldLabel
                       label={t("l1GasUsed")}
                       tooltipKey="transaction.l1GasUsed"
-                      visibleFor={["advanced"]}
+                      visibleFor={["beginner", "intermediate", "advanced"]}
                     />
                     <span className="tx-value">
                       {Number(transaction.receipt.l1GasUsed).toLocaleString()}
@@ -848,7 +848,7 @@ const TransactionDisplay: React.FC<TransactionDisplayProps> = React.memo(
                     <FieldLabel
                       label={t("l1FeeScalar")}
                       tooltipKey="transaction.l1FeeScalar"
-                      visibleFor={["advanced"]}
+                      visibleFor={["beginner", "intermediate", "advanced"]}
                     />
                     <span className="tx-value">{transaction.receipt.l1FeeScalar}</span>
                   </div>
@@ -919,7 +919,7 @@ const TransactionDisplay: React.FC<TransactionDisplayProps> = React.memo(
                   <FieldLabel
                     label={t("blobVersionedHashes")}
                     tooltipKey="transaction.blobVersionedHashes"
-                    visibleFor={["advanced"]}
+                    visibleFor={["beginner", "intermediate", "advanced"]}
                   />
                   <span className="tx-value">
                     {transaction.blobVersionedHashes.map((hash) => (

@@ -1,7 +1,10 @@
 import React, { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
+import { useSettings } from "../../../context/SettingsContext";
 import CopyButton from "../../common/CopyButton";
 import FieldLabel from "../../common/FieldLabel";
+import HelperTooltip from "../../common/HelperTooltip";
 import { SATOSHIS_PER_BTC } from "../../../config/bitcoinConstants";
 import { getNetworkById } from "../../../config/networks";
 import type { BitcoinTransaction } from "../../../types";
@@ -46,6 +49,9 @@ interface BitcoinTransactionDisplayProps {
 
 const BitcoinTransactionDisplay: React.FC<BitcoinTransactionDisplayProps> = React.memo(
   ({ transaction, networkId, btcPrice }) => {
+    const { t: tTooltips } = useTranslation("tooltips");
+    const { settings } = useSettings();
+
     // Calculate totals
     const totalInput = calculateTotalInput(transaction);
     const totalOutput = calculateTotalOutput(transaction);
@@ -129,6 +135,9 @@ const BitcoinTransactionDisplay: React.FC<BitcoinTransactionDisplayProps> = Reac
               transaction.confirmations > 0 && (
                 <span className="block-status-badge block-status-finalized">
                   {transaction.confirmations.toLocaleString()} Confirmations
+                  {settings.showHelperTooltips !== false && (
+                    <HelperTooltip content={tTooltips("bitcoin.confirmations")} />
+                  )}
                 </span>
               )
             )}
@@ -156,7 +165,7 @@ const BitcoinTransactionDisplay: React.FC<BitcoinTransactionDisplayProps> = Reac
                 <FieldLabel
                   label="Witness Hash:"
                   tooltipKey="bitcoin.witnessHash"
-                  visibleFor={["intermediate", "advanced"]}
+                  visibleFor={["beginner", "intermediate", "advanced"]}
                 />
                 <span
                   className="tx-value tx-mono"
@@ -269,7 +278,7 @@ const BitcoinTransactionDisplay: React.FC<BitcoinTransactionDisplayProps> = Reac
                     <FieldLabel
                       label="Fee/B:"
                       tooltipKey="bitcoin.feePerByte"
-                      visibleFor={["intermediate", "advanced"]}
+                      visibleFor={["beginner", "intermediate", "advanced"]}
                     />
                     <span className="tx-value">{feePerByte.toFixed(3)} sat/B</span>
                   </div>
@@ -285,7 +294,7 @@ const BitcoinTransactionDisplay: React.FC<BitcoinTransactionDisplayProps> = Reac
                     <FieldLabel
                       label="Fee/WU:"
                       tooltipKey="bitcoin.feePerWU"
-                      visibleFor={["advanced"]}
+                      visibleFor={["beginner", "intermediate", "advanced"]}
                     />
                     <span className="tx-value">{feePerWU.toFixed(3)} sat/WU</span>
                   </div>
@@ -317,7 +326,7 @@ const BitcoinTransactionDisplay: React.FC<BitcoinTransactionDisplayProps> = Reac
                 <FieldLabel
                   label="Weight:"
                   tooltipKey="bitcoin.weight"
-                  visibleFor={["intermediate", "advanced"]}
+                  visibleFor={["beginner", "intermediate", "advanced"]}
                 />
                 <span className="tx-value">{transaction.weight.toLocaleString()} WU</span>
               </div>
@@ -369,7 +378,7 @@ const BitcoinTransactionDisplay: React.FC<BitcoinTransactionDisplayProps> = Reac
                 <FieldLabel
                   label="Version:"
                   tooltipKey="bitcoin.version"
-                  visibleFor={["intermediate", "advanced"]}
+                  visibleFor={["beginner", "intermediate", "advanced"]}
                 />
                 <span className="tx-value">{transaction.version}</span>
               </div>
@@ -377,7 +386,7 @@ const BitcoinTransactionDisplay: React.FC<BitcoinTransactionDisplayProps> = Reac
                 <FieldLabel
                   label="Locktime:"
                   tooltipKey="bitcoin.locktime"
-                  visibleFor={["intermediate", "advanced"]}
+                  visibleFor={["beginner", "intermediate", "advanced"]}
                 />
                 <span className="tx-value">{transaction.locktime.toLocaleString()}</span>
               </div>
@@ -389,7 +398,12 @@ const BitcoinTransactionDisplay: React.FC<BitcoinTransactionDisplayProps> = Reac
             {/* Inputs Column */}
             <div className="btc-io-column">
               <div className="btc-io-column-header">
-                <span className="btc-io-column-title">Inputs ({transaction.vin.length})</span>
+                <span className="btc-io-column-title">
+                  Inputs ({transaction.vin.length})
+                  {settings.showHelperTooltips !== false && (
+                    <HelperTooltip content={tTooltips("bitcoin.inputsColumn")} />
+                  )}
+                </span>
                 {totalInput > 0 && (
                   <div className="btc-io-column-totals">
                     <span className="btc-io-column-total">{formatBTC(totalInput)}</span>
@@ -479,7 +493,12 @@ const BitcoinTransactionDisplay: React.FC<BitcoinTransactionDisplayProps> = Reac
             {/* Outputs Column */}
             <div className="btc-io-column">
               <div className="btc-io-column-header">
-                <span className="btc-io-column-title">Outputs ({transaction.vout.length})</span>
+                <span className="btc-io-column-title">
+                  Outputs ({transaction.vout.length})
+                  {settings.showHelperTooltips !== false && (
+                    <HelperTooltip content={tTooltips("bitcoin.outputsColumn")} />
+                  )}
+                </span>
                 <div className="btc-io-column-totals">
                   <span className="btc-io-column-total">{formatBTC(totalOutput)}</span>
                   {formatUSD(totalOutput, btcPrice) && (

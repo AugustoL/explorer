@@ -194,7 +194,7 @@ const ContractInfoCard: React.FC<ContractInfoCardProps> = ({
           <FieldLabel
             label={`${t("proxyType")}:`}
             tooltipKey="address.proxyType"
-            visibleFor={["intermediate"]}
+            visibleFor={["beginner", "intermediate", "advanced"]}
             className="account-card-label"
           />
           <span className="account-card-value">{proxyInfo.type}</span>
@@ -207,7 +207,7 @@ const ContractInfoCard: React.FC<ContractInfoCardProps> = ({
           <FieldLabel
             label={`${t("implementationAddress")}:`}
             tooltipKey="address.implementationAddress"
-            visibleFor={["intermediate"]}
+            visibleFor={["beginner", "intermediate", "advanced"]}
             className="account-card-label"
           />
           <span className="account-card-value">

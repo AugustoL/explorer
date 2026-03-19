@@ -92,6 +92,9 @@ const BitcoinBlockDisplay: React.FC<BitcoinBlockDisplayProps> = React.memo(
             {block.confirmations !== undefined && (
               <span className="block-status-badge block-status-finalized">
                 {block.confirmations.toLocaleString()} Confirmations
+                {settings.showHelperTooltips !== false && (
+                  <HelperTooltip content={tTooltips("bitcoin.blockConfirmations")} />
+                )}
               </span>
             )}
           </div>
@@ -230,7 +233,7 @@ const BitcoinBlockDisplay: React.FC<BitcoinBlockDisplayProps> = React.memo(
                   <FieldLabel
                     label="Weight:"
                     tooltipKey="bitcoin.blockWeight"
-                    visibleFor={["intermediate", "advanced"]}
+                    visibleFor={["beginner", "intermediate", "advanced"]}
                   />
                   <span className="tx-value">{block.weight.toLocaleString()} WU</span>
                 </div>
@@ -312,40 +315,36 @@ const BitcoinBlockDisplay: React.FC<BitcoinBlockDisplayProps> = React.memo(
                   <div className="detail-row">
                     <span className="detail-label">
                       Merkle Root:
-                      {settings.showHelperTooltips !== false &&
-                        settings.knowledgeLevel === "advanced" && (
-                          <HelperTooltip content={tTooltips("bitcoin.merkleRoot")} />
-                        )}
+                      {settings.showHelperTooltips !== false && (
+                        <HelperTooltip content={tTooltips("bitcoin.merkleRoot")} />
+                      )}
                     </span>
                     <span className="detail-value tx-mono">{block.merkleRoot}</span>
                   </div>
                   <div className="detail-row">
                     <span className="detail-label">
                       Version:
-                      {settings.showHelperTooltips !== false &&
-                        settings.knowledgeLevel === "advanced" && (
-                          <HelperTooltip content={tTooltips("bitcoin.blockVersion")} />
-                        )}
+                      {settings.showHelperTooltips !== false && (
+                        <HelperTooltip content={tTooltips("bitcoin.blockVersion")} />
+                      )}
                     </span>
                     <span className="detail-value">0x{block.version.toString(16)}</span>
                   </div>
                   <div className="detail-row">
                     <span className="detail-label">
                       Bits:
-                      {settings.showHelperTooltips !== false &&
-                        settings.knowledgeLevel === "advanced" && (
-                          <HelperTooltip content={tTooltips("bitcoin.bits")} />
-                        )}
+                      {settings.showHelperTooltips !== false && (
+                        <HelperTooltip content={tTooltips("bitcoin.bits")} />
+                      )}
                     </span>
                     <span className="detail-value tx-mono">{block.bits}</span>
                   </div>
                   <div className="detail-row">
                     <span className="detail-label">
                       Nonce:
-                      {settings.showHelperTooltips !== false &&
-                        settings.knowledgeLevel === "advanced" && (
-                          <HelperTooltip content={tTooltips("bitcoin.blockNonce")} />
-                        )}
+                      {settings.showHelperTooltips !== false && (
+                        <HelperTooltip content={tTooltips("bitcoin.blockNonce")} />
+                      )}
                     </span>
                     <span className="detail-value">{block.nonce.toLocaleString()}</span>
                   </div>
@@ -353,10 +352,9 @@ const BitcoinBlockDisplay: React.FC<BitcoinBlockDisplayProps> = React.memo(
                     <div className="detail-row">
                       <span className="detail-label">
                         Coinbase (hex):
-                        {settings.showHelperTooltips !== false &&
-                          settings.knowledgeLevel === "advanced" && (
-                            <HelperTooltip content={tTooltips("bitcoin.coinbaseHex")} />
-                          )}
+                        {settings.showHelperTooltips !== false && (
+                          <HelperTooltip content={tTooltips("bitcoin.coinbaseHex")} />
+                        )}
                       </span>
                       <span className="detail-value tx-mono btc-coinbase-hex">
                         {block.coinbaseHex}

@@ -67,7 +67,7 @@ const NFTCollectionInfoCard: React.FC<NFTCollectionInfoCardProps> = ({
         <FieldLabel
           label={`${t("tokenStandard")}:`}
           tooltipKey="token.tokenStandard"
-          visibleFor={["beginner"]}
+          visibleFor={["beginner", "intermediate"]}
           className="account-card-label"
         />
         <span className="account-card-value">
@@ -94,7 +94,7 @@ const NFTCollectionInfoCard: React.FC<NFTCollectionInfoCardProps> = ({
           <FieldLabel
             label={`${t("metadataURI")}:`}
             tooltipKey="token.metadataUri"
-            visibleFor={["intermediate"]}
+            visibleFor={["beginner", "intermediate"]}
             className="account-card-label"
           />
           <span className="account-card-value account-card-mono">

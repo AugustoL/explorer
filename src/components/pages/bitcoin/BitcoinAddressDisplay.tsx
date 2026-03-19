@@ -115,7 +115,7 @@ const BitcoinAddressDisplay: React.FC<BitcoinAddressDisplayProps> = React.memo(
               <FieldLabel
                 label="UTXOs:"
                 tooltipKey="bitcoin.utxos"
-                visibleFor={["beginner", "intermediate"]}
+                visibleFor={["beginner", "intermediate", "advanced"]}
               />
               <span className="tx-value">{address.utxoCount.toLocaleString()} unspent outputs</span>
             </div>

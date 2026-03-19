@@ -158,7 +158,7 @@
     },
     "knowledgeLevel": {
       "label": "Knowledge Level",
-      "description": "Controls how many helper tooltips are shown. Beginner shows the most, Advanced shows the fewest.",
+      "description": "Controls how many helper tooltips are shown. Beginner shows all tooltips. Intermediate hides basic fields. Advanced shows only complex and chain-specific tooltips.",
       "beginner": "Beginner",
       "intermediate": "Intermediate",
       "advanced": "Advanced"

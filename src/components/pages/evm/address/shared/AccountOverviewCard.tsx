@@ -138,7 +138,7 @@ const AccountOverviewCard: React.FC<AccountOverviewCardProps> = ({
           <FieldLabel
             label={`${t("eip7702Delegate")}:`}
             tooltipKey="address.eip7702Delegate"
-            visibleFor={["advanced"]}
+            visibleFor={["beginner", "intermediate", "advanced"]}
             className="account-card-label"
           />
           <span className="account-card-value">

@@ -158,7 +158,7 @@
     },
     "knowledgeLevel": {
       "label": "Nivel de Conocimiento",
-      "description": "Controla cuántos tooltips de ayuda se muestran. Principiante muestra más, Avanzado muestra menos.",
+      "description": "Controla cuántos tooltips de ayuda se muestran. Principiante muestra todos. Intermedio oculta campos básicos. Avanzado muestra solo tooltips complejos y específicos de la cadena.",
       "beginner": "Principiante",
       "intermediate": "Intermedio",
       "advanced": "Avanzado"

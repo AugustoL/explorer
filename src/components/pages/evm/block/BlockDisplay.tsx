@@ -161,7 +161,12 @@ const BlockDisplay: React.FC<BlockDisplayProps> = React.memo(
                 <span className="block-timestamp-full">({timestampFormatted})</span>
               </span>
               <span className="block-header-divider">•</span>
-              <span className="block-status-badge block-status-finalized">{t("finalized")}</span>
+              <span className="block-status-badge block-status-finalized">
+                {t("finalized")}
+                {settings.showHelperTooltips !== false && (
+                  <HelperTooltip content={tTooltips("block.finalized")} />
+                )}
+              </span>
             </div>
             {metadata && selectedProvider !== undefined && onProviderSelect && (
               <RPCIndicator
@@ -240,7 +245,7 @@ const BlockDisplay: React.FC<BlockDisplayProps> = React.memo(
                     <FieldLabel
                       label={`${t("difficulty")}:`}
                       tooltipKey="block.difficulty"
-                      visibleFor={["intermediate", "advanced"]}
+                      visibleFor={["beginner", "intermediate"]}
                     />
                     <span className="tx-value">{Number(block.difficulty).toLocaleString()}</span>
                   </div>
@@ -252,7 +257,7 @@ const BlockDisplay: React.FC<BlockDisplayProps> = React.memo(
                     <FieldLabel
                       label={`${t("totalDifficulty")}:`}
                       tooltipKey="block.totalDifficulty"
-                      visibleFor={["intermediate", "advanced"]}
+                      visibleFor={["beginner", "intermediate"]}
                     />
                     <span className="tx-value">
                       {Number(block.totalDifficulty).toLocaleString()}
@@ -276,7 +281,7 @@ const BlockDisplay: React.FC<BlockDisplayProps> = React.memo(
                     <FieldLabel
                       label={`${t("extraData")}:`}
                       tooltipKey="block.extraData"
-                      visibleFor={["intermediate", "advanced"]}
+                      visibleFor={["beginner", "intermediate"]}
                     />
                     <span className="tx-value">
                       <ExtraDataDisplay hexData={block.extraData} />
@@ -304,7 +309,7 @@ const BlockDisplay: React.FC<BlockDisplayProps> = React.memo(
                   <FieldLabel
                     label={t("gasUsed")}
                     tooltipKey="block.gasUsed"
-                    visibleFor={["beginner"]}
+                    visibleFor={["beginner", "intermediate"]}
                   />
                   <span className="tx-value">
                     {Number(block.gasUsed).toLocaleString()}
@@ -317,7 +322,7 @@ const BlockDisplay: React.FC<BlockDisplayProps> = React.memo(
                   <FieldLabel
                     label={t("gasLimit")}
                     tooltipKey="block.gasLimit"
-                    visibleFor={["beginner"]}
+                    visibleFor={["beginner", "intermediate"]}
                   />
                   <span className="tx-value">{Number(block.gasLimit).toLocaleString()}</span>
                 </div>
@@ -328,7 +333,7 @@ const BlockDisplay: React.FC<BlockDisplayProps> = React.memo(
                     <FieldLabel
                       label={t("baseFeePerGas")}
                       tooltipKey="block.baseFeePerGas"
-                      visibleFor={["intermediate"]}
+                      visibleFor={["beginner", "intermediate"]}
                     />
                     <span className="tx-value">{formatGwei(block.baseFeePerGas)}</span>
                   </div>
@@ -355,7 +360,7 @@ const BlockDisplay: React.FC<BlockDisplayProps> = React.memo(
                       <FieldLabel
                         label={t("excessBlobGas")}
                         tooltipKey="block.excessBlobGas"
-                        visibleFor={["intermediate", "advanced"]}
+                        visibleFor={["beginner", "intermediate", "advanced"]}
                       />
                       <span className="tx-value">
                         {Number(block.excessBlobGas).toLocaleString()}
@@ -381,7 +386,7 @@ const BlockDisplay: React.FC<BlockDisplayProps> = React.memo(
                       <FieldLabel
                         label={`${t("l1BlockNumber")}:`}
                         tooltipKey="block.l1BlockNumber"
-                        visibleFor={["intermediate", "advanced"]}
+                        visibleFor={["beginner", "intermediate", "advanced"]}
                       />
                       <span className="tx-value">
                         {Number(block.l1BlockNumber).toLocaleString()}
@@ -391,7 +396,7 @@ const BlockDisplay: React.FC<BlockDisplayProps> = React.memo(
                       <FieldLabel
                         label={`${t("sendCount")}:`}
                         tooltipKey="block.sendCount"
-                        visibleFor={["advanced"]}
+                        visibleFor={["beginner", "intermediate", "advanced"]}
                       />
                       <span className="tx-value">{block.sendCount}</span>
                     </div>
@@ -399,7 +404,7 @@ const BlockDisplay: React.FC<BlockDisplayProps> = React.memo(
                       <FieldLabel
                         label={`${t("sendRoot")}:`}
                         tooltipKey="block.sendRoot"
-                        visibleFor={["advanced"]}
+                        visibleFor={["beginner", "intermediate", "advanced"]}
                       />
                       <span className="tx-value tx-mono">{block.sendRoot}</span>
                     </div>
@@ -423,10 +428,9 @@ const BlockDisplay: React.FC<BlockDisplayProps> = React.memo(
                   <div className="detail-row">
                     <span className="detail-label">
                       Parent Hash:
-                      {settings.showHelperTooltips !== false &&
-                        settings.knowledgeLevel === "advanced" && (
-                          <HelperTooltip content={tTooltips("block.parentHash")} />
-                        )}
+                      {settings.showHelperTooltips !== false && (
+                        <HelperTooltip content={tTooltips("block.parentHash")} />
+                      )}
                     </span>
                     <span className="detail-value tx-mono">
                       {networkId &&
@@ -443,30 +447,27 @@ const BlockDisplay: React.FC<BlockDisplayProps> = React.memo(
                   <div className="detail-row">
                     <span className="detail-label">
                       State Root:
-                      {settings.showHelperTooltips !== false &&
-                        settings.knowledgeLevel === "advanced" && (
-                          <HelperTooltip content={tTooltips("block.stateRoot")} />
-                        )}
+                      {settings.showHelperTooltips !== false && (
+                        <HelperTooltip content={tTooltips("block.stateRoot")} />
+                      )}
                     </span>
                     <span className="detail-value tx-mono">{block.stateRoot}</span>
                   </div>
                   <div className="detail-row">
                     <span className="detail-label">
                       Transactions Root:
-                      {settings.showHelperTooltips !== false &&
-                        settings.knowledgeLevel === "advanced" && (
-                          <HelperTooltip content={tTooltips("block.transactionsRoot")} />
-                        )}
+                      {settings.showHelperTooltips !== false && (
+                        <HelperTooltip content={tTooltips("block.transactionsRoot")} />
+                      )}
                     </span>
                     <span className="detail-value tx-mono">{block.transactionsRoot}</span>
                   </div>
                   <div className="detail-row">
                     <span className="detail-label">
                       Receipts Root:
-                      {settings.showHelperTooltips !== false &&
-                        settings.knowledgeLevel === "advanced" && (
-                          <HelperTooltip content={tTooltips("block.receiptsRoot")} />
-                        )}
+                      {settings.showHelperTooltips !== false && (
+                        <HelperTooltip content={tTooltips("block.receiptsRoot")} />
+                      )}
                     </span>
                     <span className="detail-value tx-mono">{block.receiptsRoot}</span>
                   </div>
@@ -474,10 +475,9 @@ const BlockDisplay: React.FC<BlockDisplayProps> = React.memo(
                     <div className="detail-row">
                       <span className="detail-label">
                         Withdrawals Root:
-                        {settings.showHelperTooltips !== false &&
-                          settings.knowledgeLevel === "advanced" && (
-                            <HelperTooltip content={tTooltips("block.withdrawalsRoot")} />
-                          )}
+                        {settings.showHelperTooltips !== false && (
+                          <HelperTooltip content={tTooltips("block.withdrawalsRoot")} />
+                        )}
                       </span>
                       <span className="detail-value tx-mono">{block.withdrawalsRoot}</span>
                     </div>
@@ -485,10 +485,9 @@ const BlockDisplay: React.FC<BlockDisplayProps> = React.memo(
                   <div className="detail-row">
                     <span className="detail-label">
                       Logs Bloom:
-                      {settings.showHelperTooltips !== false &&
-                        settings.knowledgeLevel === "advanced" && (
-                          <HelperTooltip content={tTooltips("block.logsBloom")} />
-                        )}
+                      {settings.showHelperTooltips !== false && (
+                        <HelperTooltip content={tTooltips("block.logsBloom")} />
+                      )}
                     </span>
                     <div className="detail-value">
                       <code className="logs-bloom">{block.logsBloom}</code>
@@ -497,30 +496,27 @@ const BlockDisplay: React.FC<BlockDisplayProps> = React.memo(
                   <div className="detail-row">
                     <span className="detail-label">
                       Nonce:
-                      {settings.showHelperTooltips !== false &&
-                        settings.knowledgeLevel === "advanced" && (
-                          <HelperTooltip content={tTooltips("block.nonce")} />
-                        )}
+                      {settings.showHelperTooltips !== false && (
+                        <HelperTooltip content={tTooltips("block.nonce")} />
+                      )}
                     </span>
                     <span className="detail-value">{block.nonce}</span>
                   </div>
                   <div className="detail-row">
                     <span className="detail-label">
                       Mix Hash:
-                      {settings.showHelperTooltips !== false &&
-                        settings.knowledgeLevel === "advanced" && (
-                          <HelperTooltip content={tTooltips("block.mixHash")} />
-                        )}
+                      {settings.showHelperTooltips !== false && (
+                        <HelperTooltip content={tTooltips("block.mixHash")} />
+                      )}
                     </span>
                     <span className="detail-value tx-mono">{block.mixHash}</span>
                   </div>
                   <div className="detail-row">
                     <span className="detail-label">
                       Sha3 Uncles:
-                      {settings.showHelperTooltips !== false &&
-                        settings.knowledgeLevel === "advanced" && (
-                          <HelperTooltip content={tTooltips("block.sha3Uncles")} />
-                        )}
+                      {settings.showHelperTooltips !== false && (
+                        <HelperTooltip content={tTooltips("block.sha3Uncles")} />
+                      )}
                     </span>
                     <span className="detail-value tx-mono">{block.sha3Uncles}</span>
                   </div>
@@ -594,10 +590,9 @@ const BlockDisplay: React.FC<BlockDisplayProps> = React.memo(
                         <div className="tx-log-row">
                           <span className="tx-log-label">
                             {t("validator")}
-                            {settings.showHelperTooltips !== false &&
-                              settings.knowledgeLevel === "beginner" && (
-                                <HelperTooltip content={tTooltips("block.validator")} />
-                              )}
+                            {settings.showHelperTooltips !== false && (
+                              <HelperTooltip content={tTooltips("block.validator")} />
+                            )}
                           </span>
                           <span className="tx-log-value">
                             {Number(withdrawal.validatorIndex).toLocaleString()}

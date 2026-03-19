@@ -260,7 +260,12 @@ const ContractInteraction: React.FC<ContractInteractionProps> = ({
   return (
     <div className="tx-row-vertical">
       <div className="contract-functions-header">
-        <span className="tx-label">{t("functions")}</span>
+        <span className="tx-label">
+          {t("functions")}
+          {settings.showHelperTooltips !== false && (
+            <HelperTooltip content={tTooltips("address.functions")} />
+          )}
+        </span>
         <ConnectButton.Custom>
           {({
             account,

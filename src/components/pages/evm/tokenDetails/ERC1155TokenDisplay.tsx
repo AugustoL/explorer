@@ -243,7 +243,7 @@ const ERC1155TokenDetails: React.FC = () => {
                 <FieldLabel
                   label={`${t("tokenStandard")}:`}
                   tooltipKey="token.tokenStandard"
-                  visibleFor={["beginner"]}
+                  visibleFor={["beginner", "intermediate"]}
                 />
                 <span className="tx-value">
                   <span className="token-standard-badge token-standard-erc1155">ERC-1155</span>
