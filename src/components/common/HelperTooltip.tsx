@@ -124,21 +124,32 @@ const HelperTooltip: React.FC<HelperTooltipProps> = ({ content, placement = "top
     const bubble = bubbleRef.current;
     const rect = bubble.getBoundingClientRect();
     const margin = 8;
+    let needsClamp = false;
+    let left = rect.left;
+    let top = rect.top;
 
     // Horizontal clamping
     if (rect.right > window.innerWidth - margin) {
-      bubble.style.left = `${window.innerWidth - margin - rect.width}px`;
-      bubble.style.transform = "none";
+      left = window.innerWidth - margin - rect.width;
+      needsClamp = true;
     } else if (rect.left < margin) {
-      bubble.style.left = `${margin}px`;
-      bubble.style.transform = "none";
+      left = margin;
+      needsClamp = true;
     }
 
     // Vertical clamping
     if (rect.bottom > window.innerHeight - margin) {
-      bubble.style.top = `${window.innerHeight - margin - rect.height}px`;
+      top = window.innerHeight - margin - rect.height;
+      needsClamp = true;
     } else if (rect.top < margin) {
-      bubble.style.top = `${margin}px`;
+      top = margin;
+      needsClamp = true;
+    }
+
+    if (needsClamp) {
+      bubble.style.left = `${left}px`;
+      bubble.style.top = `${top}px`;
+      bubble.style.transform = "none";
     }
   }, [isVisible, triggerRect]);
 
