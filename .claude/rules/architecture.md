@@ -26,6 +26,7 @@ Orchestrates data fetching with caching and metadata:
 - Instantiates the correct adapter via `AdapterFactory` based on chain ID
 - Returns `DataWithMetadata<T>` when using parallel strategy
 - 30-second in-memory cache keyed by `networkId:type:identifier`
+- Supports trace operations for Hardhat (31337) and localhost networks
 
 ### 4. Hook Layer (`hooks/`)
 React integration:
@@ -43,10 +44,10 @@ Global state management:
 Chain ID detection in `AdapterFactory` determines which adapter to instantiate:
 
 - **Arbitrum** (42161): `ArbitrumAdapter` - adds `l1BlockNumber`, `sendCount`, `sendRoot`
-- **OP Stack** (10, 8453): `OptimismAdapter`, `BaseAdapter` - adds L1 fee breakdown
-- **Hardhat** (31337): `HardhatAdapter` - trace support via struct log conversion (`buildCallTreeFromStructLogs`, `buildPrestateFromStructLogs`)
 - **Bitcoin** (bip122:*): `BitcoinAdapter` - UTXO model, mempool transactions, block rewards
-- **Default**: `EVMAdapter` for Ethereum (1), BSC (56, 97), Polygon (137), Sepolia (11155111), BNB (56)
+- **OP Stack** (10, 8453): `OptimismAdapter` (10), `BaseAdapter` (8453) - adds L1 fee breakdown (`l1Fee`, `l1GasPrice`, `l1GasUsed`)
+- **Hardhat** (31337): `HardhatAdapter` - uses `HardhatClient` from `@openscan/network-connectors`; trace support via struct log conversion (`buildCallTreeFromStructLogs`, `buildPrestateFromStructLogs` in `src/utils/structLogConverter.ts`) since Hardhat v3 does not support `callTracer`/`prestateTracer`
+- **Default**: `EVMAdapter` for Ethereum (1), BSC (56, 97), Polygon (137), Sepolia (11155111), Avalanche (43114)
 
 ## Key Type Definitions
 
