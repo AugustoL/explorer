@@ -25,6 +25,7 @@ export interface Env {
   ETHERSCAN_API_KEY: string;
   ALCHEMY_API_KEY: string;
   INFURA_API_KEY: string;
+  DRPC_API_KEY: string;
   ALLOWED_ORIGINS: string;
   GROQ_MODEL: string;
 }
@@ -67,16 +68,19 @@ export interface BtcRpcRequestBody {
 
 // ── EVM types ─────────────────────────────────────────────────────────────────
 
-/** Maps CAIP-2 networkId → { alchemy slug, infura slug } */
-export const ALLOWED_EVM_NETWORKS: Record<string, { alchemy: string; infura?: string }> = {
-  "eip155:1": { alchemy: "eth-mainnet", infura: "mainnet" },
-  "eip155:11155111": { alchemy: "eth-sepolia", infura: "sepolia" },
-  "eip155:42161": { alchemy: "arb-mainnet", infura: "arbitrum-mainnet" },
-  "eip155:10": { alchemy: "opt-mainnet", infura: "optimism-mainnet" },
-  "eip155:8453": { alchemy: "base-mainnet", infura: "base-mainnet" },
-  "eip155:137": { alchemy: "polygon-mainnet", infura: "polygon-mainnet" },
-  "eip155:56": { alchemy: "bnb-mainnet" },
-  "eip155:43114": { alchemy: "avax-mainnet", infura: "avalanche-mainnet" },
+/** Maps CAIP-2 networkId → { alchemy slug, infura slug, drpc slug } */
+export const ALLOWED_EVM_NETWORKS: Record<
+  string,
+  { alchemy: string; infura?: string; drpc: string }
+> = {
+  "eip155:1": { alchemy: "eth-mainnet", infura: "mainnet", drpc: "ethereum" },
+  "eip155:11155111": { alchemy: "eth-sepolia", infura: "sepolia", drpc: "sepolia" },
+  "eip155:42161": { alchemy: "arb-mainnet", infura: "arbitrum-mainnet", drpc: "arbitrum" },
+  "eip155:10": { alchemy: "opt-mainnet", infura: "optimism-mainnet", drpc: "optimism" },
+  "eip155:8453": { alchemy: "base-mainnet", infura: "base-mainnet", drpc: "base" },
+  "eip155:137": { alchemy: "polygon-mainnet", infura: "polygon-mainnet", drpc: "polygon" },
+  "eip155:56": { alchemy: "bnb-mainnet", drpc: "bsc" },
+  "eip155:43114": { alchemy: "avax-mainnet", infura: "avalanche-mainnet", drpc: "avalanche" },
 };
 
 export interface EvmRpcRequestBody {

@@ -11,4 +11,5 @@ GROQ_MODEL = "groq/compound"
 # ETHERSCAN_API_KEY  — Etherscan V2 API key for /etherscan/verify
 # ALCHEMY_API_KEY   — Alchemy API key for /beacon/*, /btc/alchemy, /evm/alchemy/*
 # INFURA_API_KEY    — Infura API key for /evm/infura/*
+# DRPC_API_KEY      — dRPC API key for /evm/drpc/*, /btc/drpc
 

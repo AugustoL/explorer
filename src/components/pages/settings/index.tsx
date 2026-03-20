@@ -89,6 +89,8 @@ const isAlchemyUrl = (url: string): boolean => url.includes("alchemy.com");
 const isWorkerAlchemyUrl = (url: string): boolean =>
   url.includes("/evm/alchemy/") || url.includes("/btc/alchemy") || url.includes("/beacon/alchemy/");
 const isWorkerInfuraUrl = (url: string): boolean => url.includes("/evm/infura/");
+const isWorkerDrpcUrl = (url: string): boolean =>
+  url.includes("/evm/drpc/") || url.includes("/btc/drpc");
 
 const Settings: React.FC = () => {
   const { t, i18n } = useTranslation("settings");
@@ -609,7 +611,8 @@ const Settings: React.FC = () => {
 
   const getRpcTagClass = useCallback(
     (url: string): string => {
-      if (isWorkerAlchemyUrl(url) || isWorkerInfuraUrl(url)) return "rpc-opensource";
+      if (isWorkerAlchemyUrl(url) || isWorkerInfuraUrl(url) || isWorkerDrpcUrl(url))
+        return "rpc-opensource";
       if (isInfuraUrl(url) || isAlchemyUrl(url)) return "rpc-tracking";
       const ep = metadataUrlMap.get(url);
       if (!ep) return "";
@@ -624,6 +627,7 @@ const Settings: React.FC = () => {
     (url: string): string => {
       if (isWorkerAlchemyUrl(url)) return "OpenScan Alchemy";
       if (isWorkerInfuraUrl(url)) return "OpenScan Infura";
+      if (isWorkerDrpcUrl(url)) return "OpenScan dRPC";
       if (isInfuraUrl(url)) return "Infura Personal";
       if (isAlchemyUrl(url)) return "Alchemy Personal";
       const ep = metadataUrlMap.get(url);
