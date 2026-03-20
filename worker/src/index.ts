@@ -2,11 +2,20 @@ import { Hono } from "hono";
 import type { Env } from "./types";
 import { corsMiddleware } from "./middleware/cors";
 import { rateLimitMiddleware } from "./middleware/rateLimit";
+import { rateLimitBeaconMiddleware } from "./middleware/rateLimitBeacon";
+import { rateLimitBtcMiddleware } from "./middleware/rateLimitBtc";
 import { rateLimitEtherscanMiddleware } from "./middleware/rateLimitEtherscan";
+import { rateLimitEvmMiddleware } from "./middleware/rateLimitEvm";
 import { validateMiddleware } from "./middleware/validate";
+import { validateBeaconMiddleware } from "./middleware/validateBeacon";
+import { validateBtcMiddleware } from "./middleware/validateBtc";
 import { validateEtherscanMiddleware } from "./middleware/validateEtherscan";
+import { validateEvmMiddleware } from "./middleware/validateEvm";
 import { analyzeHandler } from "./routes/analyze";
+import { beaconAlchemyHandler } from "./routes/beaconBlobSidecars";
+import { btcAlchemyHandler } from "./routes/btcRpc";
 import { etherscanVerifyHandler } from "./routes/etherscanVerify";
+import { evmAlchemyHandler, evmInfuraHandler } from "./routes/evmRpc";
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -22,6 +31,33 @@ app.post(
   rateLimitEtherscanMiddleware,
   validateEtherscanMiddleware,
   etherscanVerifyHandler,
+);
+
+// GET /beacon/alchemy/:networkId/blob_sidecars/:slot — Beacon API proxy
+app.get(
+  "/beacon/alchemy/:networkId/blob_sidecars/:slot",
+  rateLimitBeaconMiddleware,
+  validateBeaconMiddleware,
+  beaconAlchemyHandler,
+);
+
+// POST /btc/alchemy — Bitcoin JSON-RPC proxy
+app.post("/btc/alchemy", rateLimitBtcMiddleware, validateBtcMiddleware, btcAlchemyHandler);
+
+// POST /evm/alchemy/:networkId — EVM JSON-RPC proxy via Alchemy
+app.post(
+  "/evm/alchemy/:networkId",
+  rateLimitEvmMiddleware,
+  validateEvmMiddleware,
+  evmAlchemyHandler,
+);
+
+// POST /evm/infura/:networkId — EVM JSON-RPC proxy via Infura
+app.post(
+  "/evm/infura/:networkId",
+  rateLimitEvmMiddleware,
+  validateEvmMiddleware,
+  evmInfuraHandler,
 );
 
 // Health check
