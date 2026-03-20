@@ -17,6 +17,7 @@ import { btcAlchemyHandler } from "./routes/btcRpc";
 import { etherscanVerifyHandler } from "./routes/etherscanVerify";
 import { btcDrpcHandler, evmDrpcHandler } from "./routes/drpcRpc";
 import { evmAlchemyHandler, evmInfuraHandler } from "./routes/evmRpc";
+import { btcOnfinalityHandler } from "./routes/onfinalityRpc";
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -66,6 +67,14 @@ app.post("/evm/drpc/:networkId", rateLimitEvmMiddleware, validateEvmMiddleware, 
 
 // POST /btc/drpc — Bitcoin JSON-RPC proxy via dRPC
 app.post("/btc/drpc", rateLimitBtcMiddleware, validateBtcMiddleware, btcDrpcHandler);
+
+// POST /btc/onfinality/:networkId — Bitcoin JSON-RPC proxy via OnFinality
+app.post(
+  "/btc/onfinality/:networkId",
+  rateLimitBtcMiddleware,
+  validateBtcMiddleware,
+  btcOnfinalityHandler,
+);
 
 // Health check
 app.get("/health", (c) => c.json({ status: "ok" }));

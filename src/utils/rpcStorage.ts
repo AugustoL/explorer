@@ -17,6 +17,10 @@ const BUILTIN_RPC_DEFAULTS: RpcUrlsContextType = {
   "bip122:000000000019d6689c085ae165831e93": [
     `${OPENSCAN_WORKER_URL}/btc/alchemy`,
     `${OPENSCAN_WORKER_URL}/btc/drpc`,
+    `${OPENSCAN_WORKER_URL}/btc/onfinality/bip122:000000000019d6689c085ae165831e93`,
+  ],
+  "bip122:000000000933ea01ad0ee984209779ba": [
+    `${OPENSCAN_WORKER_URL}/btc/onfinality/bip122:000000000933ea01ad0ee984209779ba`,
   ],
   "eip155:1": [
     `${OPENSCAN_WORKER_URL}/evm/alchemy/eip155:1`,

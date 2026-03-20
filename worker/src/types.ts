@@ -26,6 +26,7 @@ export interface Env {
   ALCHEMY_API_KEY: string;
   INFURA_API_KEY: string;
   DRPC_API_KEY: string;
+  ONFINALITY_BTC_API_KEY: string;
   ALLOWED_ORIGINS: string;
   GROQ_MODEL: string;
 }
