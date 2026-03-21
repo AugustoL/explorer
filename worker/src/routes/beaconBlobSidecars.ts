@@ -7,8 +7,8 @@ const ALCHEMY_BEACON_HOSTS: Record<string, string> = {
 };
 
 export async function beaconAlchemyHandler(c: Context<{ Bindings: Env }>) {
-  const networkId = c.req.param("networkId")!;
-  const slot = c.req.param("slot")!;
+  const networkId = c.req.param("networkId") ?? "";
+  const slot = c.req.param("slot") ?? "";
 
   const networkSlug = ALLOWED_BEACON_NETWORKS[networkId];
   if (!networkSlug) {

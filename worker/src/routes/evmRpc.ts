@@ -2,7 +2,7 @@ import type { Context } from "hono";
 import { ALLOWED_EVM_NETWORKS, type EvmRpcRequestBody, type Env } from "../types";
 
 export async function evmAlchemyHandler(c: Context<{ Bindings: Env }>) {
-  const networkId = c.req.param("networkId")!;
+  const networkId = c.req.param("networkId") ?? "";
   const body = c.get("validatedBody" as never) as unknown as EvmRpcRequestBody;
 
   const network = ALLOWED_EVM_NETWORKS[networkId];
@@ -37,7 +37,7 @@ export async function evmAlchemyHandler(c: Context<{ Bindings: Env }>) {
 }
 
 export async function evmInfuraHandler(c: Context<{ Bindings: Env }>) {
-  const networkId = c.req.param("networkId")!;
+  const networkId = c.req.param("networkId") ?? "";
   const body = c.get("validatedBody" as never) as unknown as EvmRpcRequestBody;
 
   const network = ALLOWED_EVM_NETWORKS[networkId];

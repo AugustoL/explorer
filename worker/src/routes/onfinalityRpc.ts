@@ -7,7 +7,7 @@ const ONFINALITY_BTC_HOSTS: Record<string, string> = {
 };
 
 export async function btcOnfinalityHandler(c: Context<{ Bindings: Env }>) {
-  const networkId = c.req.param("networkId")!;
+  const networkId = c.req.param("networkId") ?? "";
   const body = c.get("validatedBody" as never) as unknown as BtcRpcRequestBody;
 
   const host = ONFINALITY_BTC_HOSTS[networkId];

@@ -56,12 +56,7 @@ app.post(
 );
 
 // POST /evm/infura/:networkId — EVM JSON-RPC proxy via Infura
-app.post(
-  "/evm/infura/:networkId",
-  rateLimitEvmMiddleware,
-  validateEvmMiddleware,
-  evmInfuraHandler,
-);
+app.post("/evm/infura/:networkId", rateLimitEvmMiddleware, validateEvmMiddleware, evmInfuraHandler);
 
 // POST /evm/drpc/:networkId — EVM JSON-RPC proxy via dRPC
 app.post("/evm/drpc/:networkId", rateLimitEvmMiddleware, validateEvmMiddleware, evmDrpcHandler);

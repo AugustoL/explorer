@@ -1,10 +1,15 @@
 import type { Context } from "hono";
-import { ALLOWED_EVM_NETWORKS, type BtcRpcRequestBody, type EvmRpcRequestBody, type Env } from "../types";
+import {
+  ALLOWED_EVM_NETWORKS,
+  type BtcRpcRequestBody,
+  type EvmRpcRequestBody,
+  type Env,
+} from "../types";
 
 const DRPC_BASE = "https://lb.drpc.org/ogrpc";
 
 export async function evmDrpcHandler(c: Context<{ Bindings: Env }>) {
-  const networkId = c.req.param("networkId")!;
+  const networkId = c.req.param("networkId") ?? "";
   const body = c.get("validatedBody" as never) as unknown as EvmRpcRequestBody;
 
   const network = ALLOWED_EVM_NETWORKS[networkId];

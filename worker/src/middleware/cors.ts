@@ -16,9 +16,7 @@ function isOriginAllowed(origin: string, allowed: string[]): boolean {
         if (hostname.endsWith(suffix)) {
           return true;
         }
-      } catch {
-        continue;
-      }
+      } catch {}
     } else if (origin === entry) {
       return true;
     }
