@@ -1,5 +1,12 @@
 import type { Context, Next } from "hono";
-import { ALLOWED_EVM_NETWORKS, type EvmRpcRequestBody, type Env } from "../types";
+import {
+  ALLOWED_EVM_METHODS,
+  ALLOWED_EVM_NETWORKS,
+  type EvmRpcRequestBody,
+  type Env,
+} from "../types";
+
+const allowedMethodSet = new Set<string>(ALLOWED_EVM_METHODS);
 
 export async function validateEvmMiddleware(c: Context<{ Bindings: Env }>, next: Next) {
   const networkId = c.req.param("networkId");
@@ -20,8 +27,8 @@ export async function validateEvmMiddleware(c: Context<{ Bindings: Env }>, next:
     return c.json({ error: 'jsonrpc must be "2.0"' }, 400);
   }
 
-  if (typeof body.method !== "string" || body.method.length === 0) {
-    return c.json({ error: "method must be a non-empty string" }, 400);
+  if (typeof body.method !== "string" || !allowedMethodSet.has(body.method)) {
+    return c.json({ error: `Method not allowed. Allowed: ${ALLOWED_EVM_METHODS.join(", ")}` }, 400);
   }
 
   if (!Array.isArray(body.params)) {

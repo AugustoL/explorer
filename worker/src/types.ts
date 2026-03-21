@@ -70,6 +70,76 @@ export interface BtcRpcRequestBody {
 
 // ── EVM types ─────────────────────────────────────────────────────────────────
 
+/** Read-only EVM methods the explorer is allowed to call through the proxy */
+export const ALLOWED_EVM_METHODS = [
+  // ── Standard read methods ───────────────────────────────────────────────────
+  "web3_clientVersion",
+  "web3_sha3",
+  "net_version",
+  "net_listening",
+  "net_peerCount",
+  "eth_blockNumber",
+  "eth_chainId",
+  "eth_gasPrice",
+  "eth_maxPriorityFeePerGas",
+  "eth_feeHistory",
+  "eth_syncing",
+  "eth_protocolVersion",
+  "eth_getBalance",
+  "eth_getCode",
+  "eth_getStorageAt",
+  "eth_getTransactionCount",
+  "eth_getProof",
+  "eth_call",
+  "eth_estimateGas",
+  "eth_createAccessList",
+  "eth_getLogs",
+  // ── Block methods ───────────────────────────────────────────────────────────
+  "eth_getBlockByNumber",
+  "eth_getBlockByHash",
+  "eth_getBlockTransactionCountByHash",
+  "eth_getBlockTransactionCountByNumber",
+  "eth_getBlockReceipts",
+  "eth_getUncleCountByBlockHash",
+  "eth_getUncleCountByBlockNumber",
+  "eth_getUncleByBlockHashAndIndex",
+  "eth_getUncleByBlockNumberAndIndex",
+  // ── Transaction methods ─────────────────────────────────────────────────────
+  "eth_getTransactionByHash",
+  "eth_getTransactionByBlockHashAndIndex",
+  "eth_getTransactionByBlockNumberAndIndex",
+  "eth_getTransactionReceipt",
+  "eth_getTransactionBySenderAndNonce",
+  // ── Debug / trace methods ───────────────────────────────────────────────────
+  "debug_traceTransaction",
+  "debug_traceCall",
+  "debug_traceBlockByHash",
+  "debug_traceBlockByNumber",
+  "trace_transaction",
+  "trace_block",
+  "trace_call",
+  "trace_filter",
+  "trace_replayBlockTransactions",
+  "trace_replayTransaction",
+  // ── Arbitrum-specific ───────────────────────────────────────────────────────
+  "arbtrace_transaction",
+  "arbtrace_block",
+  "arbtrace_call",
+  "arbtrace_callMany",
+  // ── BNB-specific ────────────────────────────────────────────────────────────
+  "eth_getHeaderByNumber",
+  "eth_getTransactionsByBlockNumber",
+  "eth_getTransactionDataAndReceipt",
+  "eth_getFinalizedBlock",
+  "eth_getFinalizedHeader",
+  "eth_getBlobSidecars",
+  "eth_getBlobSidecarByTxHash",
+  "eth_health",
+  // ── Avalanche-specific ──────────────────────────────────────────────────────
+  "eth_baseFee",
+  "eth_getChainConfig",
+] as const;
+
 /** Maps CAIP-2 networkId → { alchemy slug, infura slug, drpc slug, ankr slug } */
 export const ALLOWED_EVM_NETWORKS: Record<
   string,
