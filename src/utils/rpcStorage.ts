@@ -20,8 +20,8 @@ const BUILTIN_RPC_DEFAULTS: RpcUrlsContextType = {
     `${OPENSCAN_WORKER_URL}/btc/ankr`,
     `${OPENSCAN_WORKER_URL}/btc/onfinality/bip122:000000000019d6689c085ae165831e93`,
   ],
-  "bip122:000000000933ea01ad0ee984209779ba": [
-    `${OPENSCAN_WORKER_URL}/btc/onfinality/bip122:000000000933ea01ad0ee984209779ba`,
+  "bip122:00000000da84f2bafbbc53dee25a72ae": [
+    `${OPENSCAN_WORKER_URL}/btc/onfinality/bip122:00000000da84f2bafbbc53dee25a72ae`,
   ],
   "eip155:1": [
     `${OPENSCAN_WORKER_URL}/evm/alchemy/eip155:1`,
@@ -190,8 +190,8 @@ export function saveRpcUrlsToStorage(map: RpcUrlsContextType): void {
  * Keys are networkId strings (CAIP-2 format)
  */
 export function getEffectiveRpcUrls(): RpcUrlsContextType {
-  // Merge builtin defaults first, then metadata defaults, so stored user values win
-  const defaults = { ...BUILTIN_RPC_DEFAULTS, ...getDefaultRpcEndpoints() };
+  // Merge metadata defaults first, then builtin worker defaults take priority
+  const defaults = { ...getDefaultRpcEndpoints(), ...BUILTIN_RPC_DEFAULTS };
   const stored = loadRpcUrlsFromStorage();
   if (!stored) return defaults;
 

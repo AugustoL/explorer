@@ -3,7 +3,7 @@ import type { BtcRpcRequestBody, Env } from "../types";
 
 const ONFINALITY_BTC_HOSTS: Record<string, string> = {
   "bip122:000000000019d6689c085ae165831e93": "bitcoin.api.onfinality.io",
-  "bip122:000000000933ea01ad0ee984209779ba": "bitcoin-testnet.api.onfinality.io",
+  "bip122:00000000da84f2bafbbc53dee25a72ae": "bitcoin-testnet.api.onfinality.io",
 };
 
 export async function btcOnfinalityHandler(c: Context<{ Bindings: Env }>) {
