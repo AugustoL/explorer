@@ -55,9 +55,6 @@ const AddressHeader: React.FC<AddressHeaderProps> = ({
               <HelperTooltip content={tTooltips("address.accountType")} placement="bottom" />
             )}
           </span>
-          {addressType === "x402Facilitator" && (
-            <span className="address-token-symbol">x402 Facilitator</span>
-          )}
           {tokenSymbol && <span className="address-token-symbol">{tokenSymbol}</span>}
           {klerosTag && (
             <a

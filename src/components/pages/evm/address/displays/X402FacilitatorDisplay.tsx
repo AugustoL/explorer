@@ -186,6 +186,7 @@ const X402FacilitatorDisplay: React.FC<X402FacilitatorDisplayProps> = ({
           metadata={metadata}
           selectedProvider={selectedProvider}
           onProviderSelect={onProviderSelect}
+          tokenSymbol="x402 Facilitator"
           tokenName={facilitator?.name}
           klerosTag={klerosTag}
         />
