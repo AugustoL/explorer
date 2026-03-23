@@ -189,19 +189,38 @@ export function saveRpcUrlsToStorage(map: RpcUrlsContextType): void {
  * Stored values override default for a network; missing networks fall back to defaults.
  * Keys are networkId strings (CAIP-2 format)
  */
-export function getEffectiveRpcUrls(): RpcUrlsContextType {
+/**
+ * Check whether a URL points to the OpenScan worker proxy.
+ */
+export function isWorkerProxyUrl(url: string): boolean {
+  return url.startsWith(OPENSCAN_WORKER_URL);
+}
+
+export function getEffectiveRpcUrls(options?: {
+  excludeWorkerProxy?: boolean;
+}): RpcUrlsContextType {
   // Merge metadata defaults first, then builtin worker defaults take priority
   const defaults = { ...getDefaultRpcEndpoints(), ...BUILTIN_RPC_DEFAULTS };
   const stored = loadRpcUrlsFromStorage();
-  if (!stored) return defaults;
 
-  // Merge: stored values override defaults
   const merged: RpcUrlsContextType = { ...defaults };
-  for (const k of Object.keys(stored)) {
-    const val = stored[k];
-    if (!val || !Array.isArray(val) || val.length === 0) continue;
-    merged[k] = val;
+  if (stored) {
+    for (const k of Object.keys(stored)) {
+      const val = stored[k];
+      if (!val || !Array.isArray(val) || val.length === 0) continue;
+      merged[k] = val;
+    }
   }
+
+  if (options?.excludeWorkerProxy) {
+    const filtered: RpcUrlsContextType = {};
+    for (const [networkId, urls] of Object.entries(merged)) {
+      const nonWorkerUrls = urls.filter((url) => !isWorkerProxyUrl(url));
+      if (nonWorkerUrls.length > 0) filtered[networkId] = nonWorkerUrls;
+    }
+    return filtered;
+  }
+
   return merged;
 }
 

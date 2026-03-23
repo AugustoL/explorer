@@ -3,6 +3,7 @@ import { useEffect, useId, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Markdown from "react-markdown";
 import { Link } from "react-router-dom";
+import { useSettings } from "../../../context/SettingsContext";
 import OpenScanCubeLoader from "../../LoadingLogo";
 import { useAIAnalysis } from "../../../hooks/useAIAnalysis";
 import type { AIAnalysisType } from "../../../types";
@@ -22,6 +23,7 @@ const AIAnalysisPanel: React.FC<AIAnalysisProps> = ({
   networkCurrency,
   cacheKey,
 }) => {
+  const { settings } = useSettings();
   const { t, i18n } = useTranslation("common");
   const [isOpen, setIsOpen] = useState(false);
   const panelId = useId();
@@ -39,6 +41,8 @@ const AIAnalysisPanel: React.FC<AIAnalysisProps> = ({
       setIsOpen(true);
     }
   }, [result, error]);
+
+  if (settings.workerProxyAi === false) return null;
 
   const handleAnalyze = () => {
     setIsOpen(true);

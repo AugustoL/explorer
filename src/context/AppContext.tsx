@@ -29,6 +29,16 @@ import {
 // Alias exported for use across the app where a shorter/consistent name is preferred
 export type tRpcUrlsContextType = RpcUrlsContextType;
 
+function readWorkerProxyRpcSetting(): boolean {
+  try {
+    const raw = localStorage.getItem("openScan_user_settings");
+    if (raw) return (JSON.parse(raw) as { workerProxyRpc?: boolean }).workerProxyRpc !== false;
+  } catch {
+    /* ignore */
+  }
+  return true;
+}
+
 export const AppContext = createContext<IAppContext>({
   appReady: false,
   resourcesLoaded: false,
@@ -50,7 +60,9 @@ export const AppContextProvider = ({ children }: { children: ReactNode }) => {
   const [appReady, setAppReady] = useState<boolean>(false);
   const [resourcesLoaded, setResourcesLoaded] = useState<boolean>(false);
   const [isHydrated, setIsHydrated] = useState<boolean>(false);
-  const [rpcUrls, setRpcUrlsState] = useState<RpcUrlsContextType>(() => getEffectiveRpcUrls());
+  const [rpcUrls, setRpcUrlsState] = useState<RpcUrlsContextType>(() =>
+    getEffectiveRpcUrls({ excludeWorkerProxy: !readWorkerProxyRpcSetting() }),
+  );
   // biome-ignore lint/suspicious/noExplicitAny: <TODO>
   const [jsonFiles, setJsonFilesState] = useState<Record<string, any>>(() =>
     loadJsonFilesFromStorage(),
@@ -102,7 +114,7 @@ export const AppContextProvider = ({ children }: { children: ReactNode }) => {
         }
       }
 
-      setRpcUrlsState(getEffectiveRpcUrls());
+      setRpcUrlsState(getEffectiveRpcUrls({ excludeWorkerProxy: !readWorkerProxyRpcSetting() }));
     } catch (err) {
       setNetworksError(err instanceof Error ? err.message : "Failed to load networks");
       setNetworks(getAllNetworks());

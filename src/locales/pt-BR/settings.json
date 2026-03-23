@@ -149,6 +149,18 @@
       }
     }
   },
+  "workerProxy": {
+    "title": "Proxy Worker",
+    "description": "Controle o proxy worker do OpenScan usado para análise de IA e roteamento RPC. Desativar requer suas próprias chaves de API ou endpoints.",
+    "aiAnalysis": {
+      "label": "Proxy de Análise IA",
+      "description": "Ativar o proxy de análise IA do OpenScan. Quando desativado, o painel de análise IA será ocultado em todas as páginas."
+    },
+    "rpcProxy": {
+      "label": "Proxy RPC",
+      "description": "Ativar os endpoints RPC do proxy worker do OpenScan. Quando desativado, apenas endpoints de metadados e pessoais serão usados."
+    }
+  },
   "beaconApi": {
     "title": "Beacon API",
     "description": "Configure endpoints de Beacon Chain API para visualizar dados de blobs EIP-4844. Endpoints públicos são fornecidos por padrão.",

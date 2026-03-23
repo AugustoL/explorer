@@ -511,6 +511,8 @@ export interface UserSettings {
   beaconUrls?: Record<string, string>;
   knowledgeLevel?: KnowledgeLevel;
   showHelperTooltips?: boolean;
+  workerProxyAi?: boolean;
+  workerProxyRpc?: boolean;
 }
 
 // ==================== BEACON/BLOB TYPES ====================
@@ -540,6 +542,8 @@ export const DEFAULT_SETTINGS: UserSettings = {
   persistentCacheSizeMB: 10,
   knowledgeLevel: "beginner",
   showHelperTooltips: true,
+  workerProxyAi: true,
+  workerProxyRpc: true,
 };
 
 /**

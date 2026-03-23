@@ -149,6 +149,18 @@
       }
     }
   },
+  "workerProxy": {
+    "title": "工作代理",
+    "description": "控制用于AI分析和RPC路由的OpenScan工作代理。禁用后需要您自己的API密钥或端点。",
+    "aiAnalysis": {
+      "label": "AI分析代理",
+      "description": "启用OpenScan AI分析代理。禁用后，所有页面上的AI分析面板将被隐藏。"
+    },
+    "rpcProxy": {
+      "label": "RPC代理",
+      "description": "启用OpenScan工作代理RPC端点。禁用后，仅使用元数据和您个人的RPC端点。"
+    }
+  },
   "beaconApi": {
     "title": "Beacon API",
     "description": "配置 Beacon Chain API 端点以查看 EIP-4844 Blob 数据。默认提供公共端点。",
