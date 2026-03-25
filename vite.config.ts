@@ -58,9 +58,6 @@ export default defineConfig({
     "process.env.REACT_APP_OPENSCAN_NETWORKS": JSON.stringify(
       process.env.REACT_APP_OPENSCAN_NETWORKS || ""
     ),
-    "process.env.REACT_APP_OPENSCAN_GROQ_AI_URL": JSON.stringify(
-      process.env.REACT_APP_OPENSCAN_GROQ_AI_URL || "https://openscan-groq-ai-proxy.openscan.workers.dev"
-    ),
     "process.env.REACT_APP_OPENSCAN_WORKER_URL": JSON.stringify(
       process.env.REACT_APP_OPENSCAN_WORKER_URL || "https://openscan-worker-proxy.openscan.workers.dev"
     ),
