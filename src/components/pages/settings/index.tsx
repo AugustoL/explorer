@@ -25,7 +25,11 @@ import { downloadConfigFile, exportConfig, importConfig } from "../../../utils/c
 import { logger } from "../../../utils/logger";
 import { getChainIdFromNetwork } from "../../../utils/networkResolver";
 import { clearPersistentCache, getPersistentCacheSize } from "../../../utils/persistentCache";
-import { clearMetadataRpcCache, getMetadataEndpointMap } from "../../../utils/rpcStorage";
+import {
+  clearMetadataRpcCache,
+  getEffectiveRpcUrls,
+  getMetadataEndpointMap,
+} from "../../../utils/rpcStorage";
 import { sortRpcsByQuality } from "../../../utils/rpcAutoSync";
 import { type RpcTestResult, testRpcEndpoint } from "../rpcs/useRpcLatencyTest";
 
@@ -1315,6 +1319,66 @@ const Settings: React.FC = () => {
                   <span className={`settings-autosave-pill ${autoSaveState}`}>
                     {autoSaveMessage}
                   </span>
+                </div>
+
+                <div className="settings-section no-margin-bottom">
+                  <h2 className="settings-section-title">☁️ {t("workerProxy.title")}</h2>
+                  <p className="settings-section-description">{t("workerProxy.description")}</p>
+
+                  <div className="settings-item">
+                    <div>
+                      <div className="settings-item-label">{t("workerProxy.aiAnalysis.label")}</div>
+                      <div className="settings-item-description">
+                        {t("workerProxy.aiAnalysis.description")}
+                      </div>
+                    </div>
+                    <label className="settings-toggle">
+                      <input
+                        type="checkbox"
+                        checked={settings.workerProxyAi !== false}
+                        onChange={(e) => updateSettings({ workerProxyAi: e.target.checked })}
+                        className="settings-toggle-input"
+                      />
+                      <span
+                        className={`settings-toggle-slider ${settings.workerProxyAi !== false ? "active" : ""}`}
+                      >
+                        <span
+                          className={`settings-toggle-knob ${settings.workerProxyAi !== false ? "active" : ""}`}
+                        />
+                      </span>
+                    </label>
+                  </div>
+
+                  <div className="settings-item">
+                    <div>
+                      <div className="settings-item-label">{t("workerProxy.rpcProxy.label")}</div>
+                      <div className="settings-item-description">
+                        {t("workerProxy.rpcProxy.description")}
+                      </div>
+                    </div>
+                    <label className="settings-toggle">
+                      <input
+                        type="checkbox"
+                        checked={settings.workerProxyRpc !== false}
+                        onChange={(e) => {
+                          updateSettings({ workerProxyRpc: e.target.checked });
+                          setRpcUrls(
+                            getEffectiveRpcUrls({
+                              excludeWorkerProxy: !e.target.checked,
+                            }),
+                          );
+                        }}
+                        className="settings-toggle-input"
+                      />
+                      <span
+                        className={`settings-toggle-slider ${settings.workerProxyRpc !== false ? "active" : ""}`}
+                      >
+                        <span
+                          className={`settings-toggle-knob ${settings.workerProxyRpc !== false ? "active" : ""}`}
+                        />
+                      </span>
+                    </label>
+                  </div>
                 </div>
 
                 <div className="settings-section no-margin-bottom">
