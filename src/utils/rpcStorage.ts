@@ -215,8 +215,7 @@ export function getEffectiveRpcUrls(options?: {
   if (options?.excludeWorkerProxy) {
     const filtered: RpcUrlsContextType = {};
     for (const [networkId, urls] of Object.entries(merged)) {
-      const nonWorkerUrls = urls.filter((url) => !isWorkerProxyUrl(url));
-      if (nonWorkerUrls.length > 0) filtered[networkId] = nonWorkerUrls;
+      filtered[networkId] = urls.filter((url) => !isWorkerProxyUrl(url));
     }
     return filtered;
   }
