@@ -199,8 +199,18 @@ export function isWorkerProxyUrl(url: string): boolean {
 export function getEffectiveRpcUrls(options?: {
   excludeWorkerProxy?: boolean;
 }): RpcUrlsContextType {
-  // Merge metadata defaults first, then builtin worker defaults take priority
-  const defaults = { ...getDefaultRpcEndpoints(), ...BUILTIN_RPC_DEFAULTS };
+  // Merge metadata and builtin worker URLs per-network (concatenate arrays, deduplicate)
+  const metadataDefaults = getDefaultRpcEndpoints();
+  const allNetworkIds = new Set([
+    ...Object.keys(metadataDefaults),
+    ...Object.keys(BUILTIN_RPC_DEFAULTS),
+  ]);
+  const defaults: RpcUrlsContextType = {};
+  for (const networkId of allNetworkIds) {
+    const metadataUrls = metadataDefaults[networkId] ?? [];
+    const builtinUrls = BUILTIN_RPC_DEFAULTS[networkId] ?? [];
+    defaults[networkId] = [...new Set([...metadataUrls, ...builtinUrls])];
+  }
   const stored = loadRpcUrlsFromStorage();
 
   const merged: RpcUrlsContextType = { ...defaults };
