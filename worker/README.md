@@ -2,7 +2,7 @@
 
 Shared RPC proxy built with [Hono](https://hono.dev) that routes requests to blockchain RPC providers (Alchemy, Infura, dRPC, Ankr, OnFinality), the Etherscan API, Beacon API, and AI services (Groq). Includes CORS, rate limiting, and request validation.
 
-Deployed on three platforms for redundancy. If Cloudflare fails or hits rate limits the frontend automatically falls over to Deno Deploy, then Vercel.
+Deployed on multiple platforms for redundancy. If Cloudflare fails or hits rate limits the frontend automatically falls over to Vercel. A Deno Deploy entry point is also available if a third platform is needed in the future.
 
 ## Architecture
 
@@ -21,7 +21,7 @@ worker/
   vercel.json         # Vercel config
 ```
 
-All three platforms share the same Hono app (`src/index.ts`). Each entry point bridges the platform's env var mechanism into Hono's `app.fetch(request, env)` — zero code duplication.
+All platforms share the same Hono app (`src/index.ts`). Each entry point bridges the platform's env var mechanism into Hono's `app.fetch(request, env)` — zero code duplication.
 
 ## Routes
 
@@ -97,25 +97,16 @@ npx wrangler deploy
 npx wrangler dev
 ```
 
-### Deno Deploy (secondary failover)
+### Deno Deploy (optional, not currently active)
 
-**First-time setup:**
+Entry point and config are ready at `src/entry-deno.ts` and `deno.json`. To activate:
 
-```bash
-# Install deployctl
-deno install -Arf jsr:@deno/deployctl
-
-# Login to Deno Deploy
-deployctl login
-```
-
-Add secrets via the [Deno Deploy dashboard](https://dash.deno.com) under your project's Settings > Environment Variables. Add all variables from the table above.
-
-**Deploy:**
-
-```bash
-deployctl deploy --project=openscan-worker-proxy src/entry-deno.ts
-```
+1. Install `deployctl`: `deno install -Arf jsr:@deno/deployctl`
+2. Create a project on [console.deno.com](https://console.deno.com)
+3. Get an access token from your account settings
+4. Add all env vars from the table above via the Deno console
+5. Deploy: `deployctl deploy --project=openscan-worker-proxy src/entry-deno.ts --token=$DENO_DEPLOY_TOKEN`
+6. Add the deployment URL to `WORKER_URLS` in `src/config/workerConfig.ts`
 
 **Local dev:**
 
@@ -123,7 +114,7 @@ deployctl deploy --project=openscan-worker-proxy src/entry-deno.ts
 deno task dev
 ```
 
-### Vercel Edge Functions (tertiary failover)
+### Vercel Edge Functions (failover)
 
 **First-time setup:**
 
@@ -166,8 +157,7 @@ curl https://openscan-worker-proxy.vercel.app/health
 The explorer frontend (`src/config/workerConfig.ts`) automatically tries each worker URL in order:
 
 1. **Cloudflare** — `https://openscan-worker-proxy.openscan.workers.dev`
-2. **Deno Deploy** — `https://openscan-worker-proxy.deno.dev`
-3. **Vercel** — `https://openscan-worker-proxy.vercel.app`
+2. **Vercel** — `https://openscan-worker-proxy.vercel.app`
 
 Falls through to the next platform on network errors, 429 (rate limited), 502, or 503 responses.
 

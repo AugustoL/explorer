@@ -1,7 +1,6 @@
-/** Worker proxy URLs in failover order: Cloudflare → Deno Deploy → Vercel */
+/** Worker proxy URLs in failover order: Cloudflare → Vercel */
 export const WORKER_URLS: string[] = [
   "https://openscan-worker-proxy.openscan.workers.dev",
-  "https://openscan-worker-proxy.deno.dev",
   "https://openscan-worker-proxy.vercel.app",
 ];
 
@@ -18,7 +17,7 @@ const FAILOVER_STATUSES = new Set([429, 502, 503]);
 
 /**
  * Fetch from the worker proxy with automatic failover across platforms.
- * Tries each worker URL in order (Cloudflare → Deno → Vercel).
+ * Tries each worker URL in order (Cloudflare → Vercel).
  * Falls through on network errors, 429, 502, and 503 responses.
  */
 export async function fetchWithWorkerFailover(path: string, init?: RequestInit): Promise<Response> {
