@@ -25,8 +25,8 @@ const SolanaAccountDisplay: React.FC<SolanaAccountDisplayProps> = React.memo(
             <span className="block-status-badge block-status-finalized">{accountTypeLabel}</span>
           </div>
 
+          {/* Address — full width on top */}
           <div className="tx-details">
-            {/* Address — full width on top */}
             <div className="tx-row">
               <span className="tx-label">{t("account.address")}:</span>
               <span
@@ -37,59 +37,59 @@ const SolanaAccountDisplay: React.FC<SolanaAccountDisplayProps> = React.memo(
                 <CopyButton value={account.address} />
               </span>
             </div>
+          </div>
 
-            <div className="btc-tx-details-grid">
-              {/* Left column — account details */}
-              <div className="btc-tx-details-column">
-                <div className="tx-row">
-                  <span className="tx-label">{t("account.balance")}:</span>
-                  <span className="tx-value tx-value-highlight">
-                    {formatSol(account.lamports)}
-                  </span>
-                </div>
-
-                <div className="tx-row">
-                  <span className="tx-label">{t("account.owner")}:</span>
-                  <span className="tx-value tx-mono">
-                    <Link
-                      to={`/${networkId}/account/${account.owner}`}
-                      className="tx-link"
-                      title={account.owner}
-                    >
-                      {shortenSolanaAddress(account.owner, 10, 10)}
-                    </Link>
-                  </span>
-                </div>
-
-                <div className="tx-row">
-                  <span className="tx-label">{t("account.executable")}:</span>
-                  <span className="tx-value">
-                    {account.executable ? t("account.yes") : t("account.no")}
-                  </span>
-                </div>
-
-                <div className="tx-row">
-                  <span className="tx-label">{t("account.dataSize")}:</span>
-                  <span className="tx-value">{account.space.toLocaleString()} bytes</span>
-                </div>
-
-                <div className="tx-row">
-                  <span className="tx-label">{t("account.rentEpoch")}:</span>
-                  <span className="tx-value">{account.rentEpoch}</span>
-                </div>
+          {/* Two-column layout: account details | token holdings */}
+          <div className="btc-tx-details-grid">
+            {/* Left column — account details */}
+            <div className="btc-tx-details-column">
+              <div className="tx-row">
+                <span className="tx-label">{t("account.balance")}:</span>
+                <span className="tx-value tx-value-highlight">
+                  {formatSol(account.lamports)}
+                </span>
               </div>
 
-              {/* Right column — token holdings */}
-              <div className="btc-tx-details-column">
-                <div className="tx-row">
-                  <span className="tx-label">
-                    {t("account.tokenHoldings")}
-                    {account.tokenAccounts && account.tokenAccounts.length > 0
-                      ? ` (${account.tokenAccounts.length})`
-                      : ""}
-                    :
-                  </span>
-                </div>
+              <div className="tx-row">
+                <span className="tx-label">{t("account.owner")}:</span>
+                <span className="tx-value tx-mono">
+                  <Link
+                    to={`/${networkId}/account/${account.owner}`}
+                    className="tx-link"
+                    title={account.owner}
+                  >
+                    {shortenSolanaAddress(account.owner, 10, 10)}
+                  </Link>
+                </span>
+              </div>
+
+              <div className="tx-row">
+                <span className="tx-label">{t("account.executable")}:</span>
+                <span className="tx-value">
+                  {account.executable ? t("account.yes") : t("account.no")}
+                </span>
+              </div>
+
+              <div className="tx-row">
+                <span className="tx-label">{t("account.dataSize")}:</span>
+                <span className="tx-value">{account.space.toLocaleString()} bytes</span>
+              </div>
+
+              <div className="tx-row">
+                <span className="tx-label">{t("account.rentEpoch")}:</span>
+                <span className="tx-value">{account.rentEpoch}</span>
+              </div>
+            </div>
+
+            {/* Right column — token holdings */}
+            <div className="btc-tx-details-column">
+              <div className="block-display-section">
+                <h3 className="block-display-section-title">
+                  {t("account.tokenHoldings")}
+                  {account.tokenAccounts && account.tokenAccounts.length > 0
+                    ? ` (${account.tokenAccounts.length})`
+                    : ""}
+                </h3>
                 {account.tokenAccounts && account.tokenAccounts.length > 0 ? (
                   <div className="table-wrapper">
                     <table className="dash-table">
@@ -118,8 +118,8 @@ const SolanaAccountDisplay: React.FC<SolanaAccountDisplayProps> = React.memo(
                     </table>
                   </div>
                 ) : (
-                  <div className="tx-row">
-                    <span className="tx-value text-muted">{t("account.noTokens")}</span>
+                  <div className="card-content">
+                    <p className="text-muted margin-0">{t("account.noTokens")}</p>
                   </div>
                 )}
               </div>
