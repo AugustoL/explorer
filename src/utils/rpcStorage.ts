@@ -64,6 +64,10 @@ const BUILTIN_RPC_DEFAULTS: RpcUrlsContextType = {
     `${OPENSCAN_WORKER_URL}/evm/drpc/eip155:43114`,
     `${OPENSCAN_WORKER_URL}/evm/ankr/eip155:43114`,
   ],
+  // Solana — public RPC endpoints (rate-limited; users should add their own for production use)
+  "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp": ["https://api.mainnet-beta.solana.com"],
+  "solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1": ["https://api.devnet.solana.com"],
+  "solana:4uhcVJyU9pJkvQyS88uRDiswHXSCkY3z": ["https://api.testnet.solana.com"],
 };
 
 interface MetadataRpcCache {
