@@ -171,13 +171,15 @@ export default function SolanaTransactionsPage() {
                     </Link>
                   </td>
                   <td>
-                    <span
-                      className={tx.status === "success" ? "tx-status-success" : "tx-status-failed"}
-                    >
-                      {tx.status === "success"
-                        ? t("transactions.success")
-                        : t("transactions.failed")}
-                    </span>
+                    {tx.status === "success" ? (
+                      <span className="table-status-badge table-status-success">
+                        ✓ {t("transactions.success")}
+                      </span>
+                    ) : (
+                      <span className="table-status-badge table-status-failed">
+                        ✗ {t("transactions.failed")}
+                      </span>
+                    )}
                   </td>
                   <td>
                     <Link to={`/${networkSlug}/slot/${tx.slot}`} className="table-cell-number">

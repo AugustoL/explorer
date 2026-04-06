@@ -150,9 +150,15 @@ const SolanaAccountDisplay: React.FC<SolanaAccountDisplayProps> = React.memo(
                           </Link>
                         </td>
                         <td>
-                          <span className={sig.err ? "tx-status-failed" : "tx-status-success"}>
-                            {sig.err ? t("transactions.failed") : t("transactions.success")}
-                          </span>
+                          {sig.err ? (
+                            <span className="table-status-badge table-status-failed">
+                              ✗ {t("transactions.failed")}
+                            </span>
+                          ) : (
+                            <span className="table-status-badge table-status-success">
+                              ✓ {t("transactions.success")}
+                            </span>
+                          )}
                         </td>
                         <td>
                           <Link to={`/${networkId}/slot/${sig.slot}`} className="table-cell-number">
