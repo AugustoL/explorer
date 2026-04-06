@@ -145,43 +145,30 @@ const SolanaSlotDisplay: React.FC<SolanaSlotDisplayProps> = React.memo(({ block,
 
         {/* Transactions */}
         {block.signatures && block.signatures.length > 0 && (
-          <div className="block-display-section">
+          <div className="tx-row tx-row-vertical">
             <button
               type="button"
-              className="block-display-section-toggle"
+              className="more-details-toggle"
               onClick={() => setShowTransactions((v) => !v)}
             >
-              <h3 className="block-display-section-title">
-                {t("block.transactions")} ({block.signatures.length})
-              </h3>
-              <span className="block-display-section-toggle-icon">
-                {showTransactions ? "−" : "+"}
-              </span>
+              {showTransactions ? "− Hide" : "+ Show"} {t("block.transactions")} (
+              {block.signatures.length})
             </button>
+
             {showTransactions && (
-              <div className="table-wrapper">
-                <table className="dash-table">
-                  <thead>
-                    <tr>
-                      <th>{t("transaction.signature")}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {block.signatures.slice(0, 100).map((sig) => (
-                      <tr key={sig}>
-                        <td className="table-cell-mono">
-                          <Link
-                            to={`/${networkId}/tx/${sig}`}
-                            className="table-cell-address"
-                            title={sig}
-                          >
-                            {shortenSolanaAddress(sig, 12, 12)}
-                          </Link>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              <div className="more-details-content">
+                <div className="tx-list">
+                  {block.signatures.map((sig, index) => (
+                    <div key={sig} className="tx-list-item">
+                      <span className="tx-list-index">{index}</span>
+                      <span className="tx-list-hash tx-mono">
+                        <Link to={`/${networkId}/tx/${sig}`} className="link-accent">
+                          {sig}
+                        </Link>
+                      </span>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </div>
