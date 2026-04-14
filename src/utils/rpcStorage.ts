@@ -1,4 +1,4 @@
-import { OPENSCAN_WORKER_URL } from "../config/workerConfig";
+import { OPENSCAN_WORKER_URL, isWorkerProxyUrl } from "../config/workerConfig";
 import { type MetadataRpcEndpoint, METADATA_VERSION } from "../services/MetadataService";
 import type { RpcUrlsContextType } from "../types";
 import { logger } from "./logger";
@@ -207,12 +207,8 @@ export function saveRpcUrlsToStorage(map: RpcUrlsContextType): void {
  * Stored values override default for a network; missing networks fall back to defaults.
  * Keys are networkId strings (CAIP-2 format)
  */
-/**
- * Check whether a URL points to the OpenScan worker proxy.
- */
-export function isWorkerProxyUrl(url: string): boolean {
-  return OPENSCAN_WORKER_URL.length > 0 && url.startsWith(OPENSCAN_WORKER_URL);
-}
+// isWorkerProxyUrl is re-exported from workerConfig (checks all worker URLs)
+export { isWorkerProxyUrl };
 
 export function getEffectiveRpcUrls(options?: {
   excludeWorkerProxy?: boolean;
