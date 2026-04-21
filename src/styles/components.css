@@ -7946,6 +7946,14 @@ button.tx-section-header-toggle {
 	margin-bottom: 16px;
 }
 
+.collection-token-list-card {
+	background: var(--color-surface);
+	border: 1px solid var(--color-primary-alpha-10);
+	border-radius: 8px;
+	padding: 16px;
+	margin-bottom: 16px;
+}
+
 .nft-collection-display {
 	display: inline-flex;
 	align-items: center;
