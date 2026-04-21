@@ -21,7 +21,7 @@ import type { PolygonClient, SupportedChainId, EthereumClient } from "@openscan/
 export class PolygonAdapter extends NetworkAdapter {
   private client: PolygonClient;
 
-  constructor(networkId: SupportedChainId, client: PolygonClient) {
+  constructor(networkId: SupportedChainId | 80002, client: PolygonClient) {
     super(networkId);
     this.client = client;
     this.initTxSearch(client as unknown as EthereumClient);

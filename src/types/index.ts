@@ -10,10 +10,10 @@ export type NetworkType = "evm" | "bitcoin" | "solana";
 
 /**
  * All EVM chain IDs supported by the app.
- * Maps directly to the connector library's SupportedChainId.
- * When adding a new EVM network, add its chain ID to network-connectors first.
+ * Extends the connector library's SupportedChainId with testnet chain IDs
+ * that reuse their L1 family's client (not yet registered in network-connectors).
  */
-export type AppChainId = SupportedChainId;
+export type AppChainId = SupportedChainId | 43113 | 421614 | 11155420 | 84532 | 80002;
 
 // ==================== CORE DOMAIN TYPES ====================
 
