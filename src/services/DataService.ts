@@ -1,8 +1,13 @@
 import {
   type SupportedChainId,
   type SupportedSolanaChainId,
-  ClientFactory,
+  ArbitrumClient,
+  BaseClient,
   BitcoinClient,
+  ClientFactory,
+  EthereumClient,
+  OptimismClient,
+  PolygonClient,
 } from "@openscan/network-connectors";
 
 import { AdapterFactory } from "./adapters/adaptersFactory";
@@ -12,6 +17,28 @@ import type { SolanaAdapter } from "./adapters/SolanaAdapter/SolanaAdapter";
 import type { NetworkConfig, RpcUrlsContextType } from "../types";
 import { getRPCUrls } from "../config/rpcConfig";
 import { getNetworkRpcKey, getChainIdFromNetwork } from "../utils/networkResolver";
+
+type EVMClientConfig = {
+  rpcUrls: string[];
+  type: "fallback" | "parallel" | "race";
+};
+
+type EVMTestnetClient =
+  | ArbitrumClient
+  | OptimismClient
+  | BaseClient
+  | PolygonClient
+  | EthereumClient;
+
+// EVM testnets not yet registered in @openscan/network-connectors ClientFactory.
+// Mapped to their L1 family's client since they share the same JSON-RPC surface.
+const EVM_TESTNET_CLIENTS: Record<number, (config: EVMClientConfig) => EVMTestnetClient> = {
+  421614: (config) => new ArbitrumClient(config),
+  11155420: (config) => new OptimismClient(config),
+  84532: (config) => new BaseClient(config),
+  80002: (config) => new PolygonClient(config),
+  43113: (config) => new EthereumClient(config),
+};
 
 /**
  * DataService supports EVM, Bitcoin, and Solana networks
@@ -58,10 +85,10 @@ export class DataService {
     } else {
       // Create EVM client and adapter
       const chainId = getChainIdFromNetwork(network) as SupportedChainId;
-      const networkClient = ClientFactory.createTypedClient<typeof chainId>(chainId, {
-        rpcUrls,
-        type: strategy,
-      });
+      const clientConfig = { rpcUrls, type: strategy };
+      const networkClient =
+        EVM_TESTNET_CLIENTS[chainId as number]?.(clientConfig) ??
+        ClientFactory.createTypedClient<typeof chainId>(chainId, clientConfig);
       this.networkAdapter = AdapterFactory.createAdapter(chainId, networkClient);
     }
   }
