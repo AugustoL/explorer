@@ -1,7 +1,6 @@
-import { test, expect } from "../../fixtures/test";
+import { test } from "../../fixtures/test";
 import { SOLANA } from "../../fixtures/networks";
-import { DEFAULT_TIMEOUT } from "../../helpers/wait";
-import type { Page } from "@playwright/test";
+import { expectStillMounted } from "../../fixtures/assertions";
 
 /**
  * Solana mainnet smoke. Solana has a full adapter
@@ -14,15 +13,6 @@ import type { Page } from "@playwright/test";
  * contract is exercised enough to have a stable curated fixture (phase 4
  * will add a `solana.ts` fixture akin to `mainnet.ts`).
  */
-
-const FOOTER_SELECTOR = "footer, .app-footer, [role='contentinfo']";
-
-async function expectStillMounted(page: Page): Promise<void> {
-  await expect(page.locator("#root")).toBeVisible({ timeout: DEFAULT_TIMEOUT });
-  await expect(page.locator(FOOTER_SELECTOR).first()).toBeVisible({
-    timeout: DEFAULT_TIMEOUT * 2,
-  });
-}
 
 test.describe("Solana smoke", () => {
   test("network landing page renders", async ({ page }) => {

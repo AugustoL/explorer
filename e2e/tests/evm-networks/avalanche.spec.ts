@@ -1,7 +1,6 @@
-import { test, expect } from "../../fixtures/test";
+import { test } from "../../fixtures/test";
 import { AVALANCHE } from "../../fixtures/networks";
-import { DEFAULT_TIMEOUT } from "../../helpers/wait";
-import type { Page } from "@playwright/test";
+import { expectStillMounted } from "../../fixtures/assertions";
 
 /**
  * Avalanche C-Chain (43114) smoke. Avalanche is registered as a production
@@ -13,15 +12,6 @@ import type { Page } from "@playwright/test";
  * assertions (if any L2-like specialization is added later) belong in their
  * own spec.
  */
-
-const FOOTER_SELECTOR = "footer, .app-footer, [role='contentinfo']";
-
-async function expectStillMounted(page: Page): Promise<void> {
-  await expect(page.locator("#root")).toBeVisible({ timeout: DEFAULT_TIMEOUT });
-  await expect(page.locator(FOOTER_SELECTOR).first()).toBeVisible({
-    timeout: DEFAULT_TIMEOUT * 2,
-  });
-}
 
 test.describe("Avalanche C-Chain smoke", () => {
   test("block page renders", async ({ page }) => {

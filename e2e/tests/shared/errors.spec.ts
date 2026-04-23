@@ -1,4 +1,4 @@
-import { test, expect } from "../../fixtures/test";
+import { test } from "../../fixtures/test";
 import {
   ETH_MAINNET,
   ARBITRUM,
@@ -6,8 +6,7 @@ import {
   BASE,
   type NetworkFixture,
 } from "../../fixtures/networks";
-import { DEFAULT_TIMEOUT } from "../../helpers/wait";
-import type { Page } from "@playwright/test";
+import { expectStillMounted } from "../../fixtures/assertions";
 
 /**
  * Cross-network error-path smoke. Each test asserts the app root and footer
@@ -17,15 +16,6 @@ import type { Page } from "@playwright/test";
  */
 
 const EVM_SUBJECTS: NetworkFixture[] = [ETH_MAINNET, ARBITRUM, OPTIMISM, BASE];
-
-const FOOTER_SELECTOR = "footer, .app-footer, [role='contentinfo']";
-
-async function expectStillMounted(page: Page): Promise<void> {
-  await expect(page.locator("#root")).toBeVisible({ timeout: DEFAULT_TIMEOUT });
-  await expect(page.locator(FOOTER_SELECTOR).first()).toBeVisible({
-    timeout: DEFAULT_TIMEOUT * 2,
-  });
-}
 
 test.describe("Error paths: invalid block numbers", () => {
   for (const net of EVM_SUBJECTS) {

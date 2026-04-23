@@ -1,7 +1,6 @@
-import { test, expect } from "../../fixtures/test";
+import { test } from "../../fixtures/test";
 import { EVM_TESTNETS } from "../../fixtures/networks";
-import { DEFAULT_TIMEOUT } from "../../helpers/wait";
-import type { Page } from "@playwright/test";
+import { expectStillMounted } from "../../fixtures/assertions";
 
 /**
  * Smoke coverage for the EVM testnets registered in
@@ -18,15 +17,6 @@ import type { Page } from "@playwright/test";
  * placeholder hashes (canonicalTxHash defaults to `0x…0001`) — the goal is
  * to verify the page renders, not that a specific tx payload displays.
  */
-
-const FOOTER_SELECTOR = "footer, .app-footer, [role='contentinfo']";
-
-async function expectStillMounted(page: Page): Promise<void> {
-  await expect(page.locator("#root")).toBeVisible({ timeout: DEFAULT_TIMEOUT });
-  await expect(page.locator(FOOTER_SELECTOR).first()).toBeVisible({
-    timeout: DEFAULT_TIMEOUT * 2,
-  });
-}
 
 for (const net of EVM_TESTNETS) {
   test.describe(`${net.name} (${net.chainId}) smoke`, () => {
