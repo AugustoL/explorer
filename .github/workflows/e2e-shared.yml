@@ -26,8 +26,8 @@ jobs:
             tests: "e2e/tests/shared/contract-interaction.spec.ts"
           - name: ai-and-worker
             tests: "e2e/tests/shared/ai-and-worker.spec.ts"
-          - name: large-tx
-            tests: "e2e/tests/shared/large-tx.spec.ts"
+          - name: event-logs
+            tests: "e2e/tests/shared/event-logs.spec.ts"
 
     steps:
       - uses: actions/checkout@v4
