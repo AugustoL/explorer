@@ -50,8 +50,14 @@ npm run test:run
 # Run unit tests in watch mode
 npm run test
 
-# Run e2e tests (Playwright)
+# Run e2e tests (Playwright) — both `chromium` (live) and `mocked` projects
 npm run test:e2e
+
+# Run a single spec file
+npx playwright test e2e/tests/shared/errors.spec.ts
+
+# Run only the chromium project (skips hermetic `shared/mocked/` specs)
+npx playwright test --project=chromium
 
 # Run e2e tests with UI
 npm run test:e2e:ui
